@@ -7,13 +7,12 @@
 <style>
   :root{--accent:#6c63ff;--muted:#6b7280}
   body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:#f4f6fb;color:#0f172a}
-  header{background:linear-gradient(90deg,var(--accent),#4b59ff);color:#fff;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  header{background:linear-gradient(90deg,var(--accent),#4b59ff);color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
   header h1{margin:0;font-size:18px}
-  .top-controls{display:flex;gap:8px;align-items:center}
-  input[type="search"], select{padding:8px;border-radius:10px;border:0;min-width:180px}
-  main.container{max-width:1200px;margin:18px auto;padding:0 14px;display:grid;grid-template-columns:1fr 320px;gap:18px}
+  .controls{display:flex;gap:8px;align-items:center}
+  input[type="search"], select{padding:8px;border-radius:10px;border:0;min-width:160px}
+  main.container{max-width:1200px;margin:16px auto;padding:0 14px;display:grid;grid-template-columns:1fr 320px;gap:18px}
   section.catalog{min-height:60vh}
-  .controls{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
   #products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
   .card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(16,24,40,0.06);display:flex;flex-direction:column;transition:transform .18s}
   .card:hover{transform:translateY(-6px)}
@@ -45,19 +44,17 @@
 
 <header>
   <h1>Online Graphic Shop</h1>
-  <div class="top-controls">
-    <div style="display:flex;gap:8px;align-items:center" class="controls">
-      <input id="search" type="search" placeholder="Search designs, e.g., logo, flyer..." aria-label="Search">
-      <select id="category">
-        <option value="all">All categories</option>
-      </select>
-      <select id="sort">
-        <option value="relevance">Sort</option>
-        <option value="price_asc">Price ↑</option>
-        <option value="price_desc">Price ↓</option>
-      </select>
-    </div>
-    <button id="open-cart" class="btn btn-primary">Cart (<span id="cart-count">0</span>)</button>
+  <div class="controls" role="search">
+    <input id="search" type="search" placeholder="Search designs (logo, flyer, poster...)" aria-label="Search">
+    <select id="category" aria-label="Category">
+      <option value="all">All categories</option>
+    </select>
+    <select id="sort" aria-label="Sort">
+      <option value="relevance">Sort</option>
+      <option value="price_asc">Price ↑</option>
+      <option value="price_desc">Price ↓</option>
+    </select>
+    <button id="open-cart" class="btn btn-primary" aria-label="Open cart">Cart (<span id="cart-count">0</span>)</button>
   </div>
 </header>
 
@@ -67,7 +64,7 @@
     <div id="infinite-loading" class="loading">Scroll to load more designs...</div>
   </section>
 
-  <aside class="panel">
+  <aside class="panel" aria-label="Cart panel">
     <h3>Your Cart</h3>
     <div id="cart-items" class="cart-list"></div>
     <div style="margin-top:10px;font-weight:800">Total: ₦<span id="cart-total">0</span></div>
@@ -76,7 +73,7 @@
       <button id="clear-cart" class="btn btn-ghost">Clear</button>
     </div>
     <div style="margin-top:12px;font-size:13px;color:var(--muted)">
-      Payment (after checkout):<br><strong>Joy Gift</strong><br>Account: <strong>9121383292</strong><br>Bank: <strong>Opay</strong>
+      Payment after checkout:<br><strong>Joy Gift</strong><br>Account: <strong>9121383292</strong><br>Bank: <strong>Opay</strong>
     </div>
   </aside>
 </main>
@@ -99,16 +96,16 @@
 </div>
 
 <footer>
-  © <span id="year"></span> Online Graphic Shop — designs for businesses and creatives
+  © <span id="year"></span> Online Graphic Shop — designs for businesses & creatives
 </footer>
 
 <script>
 /* -------------------------
   Client-side product manager
-  - Generates 700 products once (saved in localStorage)
-  - Loads chunks (infinite scroll)
+  - Generates 700 products once (saved to localStorage)
+  - Loads in chunks (infinite scroll)
   - Search, category, sort
-  - Cart saved in localStorage
+  - Cart saved to localStorage
 --------------------------*/
 
 const TOTAL_PRODUCTS = 700;
@@ -124,7 +121,7 @@ const STATE = {
   cart: JSON.parse(localStorage.getItem('ogshop_cart') || '{}') || {},
 };
 
-// quick helpers
+// helpers
 const $ = (s,r=document)=>r.querySelector(s);
 const $$ = (s,r=document)=>Array.from(r.querySelectorAll(s));
 const currency = n => "₦" + Number(n).toLocaleString('en-NG');
@@ -141,14 +138,13 @@ function makeProducts(){
   while(arr.length < TOTAL_PRODUCTS){
     const cat = CATEGORIES[(idx-1) % CATEGORIES.length];
     const title = `${cat} Design #${idx}`;
-    // price 1,500 - 12,000
     const price = rand(1500, 12000);
     const oldPrice = Math.random()>0.8 ? price + Math.round(rand(200, Math.floor(price*0.35))) : null;
     const rating = (3.5 + Math.random()*1.5).toFixed(1);
     const reviews = rand(0,1200);
-    // Unsplash placeholder with sig so images vary on GitHub Pages
-    const img = `https://source.unsplash.com/800x600/?graphic%20design,template,${encodeURIComponent(cat)}&sig=${idx}`;
-    const desc = `High-quality ${cat.toLowerCase()} template, editable and ready for your brand.`;
+    // Unsplash placeholder - sig param ensures varied images for GitHub Pages
+    const img = `https://source.unsplash.com/800x600/?${encodeURIComponent(cat)},graphic,design&sig=${idx}`;
+    const desc = `High-quality ${cat.toLowerCase()} template — editable and ready for your brand.`;
     const badge = Math.random()>0.95 ? 'Bestseller' : (Math.random()>0.95 ? 'New' : '');
     arr.push({ id: 'GFX' + String(idx).padStart(4,'0'), title, price, oldPrice, rating, reviews, category:cat, img, desc, badge });
     idx++;
@@ -157,7 +153,7 @@ function makeProducts(){
   try{ localStorage.setItem('ogshop_products_v1', JSON.stringify(arr)); } catch(e){ console.warn('storage full?'); }
 }
 
-// UI rendering
+// UI references
 const grid = $('#products-grid');
 const loadingNote = $('#infinite-loading');
 const cartCountEl = $('#cart-count');
@@ -209,11 +205,7 @@ function renderChunk(){
     grid.appendChild(el);
   }
   STATE.loaded = next;
-  if(STATE.loaded >= list.length){
-    loadingNote.textContent = 'All designs loaded';
-  } else {
-    loadingNote.textContent = 'Scroll to load more designs...';
-  }
+  loadingNote.textContent = STATE.loaded >= list.length ? 'All designs loaded' : 'Scroll to load more designs...';
 }
 
 function resetAndRender(){
@@ -273,7 +265,6 @@ document.addEventListener('click', (e)=>{
     const id = add.dataset.id;
     STATE.cart[id] = (STATE.cart[id] || 0) + 1;
     updateCartUI();
-    // small feedback
     add.textContent = 'Added';
     setTimeout(()=> add.textContent = 'Add', 900);
   }
@@ -313,7 +304,7 @@ sortEl.addEventListener('change', ()=>{
   resetAndRender();
 });
 
-/* cart open, clear, checkout */
+/* cart controls */
 $('#open-cart').addEventListener('click', ()=> window.scrollTo({top:0,behavior:'smooth'}));
 $('#go-checkout').addEventListener('click', ()=> window.location.href = 'checkout.html');
 $('#clear-cart').addEventListener('click', ()=> { if(confirm('Clear cart?')){ STATE.cart = {}; updateCartUI(); } });
@@ -323,7 +314,6 @@ function boot(){
   yearEl.textContent = new Date().getFullYear();
   makeProducts();
   fillCategoryOptions();
-  // see if saved cart exists (already loaded into STATE.cart)
   updateCartUI();
   resetAndRender();
   window.addEventListener('scroll', handleScroll);
