@@ -37,7 +37,7 @@
       Name: <strong>Joy Gift</strong><br>
       Account: <strong>9121383292</strong><br>
       Bank: <strong>Opay</strong><br>
-      After payment, click "I have paid" and optionally paste your transaction ID in the box that appears on the confirmation prompt.
+      After payment, click "I have paid" and optionally paste your transaction ID in the box that appears.
     </div>
 
     <div style="display:flex;gap:10px;margin-top:12px">
@@ -49,10 +49,8 @@
 </main>
 
 <script>
-  // read cart from localStorage
+  // read cart from localStorage (same key used in index.html)
   let cart = JSON.parse(localStorage.getItem('ogshop_cart') || '{}') || {};
-  // cart is object {id: qty}
-  // but in index we stored STATE.cart as object keys with qty; we need product details stored in localStorage products or regenerate
   const savedProducts = JSON.parse(localStorage.getItem('ogshop_products_v1') || '[]') || [];
 
   function buildItems(){
