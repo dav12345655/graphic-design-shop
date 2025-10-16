@@ -1,105 +1,101 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Checkout - Joy Gift Graphics</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background: #6c63ff;
-      color: white;
-      text-align: center;
-      padding: 20px;
-    }
-    .container {
-      width: 90%;
-      margin: 20px auto;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .item {
-      display: flex;
-      justify-content: space-between;
-      border-bottom: 1px solid #ddd;
-      padding: 10px 0;
-    }
-    .total {
-      text-align: right;
-      font-weight: bold;
-      font-size: 1.2em;
-    }
-    .pay-info {
-      margin-top: 20px;
-      background: #eef;
-      padding: 15px;
-      border-radius: 8px;
-    }
-    .btn {
-      background: #6c63ff;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .btn:hover {
-      background: #574bff;
-    }
-  </style>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Checkout — Online Graphic Shop</title>
+<style>
+  body{font-family:Inter,system-ui,Arial;background:#f4f6fb;color:#0f172a;margin:0}
+  header{background:#111;color:#fff;padding:14px 18px;text-align:center}
+  main{max-width:900px;margin:24px auto;padding:18px}
+  .card{background:#fff;border-radius:12px;padding:14px;box-shadow:0 8px 24px rgba(16,24,40,0.06)}
+  .item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px dashed #eee}
+  .item img{width:80px;height:60px;object-fit:cover;border-radius:6px;margin-right:10px}
+  .total{font-weight:900;font-size:20px;margin-top:12px}
+  .form{margin-top:12px;display:grid;gap:8px}
+  input,textarea{padding:10px;border-radius:8px;border:1px solid #e6e9ef}
+  .btn{padding:10px;border-radius:8px;border:0;background:#111;color:#fff;cursor:pointer;font-weight:700}
+  .note{background:#fff8f6;border:1px solid #ffdede;padding:10px;border-radius:8px;margin-top:12px}
+</style>
 </head>
 <body>
-  <header>
-    <h1>Checkout</h1>
-  </header>
+<header><h1>Checkout — Online Graphic Shop</h1></header>
+<main>
+  <div class="card" id="checkout-card">
+    <h3>Order Summary</h3>
+    <div id="items"></div>
+    <div class="total">Total: ₦<span id="total">0</span></div>
 
-  <div class="container">
-    <div id="cart-items"></div>
-    <p class="total">Total: ₦<span id="total">0</span></p>
-
-    <div class="pay-info">
-      <h3>Payment Details</h3>
-      <p><strong>Name:</strong> Joy Gift</p>
-      <p><strong>Account Number:</strong> 9121383292</p>
-      <p><strong>Bank Name:</strong> Opay</p>
-      <p>Make payment to the above account and send proof of payment to our support email: <strong>joygiftshop@gmail.com</strong></p>
+    <h4 style="margin-top:16px">Delivery / Contact</h4>
+    <div class="form">
+      <input id="name" placeholder="Full name" />
+      <input id="phone" placeholder="Phone or Email" />
+      <textarea id="address" rows="3" placeholder="Address (optional)"></textarea>
     </div>
 
-    <button class="btn" onclick="clearCart()">Complete Order</button>
+    <div class="note">
+      <strong>Payment details</strong><br>
+      Name: <strong>Joy Gift</strong><br>
+      Account: <strong>9121383292</strong><br>
+      Bank: <strong>Opay</strong><br>
+      After payment, click "I have paid" and optionally paste your transaction ID in the box that appears on the confirmation prompt.
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:12px">
+      <button id="pay" class="btn" style="flex:1">I have paid</button>
+      <button id="back" class="btn" style="background:#e6e6e6;color:#111">Back to shop</button>
+    </div>
+
   </div>
+</main>
 
-  <script>
-    const cartItems = document.getElementById('cart-items');
-    const totalDisplay = document.getElementById('total');
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+<script>
+  // read cart from localStorage
+  let cart = JSON.parse(localStorage.getItem('ogshop_cart') || '{}') || {};
+  // cart is object {id: qty}
+  // but in index we stored STATE.cart as object keys with qty; we need product details stored in localStorage products or regenerate
+  const savedProducts = JSON.parse(localStorage.getItem('ogshop_products_v1') || '[]') || [];
 
-    function renderCart() {
-      cartItems.innerHTML = "";
-      let total = 0;
-      cart.forEach(item => {
-        total += item.price;
-        const div = document.createElement('div');
-        div.className = 'item';
-        div.innerHTML = `<span>${item.name}</span><span>₦${item.price.toLocaleString()}</span>`;
-        cartItems.appendChild(div);
-      });
-      totalDisplay.textContent = total.toLocaleString();
+  function buildItems(){
+    const itemsDiv = document.getElementById('items');
+    itemsDiv.innerHTML = '';
+    let total = 0;
+    const entries = Object.entries(cart);
+    if(entries.length === 0){
+      itemsDiv.innerHTML = '<p>Your cart is empty. <a href="index.html">Continue shopping</a></p>';
+      document.getElementById('total').textContent = '0';
+      return;
     }
-
-    function clearCart() {
-      alert("Thank you for your order!");
-      localStorage.removeItem('cart');
-      window.location.href = 'index.html';
+    for(const [id, qty] of entries){
+      const p = savedProducts.find(x=>x.id === id);
+      const price = p ? p.price : 0;
+      total += price * qty;
+      const row = document.createElement('div');
+      row.className = 'item';
+      row.innerHTML = `<div style="display:flex;align-items:center"><img src="${p?p.img:''}" alt=""><div><div style="font-weight:700">${p?p.title:id}</div><div style="color:#667085;font-size:13px">${qty} × ${new Intl.NumberFormat('en-NG').format(price)}</div></div></div><div style="font-weight:800">₦${new Intl.NumberFormat('en-NG').format(price*qty)}</div>`;
+      itemsDiv.appendChild(row);
     }
+    document.getElementById('total').textContent = new Intl.NumberFormat('en-NG').format(total);
+  }
 
-    renderCart();
-  </script>
+  buildItems();
+
+  document.getElementById('back').addEventListener('click', ()=> location.href='index.html');
+
+  document.getElementById('pay').addEventListener('click', ()=>{
+    const name = document.getElementById('name').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    if(!name || !phone){ alert('Please enter name and phone/email.'); return; }
+    const tx = prompt('Enter transaction ID (optional) after payment — or press OK to continue without it.');
+    // save order locally
+    const orders = JSON.parse(localStorage.getItem('ogshop_orders_v1') || '[]');
+    const order = { id: 'ORD'+Date.now(), customer:{name,phone}, items:cart, tx:tx||null, createdAt:new Date().toISOString() };
+    orders.unshift(order);
+    localStorage.setItem('ogshop_orders_v1', JSON.stringify(orders));
+    // clear cart
+    localStorage.removeItem('ogshop_cart');
+    alert('Thank you! Your order has been saved locally. Order ID: ' + order.id + (tx?('\\nTransaction ID: '+tx):''));
+    location.href = 'index.html';
+  });
+</script>
 </body>
 </html>
