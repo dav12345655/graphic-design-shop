@@ -300,122 +300,140 @@
   </footer>
 
   <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
+   <script>
+  document.getElementById("year").textContent = new Date().getFullYear();
 
-    document.addEventListener("DOMContentLoaded", () => {
-      const grid = document.getElementById("products-grid");
-      const cartBtn = document.getElementById("cart-btn");
-      const cartModal = document.getElementById("cart-modal");
-      const closeCart = document.getElementById("close-cart");
-      const cartContainer = document.getElementById("cart-items");
-      const totalAmount = document.getElementById("total-amount");
-      const searchInput = document.getElementById("search-input");
-      const previewModal = document.getElementById("productPreviewModal");
-      const previewImage = document.getElementById("previewImage");
-      const previewName = document.getElementById("previewName");
-      const previewPrice = document.getElementById("previewPrice");
+  document.addEventListener("DOMContentLoaded", () => {
+    const grid = document.getElementById("products-grid");
+    const cartBtn = document.getElementById("cart-btn");
+    const cartModal = document.getElementById("cart-modal");
+    const closeCart = document.getElementById("close-cart");
+    const cartContainer = document.getElementById("cart-items");
+    const totalAmount = document.getElementById("total-amount");
+    const searchInput = document.getElementById("search-input");
+    const previewModal = document.getElementById("productPreviewModal");
+    const previewImage = document.getElementById("previewImage");
+    const previewName = document.getElementById("previewName");
+    const previewPrice = document.getElementById("previewPrice");
 
-      let products = JSON.parse(localStorage.getItem("products")) || [];
-      let cart = JSON.parse(localStorage.getItem("cart")) || [];
-      let selectedProduct = null;
+    let products = JSON.parse(localStorage.getItem("products")) || [];
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let selectedProduct = null;
 
-      function renderProducts(list) {
-        grid.innerHTML = "";
-        if (list.length === 0) {
-          grid.innerHTML = "<p>No products found.</p>";
-          return;
-        }
-        list.forEach((p, i) => {
+    // 🟢 Render products
+    function renderProducts(list) {
+      grid.innerHTML = "";
+      if (list.length === 0) {
+        grid.innerHTML = "<p>No products found.</p>";
+        return;
+      }
+      list.forEach((p, i) => {
+        const div = document.createElement("div");
+        div.className = "product";
+        div.innerHTML = `
+          <img src="${p.image}" alt="${p.name}">
+          <div class="info">
+            <h3>${p.name}</h3>
+            <p>₦${p.price.toLocaleString()}</p>
+            <button data-id="${i}" class="preview-btn">View</button>
+          </div>`;
+        grid.appendChild(div);
+      });
+    }
+
+    // 🛒 Render cart properly
+    function renderCart() {
+      cartContainer.innerHTML = "";
+      let total = 0;
+
+      if (cart.length === 0) {
+        cartContainer.innerHTML = "<p>Your cart is empty.</p>";
+      } else {
+        cart.forEach((item, index) => {
+          const itemTotal = item.price * item.qty;
+          total += itemTotal;
+
           const div = document.createElement("div");
-          div.className = "product";
+          div.className = "cart-item";
           div.innerHTML = `
-            <img src="${p.image}" alt="${p.name}">
-            <div class="info">
-              <h3>${p.name}</h3>
-              <p>₦${p.price.toLocaleString()}</p>
-              <button data-id="${i}" class="preview-btn">View</button>
-            </div>`;
-          grid.appendChild(div);
+            <span style="flex:2;">${item.name}</span>
+            <label style="flex:1;">Qty:</label>
+            <input type="number" value="${item.qty}" min="1" data-index="${index}">
+            <span style="flex:1;">₦${itemTotal.toLocaleString()}</span>
+          `;
+          cartContainer.appendChild(div);
         });
       }
 
-      function renderCart() {
-        cartContainer.innerHTML = "";
-        let total = 0;
-        if (cart.length === 0) {
-          cartContainer.innerHTML = "<p>Your cart is empty.</p>";
-        } else {
-          cart.forEach((item, index) => {
-            const itemTotal = item.price * item.qty;
-            total += itemTotal;
-            const div = document.createElement("div");
-            div.className = "cart-item";
-            div.innerHTML = `
-              <span>${item.name}</span>
-              <input type="number" value="${item.qty}" min="1" data-index="${index}">
-              <span>₦${itemTotal.toLocaleString()}</span>
-            `;
-            cartContainer.appendChild(div);
-          });
-        }
-        totalAmount.textContent = total.toLocaleString();
-        localStorage.setItem("cart", JSON.stringify(cart));
+      totalAmount.textContent = total.toLocaleString();
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
+
+    // 🟡 Product preview modal
+    grid.addEventListener("click", (e) => {
+      if (e.target.classList.contains("preview-btn")) {
+        const id = e.target.dataset.id;
+        selectedProduct = { ...products[id], qty: 1 };
+        previewImage.src = selectedProduct.image;
+        previewName.textContent = selectedProduct.name;
+        previewPrice.textContent = "₦" + selectedProduct.price.toLocaleString();
+        previewModal.style.display = "flex";
       }
-
-      grid.addEventListener("click", (e) => {
-        if (e.target.classList.contains("preview-btn")) {
-          const id = e.target.dataset.id;
-          selectedProduct = { ...products[id], qty: 1 };
-          previewImage.src = selectedProduct.image;
-          previewName.textContent = selectedProduct.name;
-          previewPrice.textContent = "₦" + selectedProduct.price.toLocaleString();
-          previewModal.style.display = "flex";
-        }
-      });
-
-      document.getElementById("cancelPreviewBtn").addEventListener("click", () => {
-        previewModal.style.display = "none";
-      });
-
-      document.getElementById("confirmAddBtn").addEventListener("click", () => {
-        if (selectedProduct) {
-          cart.push(selectedProduct);
-          renderCart();
-          alert(`${selectedProduct.name} added to cart!`);
-          previewModal.style.display = "none";
-        }
-      });
-
-      cartContainer.addEventListener("input", (e) => {
-        if (e.target.type === "number") {
-          const index = e.target.dataset.index;
-          cart[index].qty = parseInt(e.target.value);
-          renderCart();
-        }
-      });
-
-      cartBtn.addEventListener("click", () => {
-        renderCart();
-        cartModal.style.display = "block";
-      });
-
-      closeCart.addEventListener("click", () => {
-        cartModal.style.display = "none";
-      });
-
-      window.addEventListener("click", (e) => {
-        if (e.target === cartModal) cartModal.style.display = "none";
-        if (e.target === previewModal) previewModal.style.display = "none";
-      });
-
-      searchInput.addEventListener("input", () => {
-        const keyword = searchInput.value.toLowerCase();
-        const filtered = products.filter((p) => p.name.toLowerCase().includes(keyword));
-        renderProducts(filtered);
-      });
-
-      renderProducts(products);
     });
-  </script>
+
+    // Cancel preview
+    document.getElementById("cancelPreviewBtn").addEventListener("click", () => {
+      previewModal.style.display = "none";
+    });
+
+    // Confirm Add to Cart
+    document.getElementById("confirmAddBtn").addEventListener("click", () => {
+      if (selectedProduct) {
+        const existingIndex = cart.findIndex(p => p.name === selectedProduct.name);
+        if (existingIndex >= 0) {
+          cart[existingIndex].qty += 1;
+        } else {
+          cart.push(selectedProduct);
+        }
+        renderCart();
+        alert(`${selectedProduct.name} added to cart!`);
+        previewModal.style.display = "none";
+      }
+    });
+
+    // 🧮 Update quantity inside cart
+    cartContainer.addEventListener("input", (e) => {
+      if (e.target.type === "number") {
+        const index = e.target.dataset.index;
+        cart[index].qty = parseInt(e.target.value);
+        renderCart();
+      }
+    });
+
+    // 🟢 Open / Close cart modal
+    cartBtn.addEventListener("click", () => {
+      renderCart();
+      cartModal.style.display = "block";
+    });
+
+    closeCart.addEventListener("click", () => {
+      cartModal.style.display = "none";
+    });
+
+    window.addEventListener("click", (e) => {
+      if (e.target === cartModal) cartModal.style.display = "none";
+      if (e.target === previewModal) previewModal.style.display = "none";
+    });
+
+    // 🔍 Search filter
+    searchInput.addEventListener("input", () => {
+      const keyword = searchInput.value.toLowerCase();
+      const filtered = products.filter((p) => p.name.toLowerCase().includes(keyword));
+      renderProducts(filtered);
+    });
+
+    renderProducts(products);
+  });
+</script>
 </body>
 </html>
