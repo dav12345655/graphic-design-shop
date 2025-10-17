@@ -3,152 +3,158 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Panel - Online Graphic Shop</title>
+  <title>Admin - Online Graphic Shop</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f5f6fa;
+      background: #f7f7f7;
       margin: 0;
-      padding: 20px;
+      padding: 0;
     }
-    h1 {
-      color: #2f3640;
-    }
-    .box {
-      background: white;
+    .container {
+      width: 90%;
+      max-width: 900px;
+      margin: 30px auto;
+      background: #fff;
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
     }
     input, button {
-      padding: 8px;
+      padding: 10px;
       margin: 5px;
-    }
-    button {
-      cursor: pointer;
-      background: #0984e3;
-      color: white;
-      border: none;
+      border: 1px solid #ddd;
       border-radius: 5px;
     }
-    button:hover {
-      background: #74b9ff;
+    button {
+      background: #333;
+      color: white;
+      cursor: pointer;
     }
-    #productList div {
-      background: #fff;
+    button:hover {
+      background: #555;
+    }
+    .product {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fafafa;
+      margin-top: 10px;
       padding: 10px;
-      border-radius: 10px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-      margin: 10px 0;
+      border: 1px solid #eee;
+      border-radius: 5px;
     }
     img {
-      border-radius: 6px;
+      height: 50px;
+      border-radius: 5px;
+    }
+    .top-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
     }
   </style>
 </head>
 <body>
-  <h1>Admin Panel</h1>
+  <div class="container">
+    <h1>Admin Dashboard</h1>
+    <div class="top-buttons">
+      <button id="exportBtn">Export JSON</button>
+      <input type="file" id="importFile" accept=".json" style="display:none;">
+      <button id="importBtn">Import JSON</button>
+    </div>
 
-  <!-- LOGIN SECTION -->
-  <div id="login" class="box">
-    <h3>Login to continue</h3>
-    <input type="password" id="adminPassword" placeholder="Enter admin password" />
-    <button id="loginBtn">Login</button>
-  </div>
+    <input type="text" id="name" placeholder="Product Name" />
+    <input type="number" id="price" placeholder="Price (₦)" />
+    <input type="text" id="category" placeholder="Category (e.g. Flyer, Logo)" />
+    <input type="text" id="image" placeholder="Image URL" />
+    <button id="addProduct">Add Product</button>
 
-  <!-- ADMIN SECTION -->
-  <div id="admin-panel" class="box" style="display:none;">
-    <h3>Add New Product</h3>
-    <input type="text" id="newName" placeholder="Product name" />
-    <input type="number" id="newPrice" placeholder="Price (₦)" />
-    <input type="text" id="newImage" placeholder="Image URL" />
-    <button id="addProductBtn">Add Product</button>
-    <button id="exportJSON">Export JSON</button>
-
-    <h3>All Products</h3>
     <div id="productList"></div>
   </div>
 
   <script>
-    const ADMIN_PASSWORD = "admin123";
-    const STORAGE_KEY = "ogshop_products_v1";
-    let products = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    let products = JSON.parse(localStorage.getItem("products")) || [];
 
-    const loginSection = document.getElementById("login");
-    const adminPanel = document.getElementById("admin-panel");
-
-    document.getElementById("loginBtn").onclick = () => {
-      const password = document.getElementById("adminPassword").value;
-      if (password === ADMIN_PASSWORD) {
-        loginSection.style.display = "none";
-        adminPanel.style.display = "block";
-        renderProducts();
-      } else {
-        alert("Incorrect password");
-      }
-    };
-
-    function saveProducts() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
-    }
+    const productList = document.getElementById("productList");
 
     function renderProducts() {
-      const list = document.getElementById("productList");
-      list.innerHTML = "";
-      products.forEach((p, i) => {
+      productList.innerHTML = "";
+      products.forEach((p, index) => {
         const div = document.createElement("div");
+        div.className = "product";
         div.innerHTML = `
-          <strong>${p.name}</strong> - ₦${p.price}<br>
-          <img src="${p.image}" width="100"><br>
-          <button onclick="editProduct(${i})">Edit</button>
-          <button onclick="deleteProduct(${i})">Delete</button>
+          <div>
+            <strong>${p.name}</strong><br>
+            ₦${p.price} | ${p.category}<br>
+            <img src="${p.image}" alt="image">
+          </div>
+          <div>
+            <button onclick="deleteProduct(${index})">Delete</button>
+          </div>
         `;
-        list.appendChild(div);
+        productList.appendChild(div);
       });
-    }
-
-    function editProduct(index) {
-      const p = products[index];
-      const newName = prompt("Enter new name:", p.name);
-      const newPrice = prompt("Enter new price:", p.price);
-      const newImage = prompt("Enter new image URL:", p.image);
-      if (newName && newPrice && newImage) {
-        products[index] = { ...p, name: newName, price: Number(newPrice), image: newImage };
-        saveProducts();
-        renderProducts();
-        alert("Product updated!");
-      }
+      localStorage.setItem("products", JSON.stringify(products));
     }
 
     function deleteProduct(index) {
-      if (confirm("Delete this product?")) {
-        products.splice(index, 1);
-        saveProducts();
-        renderProducts();
-      }
+      products.splice(index, 1);
+      renderProducts();
     }
 
-    document.getElementById("addProductBtn").onclick = () => {
-      const name = document.getElementById("newName").value;
-      const price = Number(document.getElementById("newPrice").value);
-      const image = document.getElementById("newImage").value;
+    document.getElementById("addProduct").onclick = () => {
+      const name = document.getElementById("name").value;
+      const price = document.getElementById("price").value;
+      const category = document.getElementById("category").value;
+      const image = document.getElementById("image").value;
       if (!name || !price || !image) return alert("Please fill all fields");
-      products.push({ id: Date.now(), name, price, image });
-      saveProducts();
+      products.push({ name, price, category, image });
       renderProducts();
-      document.getElementById("newName").value = "";
-      document.getElementById("newPrice").value = "";
-      document.getElementById("newImage").value = "";
+      document.getElementById("name").value = "";
+      document.getElementById("price").value = "";
+      document.getElementById("category").value = "";
+      document.getElementById("image").value = "";
     };
 
-    document.getElementById("exportJSON").onclick = () => {
+    // Export JSON
+    document.getElementById("exportBtn").onclick = () => {
       const blob = new Blob([JSON.stringify(products, null, 2)], { type: "application/json" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
       a.download = "products.json";
       a.click();
     };
+
+    // Import JSON
+    document.getElementById("importBtn").onclick = () => {
+      document.getElementById("importFile").click();
+    };
+    document.getElementById("importFile").onchange = (event) => {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (Array.isArray(imported)) {
+            products = imported;
+            renderProducts();
+            alert("Products imported successfully!");
+          } else {
+            alert("Invalid JSON file.");
+          }
+        } catch {
+          alert("Error reading JSON file.");
+        }
+      };
+      reader.readAsText(file);
+    };
+
+    renderProducts();
   </script>
 </body>
 </html>
