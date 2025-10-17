@@ -69,6 +69,7 @@
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
       overflow: hidden;
       transition: transform 0.2s;
+      cursor: pointer;
     }
 
     .product:hover {
@@ -157,14 +158,8 @@
     }
 
     @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(40px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from {opacity: 0; transform: translateY(40px);}
+      to {opacity: 1; transform: translateY(0);}
     }
 
     .close-cart {
@@ -210,6 +205,55 @@
       text-decoration: none;
       z-index: 1000;
     }
+
+    /* 🌟 Product Preview Modal */
+    #productPreviewModal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.6);
+      align-items: center;
+      justify-content: center;
+    }
+
+    #productPreviewModal .preview-box {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      animation: fadeIn 0.3s ease;
+    }
+
+    #productPreviewModal img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .preview-buttons button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 6px;
+      margin: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .add-to-cart-preview {
+      background: #28a745;
+      color: white;
+    }
+
+    .cancel-preview {
+      background: #ccc;
+      color: black;
+    }
   </style>
 </head>
 
@@ -235,6 +279,19 @@
     </div>
   </div>
 
+  <!-- 🌟 Product Preview Modal -->
+  <div id="productPreviewModal">
+    <div class="preview-box">
+      <img id="previewImage" src="" alt="Product Image">
+      <h3 id="previewName"></h3>
+      <p id="previewPrice" style="font-weight: bold; color: #333;"></p>
+      <div class="preview-buttons">
+        <button id="confirmAddBtn" class="add-to-cart-preview">Add to Cart</button>
+        <button id="cancelPreviewBtn" class="cancel-preview">Cancel</button>
+      </div>
+    </div>
+  </div>
+
   <!-- 🌟 Footer -->
   <footer>
     <p>Designed by <strong>ABblack</strong> © <span id="year"></span></p>
@@ -253,9 +310,14 @@
       const cartContainer = document.getElementById("cart-items");
       const totalAmount = document.getElementById("total-amount");
       const searchInput = document.getElementById("search-input");
+      const previewModal = document.getElementById("productPreviewModal");
+      const previewImage = document.getElementById("previewImage");
+      const previewName = document.getElementById("previewName");
+      const previewPrice = document.getElementById("previewPrice");
 
       let products = JSON.parse(localStorage.getItem("products")) || [];
       let cart = JSON.parse(localStorage.getItem("cart")) || [];
+      let selectedProduct = null;
 
       function renderProducts(list) {
         grid.innerHTML = "";
@@ -271,7 +333,7 @@
             <div class="info">
               <h3>${p.name}</h3>
               <p>₦${p.price.toLocaleString()}</p>
-              <button data-id="${i}" class="add-btn">Add to Cart</button>
+              <button data-id="${i}" class="preview-btn">View</button>
             </div>`;
           grid.appendChild(div);
         });
@@ -301,12 +363,26 @@
       }
 
       grid.addEventListener("click", (e) => {
-        if (e.target.classList.contains("add-btn")) {
+        if (e.target.classList.contains("preview-btn")) {
           const id = e.target.dataset.id;
-          const product = { ...products[id], qty: 1 };
-          cart.push(product);
+          selectedProduct = { ...products[id], qty: 1 };
+          previewImage.src = selectedProduct.image;
+          previewName.textContent = selectedProduct.name;
+          previewPrice.textContent = "₦" + selectedProduct.price.toLocaleString();
+          previewModal.style.display = "flex";
+        }
+      });
+
+      document.getElementById("cancelPreviewBtn").addEventListener("click", () => {
+        previewModal.style.display = "none";
+      });
+
+      document.getElementById("confirmAddBtn").addEventListener("click", () => {
+        if (selectedProduct) {
+          cart.push(selectedProduct);
           renderCart();
-          alert(`${product.name} added to cart!`);
+          alert(`${selectedProduct.name} added to cart!`);
+          previewModal.style.display = "none";
         }
       });
 
@@ -329,6 +405,7 @@
 
       window.addEventListener("click", (e) => {
         if (e.target === cartModal) cartModal.style.display = "none";
+        if (e.target === previewModal) previewModal.style.display = "none";
       });
 
       searchInput.addEventListener("input", () => {
