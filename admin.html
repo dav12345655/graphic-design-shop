@@ -58,116 +58,130 @@
       <button class="success" id="updateBtn">Update</button>
     </div>
   </main>
+   <script>
+  const ADMIN_PASSWORD = "admin123";
+  const STORAGE_KEY = "ogshop_products_v1";
+  let products = [];
+  let editingIndex = null;
 
-  <script>
-    const ADMIN_PASSWORD = "admin123";
-    const STORAGE_KEY = "ogshop_products_v1";
-    let products = [];
-    let editingIndex = null;
+  const loginBtn = document.getElementById("loginBtn");
+  const adminPass = document.getElementById("adminPass");
+  const adminSection = document.getElementById("admin-section");
+  const loginSection = document.getElementById("login-section");
 
-    const loginBtn = document.getElementById("loginBtn");
-    const adminPass = document.getElementById("adminPass");
-    const adminSection = document.getElementById("admin-section");
-    const loginSection = document.getElementById("login-section");
+  loginBtn.onclick = () => {
+    if (adminPass.value === ADMIN_PASSWORD) {
+      loginSection.style.display = "none";
+      adminSection.style.display = "block";
+      loadFromLocal();
+    } else alert("Wrong password");
+  };
 
-    loginBtn.onclick = () => {
-      if (adminPass.value === ADMIN_PASSWORD) {
-        loginSection.style.display = "none";
-        adminSection.style.display = "block";
-        loadFromLocal();
-      } else alert("Wrong password");
-    };
-
-    function generateProducts(n = 500) {
-      const categories = ["Logos", "Flyers", "Banners", "Posters", "Social Media"];
-      const arr = [];
-      for (let i = 0; i < n; i++) {
-        const cat = categories[i % categories.length];
-        arr.push({
-          id: "GFX" + (1000 + i),
-          title: `${cat} Template #${i + 1}`,
-          price: Math.floor(Math.random() * 10000 + 1500),
-          category: cat,
-          img: `https://source.unsplash.com/300x200/?${cat}-design&sig=${i}`
-        });
-      }
-      products = arr;
-      renderTable();
-    }
-
-    function renderTable() {
-      const tbody = document.querySelector("#productTable tbody");
-      tbody.innerHTML = "";
-      products.forEach((p, i) => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td><img src="${p.img}" alt="design"></td>
-          <td>${p.title}</td>
-          <td>${p.category}</td>
-          <td>₦${p.price.toLocaleString()}</td>
-          <td>
-            <button onclick="editProduct(${i})">Edit</button>
-            <button class="danger" onclick="deleteProduct(${i})">Delete</button>
-          </td>`;
-        tbody.appendChild(row);
+  function generateProducts(n = 500) {
+    const categories = ["Logos", "Flyers", "Banners", "Posters", "Social Media"];
+    const arr = [];
+    for (let i = 0; i < n; i++) {
+      const cat = categories[i % categories.length];
+      arr.push({
+        id: "GFX" + (1000 + i),
+        title: `${cat} Template #${i + 1}`,
+        price: Math.floor(Math.random() * 10000 + 1500),
+        category: cat,
+        img: `https://source.unsplash.com/300x200/?${cat}-design&sig=${i}`
       });
     }
+    products = arr;
+    renderTable();
+  }
 
-    function editProduct(index) {
-      const p = products[index];
-      editingIndex = index;
-      document.getElementById("titleInput").value = p.title;
-      document.getElementById("priceInput").value = p.price;
-      document.getElementById("imgInput").value = p.img;
-      document.getElementById("categoryInput").value = p.category;
-    }
+  function renderTable() {
+    const tbody = document.querySelector("#productTable tbody");
+    tbody.innerHTML = "";
+    products.forEach((p, i) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td><img src="${p.img}" alt="design"></td>
+        <td>${p.title}</td>
+        <td>${p.category}</td>
+        <td>₦${p.price.toLocaleString()}</td>
+        <td>
+          <button class="primary edit-btn" data-index="${i}">Edit</button>
+          <button class="danger delete-btn" data-index="${i}">Delete</button>
+        </td>`;
+      tbody.appendChild(row);
+    });
 
-    function deleteProduct(index) {
-      products.splice(index, 1);
+    // Bind button events dynamically
+    document.querySelectorAll(".edit-btn").forEach(btn =>
+      btn.addEventListener("click", e => {
+        const index = e.target.dataset.index;
+        editProduct(index);
+      })
+    );
+    document.querySelectorAll(".delete-btn").forEach(btn =>
+      btn.addEventListener("click", e => {
+        const index = e.target.dataset.index;
+        deleteProduct(index);
+      })
+    );
+  }
+
+  function editProduct(index) {
+    const p = products[index];
+    editingIndex = index;
+    document.getElementById("titleInput").value = p.title;
+    document.getElementById("priceInput").value = p.price;
+    document.getElementById("imgInput").value = p.img;
+    document.getElementById("categoryInput").value = p.category;
+    alert("Product loaded into edit form ✅");
+  }
+
+  function deleteProduct(index) {
+    products.splice(index, 1);
+    renderTable();
+  }
+
+  document.getElementById("updateBtn").onclick = () => {
+    if (editingIndex === null) return alert("No product selected");
+    const p = products[editingIndex];
+    p.title = document.getElementById("titleInput").value;
+    p.price = parseFloat(document.getElementById("priceInput").value);
+    p.img = document.getElementById("imgInput").value;
+    p.category = document.getElementById("categoryInput").value;
+    renderTable();
+    editingIndex = null;
+    alert("✅ Product updated!");
+  };
+
+  document.getElementById("generateBtn").onclick = () => generateProducts();
+
+  function loadFromLocal() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      products = JSON.parse(saved);
       renderTable();
-    }
+    } else alert("No products found. Click Generate to create.");
+  }
 
-    document.getElementById("updateBtn").onclick = () => {
-      if (editingIndex === null) return alert("No product selected");
-      const p = products[editingIndex];
-      p.title = document.getElementById("titleInput").value;
-      p.price = parseFloat(document.getElementById("priceInput").value);
-      p.img = document.getElementById("imgInput").value;
-      p.category = document.getElementById("categoryInput").value;
-      renderTable();
-      editingIndex = null;
-      alert("Product updated!");
-    };
+  document.getElementById("saveLocal").onclick = () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
+    alert("Saved to localStorage!");
+  };
 
-    document.getElementById("generateBtn").onclick = () => generateProducts();
+  document.getElementById("clearLocal").onclick = () => {
+    localStorage.removeItem(STORAGE_KEY);
+    alert("LocalStorage cleared");
+    products = [];
+    renderTable();
+  };
 
-    function loadFromLocal() {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        products = JSON.parse(saved);
-        renderTable();
-      } else alert("No products found. Click Generate to create.");
-    }
-
-    document.getElementById("saveLocal").onclick = () => {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
-      alert("Saved to localStorage!");
-    };
-
-    document.getElementById("clearLocal").onclick = () => {
-      localStorage.removeItem(STORAGE_KEY);
-      alert("LocalStorage cleared");
-      products = [];
-      renderTable();
-    };
-
-    document.getElementById("exportJSON").onclick = () => {
-      const blob = new Blob([JSON.stringify(products, null, 2)], {type:"application/json"});
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "products.json";
-      a.click();
-    };
-  </script>
+  document.getElementById("exportJSON").onclick = () => {
+    const blob = new Blob([JSON.stringify(products, null, 2)], {type:"application/json"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "products.json";
+    a.click();
+  };
+</script>
 </body>
 </html>
