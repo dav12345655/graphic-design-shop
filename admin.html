@@ -58,130 +58,90 @@
       <button class="success" id="updateBtn">Update</button>
     </div>
   </main>
-   <script>
-  const ADMIN_PASSWORD = "admin123";
-  const STORAGE_KEY = "ogshop_products_v1";
-  let products = [];
-  let editingIndex = null;
+<script>
+const ADMIN_PASSWORD = "admin123";
+const STORAGE_KEY = "ogshop_products_v1";
+let products = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 
-  const loginBtn = document.getElementById("loginBtn");
-  const adminPass = document.getElementById("adminPass");
-  const adminSection = document.getElementById("admin-section");
-  const loginSection = document.getElementById("login-section");
+const loginSection = document.getElementById("login");
+const adminPanel = document.getElementById("admin-panel");
 
-  loginBtn.onclick = () => {
-    if (adminPass.value === ADMIN_PASSWORD) {
-      loginSection.style.display = "none";
-      adminSection.style.display = "block";
-      loadFromLocal();
-    } else alert("Wrong password");
-  };
-
-  function generateProducts(n = 500) {
-    const categories = ["Logos", "Flyers", "Banners", "Posters", "Social Media"];
-    const arr = [];
-    for (let i = 0; i < n; i++) {
-      const cat = categories[i % categories.length];
-      arr.push({
-        id: "GFX" + (1000 + i),
-        title: `${cat} Template #${i + 1}`,
-        price: Math.floor(Math.random() * 10000 + 1500),
-        category: cat,
-        img: `https://source.unsplash.com/300x200/?${cat}-design&sig=${i}`
-      });
-    }
-    products = arr;
-    renderTable();
+document.getElementById("loginBtn").onclick = () => {
+  const password = document.getElementById("adminPassword").value;
+  if (password === ADMIN_PASSWORD) {
+    loginSection.style.display = "none";
+    adminPanel.style.display = "block";
+    renderProducts();
+  } else {
+    alert("Incorrect password");
   }
+};
 
-  function renderTable() {
-    const tbody = document.querySelector("#productTable tbody");
-    tbody.innerHTML = "";
-    products.forEach((p, i) => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td><img src="${p.img}" alt="design"></td>
-        <td>${p.title}</td>
-        <td>${p.category}</td>
-        <td>₦${p.price.toLocaleString()}</td>
-        <td>
-          <button class="primary edit-btn" data-index="${i}">Edit</button>
-          <button class="danger delete-btn" data-index="${i}">Delete</button>
-        </td>`;
-      tbody.appendChild(row);
-    });
+function saveProducts() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
+}
 
-    // Bind button events dynamically
-    document.querySelectorAll(".edit-btn").forEach(btn =>
-      btn.addEventListener("click", e => {
-        const index = e.target.dataset.index;
-        editProduct(index);
-      })
-    );
-    document.querySelectorAll(".delete-btn").forEach(btn =>
-      btn.addEventListener("click", e => {
-        const index = e.target.dataset.index;
-        deleteProduct(index);
-      })
-    );
+function renderProducts() {
+  const list = document.getElementById("productList");
+  list.innerHTML = "";
+  products.forEach((p, i) => {
+    const div = document.createElement("div");
+    div.style.border = "1px solid #ccc";
+    div.style.margin = "5px";
+    div.style.padding = "10px";
+    div.style.borderRadius = "10px";
+    div.innerHTML = `
+      <strong>${p.name}</strong> - ₦${p.price}<br>
+      <img src="${p.image}" width="100" style="border-radius:6px"><br>
+      <button onclick="editProduct(${i})">Edit</button>
+      <button onclick="deleteProduct(${i})">Delete</button>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function editProduct(index) {
+  const p = products[index];
+  const newName = prompt("Enter new name:", p.name);
+  const newPrice = prompt("Enter new price:", p.price);
+  const newImage = prompt("Enter new image URL:", p.image);
+  if (newName && newPrice && newImage) {
+    products[index] = { ...p, name: newName, price: Number(newPrice), image: newImage };
+    saveProducts();
+    renderProducts();
+    alert("Product updated!");
   }
+}
 
-  function editProduct(index) {
-    const p = products[index];
-    editingIndex = index;
-    document.getElementById("titleInput").value = p.title;
-    document.getElementById("priceInput").value = p.price;
-    document.getElementById("imgInput").value = p.img;
-    document.getElementById("categoryInput").value = p.category;
-    alert("Product loaded into edit form ✅");
-  }
-
-  function deleteProduct(index) {
+function deleteProduct(index) {
+  if (confirm("Delete this product?")) {
     products.splice(index, 1);
-    renderTable();
+    saveProducts();
+    renderProducts();
   }
+}
 
-  document.getElementById("updateBtn").onclick = () => {
-    if (editingIndex === null) return alert("No product selected");
-    const p = products[editingIndex];
-    p.title = document.getElementById("titleInput").value;
-    p.price = parseFloat(document.getElementById("priceInput").value);
-    p.img = document.getElementById("imgInput").value;
-    p.category = document.getElementById("categoryInput").value;
-    renderTable();
-    editingIndex = null;
-    alert("✅ Product updated!");
-  };
+document.getElementById("addProductBtn").onclick = () => {
+  const name = document.getElementById("newName").value;
+  const price = Number(document.getElementById("newPrice").value);
+  const image = document.getElementById("newImage").value;
+  if (!name || !price || !image) return alert("Please fill all fields");
+  products.push({ id: Date.now(), name, price, image });
+  saveProducts();
+  renderProducts();
+  document.getElementById("newName").value = "";
+  document.getElementById("newPrice").value = "";
+  document.getElementById("newImage").value = "";
+};
 
-  document.getElementById("generateBtn").onclick = () => generateProducts();
-
-  function loadFromLocal() {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      products = JSON.parse(saved);
-      renderTable();
-    } else alert("No products found. Click Generate to create.");
-  }
-
-  document.getElementById("saveLocal").onclick = () => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
-    alert("Saved to localStorage!");
-  };
-
-  document.getElementById("clearLocal").onclick = () => {
-    localStorage.removeItem(STORAGE_KEY);
-    alert("LocalStorage cleared");
-    products = [];
-    renderTable();
-  };
-
-  document.getElementById("exportJSON").onclick = () => {
-    const blob = new Blob([JSON.stringify(products, null, 2)], {type:"application/json"});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "products.json";
-    a.click();
-  };
+document.getElementById("exportJSON").onclick = () => {
+  const blob = new Blob([JSON.stringify(products, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "products.json";
+  a.click();
+};
 </script>
+
 </body>
 </html>
