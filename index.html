@@ -193,7 +193,30 @@
     </div>
   </div>
 
-  <footer>© 2025 Online Graphic Shop — Designed by ABblack</footer>
+ <!-- 🌟 Footer Section -->
+<footer style="
+  background-color: #111;
+  color: #fff;
+  text-align: center;
+  padding: 20px 10px;
+  font-size: 14px;
+  margin-top: 40px;
+">
+  <p style="margin: 5px 0;">Designed by <strong>ABblack</strong> © <span id="year"></span></p>
+  <p style="margin: 5px 0;">📞 <a href="tel:+2347026865570" style="color: #00bcd4; text-decoration: none;">07026865570</a></p>
+
+  <div style="margin-top: 10px;">
+    <a href="https://wa.me/2347026865570" target="_blank" style="color: #25D366; margin: 0 10px; text-decoration: none;">WhatsApp</a> |
+    <a href="https://www.facebook.com" target="_blank" style="color: #3b5998; margin: 0 10px; text-decoration: none;">Facebook</a> |
+    <a href="https://www.instagram.com" target="_blank" style="color: #E1306C; margin: 0 10px; text-decoration: none;">Instagram</a>
+  </div>
+</footer>
+
+<script>
+  // Auto-update the year
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
