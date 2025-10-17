@@ -5,258 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Online Graphic Shop</title>
   <style>
-    body {
-      font-family: "Segoe UI", sans-serif;
-      background-color: #f8f8f8;
-      margin: 0;
-      padding: 0;
-      color: #333;
-    }
-
-    header {
-      background: linear-gradient(90deg, #111, #333);
-      color: white;
-      padding: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    header h1 {
-      font-size: 22px;
-      margin: 0;
-    }
-
-    .cart-btn {
-      background: #ff9800;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      font-weight: bold;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .cart-btn:hover {
-      background: #e68900;
-    }
-
-    .container {
-      width: 90%;
-      max-width: 1100px;
-      margin: 20px auto;
-    }
-
-    #search-input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-      gap: 15px;
-    }
-
-    .product {
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-      transition: transform 0.2s;
-      cursor: pointer;
-    }
-
-    .product:hover {
-      transform: scale(1.03);
-    }
-
-    .product img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-    }
-
-    .info {
-      padding: 10px;
-    }
-
-    .info h3 {
-      margin: 5px 0;
-      font-size: 16px;
-      color: #333;
-    }
-
-    .info p {
-      color: #777;
-      font-size: 14px;
-      margin: 5px 0;
-    }
-
-    .info button {
-      width: 100%;
-      background: #28a745;
-      color: white;
-      border: none;
-      padding: 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: 0.2s;
-    }
-
-    .info button:hover {
-      background: #218838;
-    }
-
-    /* 🛒 Cart Modal */
-    .cart-modal {
-      display: none;
-      position: fixed;
-      z-index: 9999;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-    }
-
-    .cart-content {
-      background: white;
-      margin: 80px auto;
-      padding: 20px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 400px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-      animation: fadeIn 0.3s ease;
-    }
-
-    .cart-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 10px 0;
-      font-size: 14px;
-    }
-
-    .cart-item span {
-      flex: 1;
-    }
-
-    .cart-item input {
-      width: 50px;
-      padding: 4px;
-      border-radius: 4px;
-      border: 1px solid #aaa;
-      text-align: center;
-    }
-
-    @keyframes fadeIn {
-      from {opacity: 0; transform: translateY(40px);}
-      to {opacity: 1; transform: translateY(0);}
-    }
-
-    .close-cart {
-      float: right;
-      font-size: 25px;
-      cursor: pointer;
-    }
-
-    .checkout-btn {
-      display: block;
-      background: #007bff;
-      color: #fff;
-      padding: 10px;
-      text-align: center;
-      border-radius: 5px;
-      margin-top: 15px;
-      text-decoration: none;
-    }
-
-    footer {
-      text-align: center;
-      padding: 15px;
-      margin-top: 30px;
-      background: #111;
-      color: #ccc;
-    }
-
-    /* ✅ Floating WhatsApp Button */
-    .whatsapp-float {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: #25D366;
-      color: white;
-      border-radius: 50%;
-      width: 60px;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-      font-size: 28px;
-      text-decoration: none;
-      z-index: 1000;
-    }
-
-    /* 🌟 Product Preview Modal */
-    #productPreviewModal {
-      display: none;
-      position: fixed;
-      z-index: 2000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0,0,0,0.6);
-      align-items: center;
-      justify-content: center;
-    }
-
-    #productPreviewModal .preview-box {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 400px;
-      text-align: center;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-      animation: fadeIn 0.3s ease;
-    }
-
-    #productPreviewModal img {
-      max-width: 100%;
-      border-radius: 8px;
-      margin-bottom: 10px;
-    }
-
-    .preview-buttons button {
-      padding: 10px 15px;
-      border: none;
-      border-radius: 6px;
-      margin: 5px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .add-to-cart-preview {
-      background: #28a745;
-      color: white;
-    }
-
-    .cancel-preview {
-      background: #ccc;
-      color: black;
-    }
+    body { font-family: "Segoe UI", sans-serif; background-color: #f8f8f8; margin:0; padding:0; color:#333;}
+    header { background: linear-gradient(90deg,#111,#333); color:white; padding:15px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+    header h1 { margin:0; font-size:22px;}
+    .cart-btn {background:#ff9800; color:white; border:none; padding:10px 15px; font-weight:bold; border-radius:6px; cursor:pointer; transition:0.2s;}
+    .cart-btn:hover {background:#e68900;}
+    .container {width:90%; max-width:1100px; margin:20px auto;}
+    #search-input {width:100%; padding:10px; margin-bottom:15px; border-radius:5px; border:1px solid #ccc;}
+    .grid {display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:15px;}
+    .product {background:white; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.1); overflow:hidden; transition: transform 0.2s; cursor:pointer;}
+    .product:hover {transform:scale(1.03);}
+    .product img {width:100%; height:180px; object-fit:cover;}
+    .info {padding:10px;}
+    .info h3 {margin:5px 0; font-size:16px;}
+    .info p {color:#777; font-size:14px; margin:5px 0;}
+    .info button {width:100%; background:#28a745; color:white; border:none; padding:10px; border-radius:6px; cursor:pointer; font-weight:bold; transition:0.2s;}
+    .info button:hover {background:#218838;}
+    .cart-modal {display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; background-color: rgba(0,0,0,0.5);}
+    .cart-content {background:white; margin:80px auto; padding:20px; border-radius:10px; width:90%; max-width:400px; box-shadow:0 0 15px rgba(0,0,0,0.2);}
+    .close-cart {float:right; font-size:25px; cursor:pointer;}
+    .checkout-btn {display:block; background:#007bff; color:#fff; padding:10px; text-align:center; border-radius:5px; margin-top:15px; text-decoration:none;}
+    .cart-item {display:flex; justify-content:space-between; align-items:center; margin:10px 0; font-size:14px;}
+    .cart-item input {width:50px; padding:4px; border-radius:4px; border:1px solid #aaa; text-align:center;}
+    footer {text-align:center; padding:15px; margin-top:30px; background:#111; color:#ccc;}
+    .whatsapp-float {position:fixed; bottom:20px; right:20px; background-color:#25D366; color:white; border-radius:50%; width:60px; height:60px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 8px rgba(0,0,0,0.3); font-size:28px; text-decoration:none; z-index:1000;}
+    #productPreviewModal {display:none; position:fixed; z-index:2000; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center;}
+    #productPreviewModal .preview-box {background:white; padding:20px; border-radius:10px; max-width:400px; text-align:center; box-shadow:0 5px 15px rgba(0,0,0,0.3);}
+    #productPreviewModal img {max-width:100%; border-radius:8px; margin-bottom:10px;}
+    .preview-buttons button {padding:10px 15px; border:none; border-radius:6px; margin:5px; cursor:pointer; font-weight:bold;}
+    .add-to-cart-preview {background:#28a745; color:white;}
+    .cancel-preview {background:#ccc; color:black;}
   </style>
 </head>
-
 <body>
   <header>
     <h1>Online Graphic Shop</h1>
@@ -284,7 +64,7 @@
     <div class="preview-box">
       <img id="previewImage" src="" alt="Product Image">
       <h3 id="previewName"></h3>
-      <p id="previewPrice" style="font-weight: bold; color: #333;"></p>
+      <p id="previewPrice" style="font-weight:bold;"></p>
       <div class="preview-buttons">
         <button id="confirmAddBtn" class="add-to-cart-preview">Add to Cart</button>
         <button id="cancelPreviewBtn" class="cancel-preview">Cancel</button>
@@ -299,7 +79,9 @@
     <a href="https://wa.me/2349121383292" target="_blank" class="whatsapp-float">💬</a>
   </footer>
 
-  <script>
+<script>
+document.getElementById("year").textContent = new Date().getFullYear();
+
 document.addEventListener("DOMContentLoaded", () => {
   const grid = document.getElementById("products-grid");
   const cartBtn = document.getElementById("cart-btn");
@@ -308,178 +90,104 @@ document.addEventListener("DOMContentLoaded", () => {
   const cartContainer = document.getElementById("cart-items");
   const totalAmount = document.getElementById("total-amount");
   const searchInput = document.getElementById("search-input");
+  const previewModal = document.getElementById("productPreviewModal");
+  const previewImage = document.getElementById("previewImage");
+  const previewName = document.getElementById("previewName");
+  const previewPrice = document.getElementById("previewPrice");
+  const confirmAddBtn = document.getElementById("confirmAddBtn");
+  const cancelPreviewBtn = document.getElementById("cancelPreviewBtn");
 
   let products = JSON.parse(localStorage.getItem("products")) || [];
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  let selectedProduct = null;
 
-  // 🖼 Render Products
   function renderProducts(list) {
     grid.innerHTML = "";
-    if (list.length === 0) {
-      grid.innerHTML = "<p>No products found.</p>";
-      return;
-    }
-    list.forEach((p, i) => {
-      const div = document.createElement("div");
-      div.className = "product";
-      div.innerHTML = `
+    if(list.length===0){grid.innerHTML="<p>No products found.</p>";return;}
+    list.forEach((p,i)=>{
+      const div=document.createElement("div");
+      div.className="product";
+      div.innerHTML=`
         <img src="${p.image}" alt="${p.name}">
         <div class="info">
           <h3>${p.name}</h3>
           <p>₦${p.price}</p>
-          <button data-id="${i}" class="add-btn">Add to Cart</button>
+          <button data-id="${i}" class="preview-btn">View</button>
         </div>`;
       grid.appendChild(div);
+
+      // Click image or button shows preview
+      div.querySelector('img').addEventListener('click',()=>showPreview(p));
+      div.querySelector('.preview-btn').addEventListener('click',()=>showPreview(p));
     });
   }
 
-  // 🛍 Render Cart
-  function renderCart() {
-    cartContainer.innerHTML = "";
-    let total = 0;
-    if (cart.length === 0) {
-      cartContainer.innerHTML = "<p>Your cart is empty.</p>";
-    } else {
-      cart.forEach((item, index) => {
-        const itemDiv = document.createElement("div");
-        itemDiv.style.marginBottom = "10px";
-        itemDiv.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div>
-              <strong>${item.name}</strong><br>
-              ₦${item.price.toLocaleString()}<br>
-              Qty: <input type="number" min="1" value="${item.qty}" data-index="${index}" 
-                     style="width:50px; text-align:center;">
-            </div>
-            <button class="remove-btn" data-index="${index}" 
-              style="background:red; color:white; border:none; padding:5px 8px; border-radius:5px; cursor:pointer;">🗑</button>
-          </div>
+  function showPreview(product){
+    selectedProduct=product;
+    previewImage.src=product.image;
+    previewName.textContent=product.name;
+    previewPrice.textContent='₦'+product.price.toLocaleString();
+    previewModal.style.display='flex';
+  }
+
+  function addToCart(product){
+    const existing=cart.find(item=>item.name===product.name);
+    if(existing){existing.qty+=1;}
+    else{cart.push({...product,qty:1});}
+    renderCart();
+    localStorage.setItem("cart",JSON.stringify(cart));
+    alert(`${product.name} added to cart!`);
+  }
+
+  confirmAddBtn.addEventListener('click',()=>{
+    addToCart(selectedProduct);
+    previewModal.style.display='none';
+  });
+  cancelPreviewBtn.addEventListener('click',()=>{previewModal.style.display='none';});
+
+  function renderCart(){
+    cartContainer.innerHTML="";
+    let total=0;
+    if(cart.length===0){cartContainer.innerHTML="<p>Your cart is empty.</p>";}
+    else{
+      cart.forEach((item,index)=>{
+        const itemDiv=document.createElement("div");
+        itemDiv.className="cart-item";
+        itemDiv.innerHTML=`
+          <span><strong>${item.name}</strong><br>₦${item.price.toLocaleString()}<br>Qty: <input type="number" min="1" value="${item.qty}" data-index="${index}"></span>
+          <button class="remove-btn" data-index="${index}" style="background:red;color:white;border:none;padding:5px 8px;border-radius:5px;cursor:pointer;">🗑</button>
         `;
         cartContainer.appendChild(itemDiv);
-        total += item.price * item.qty;
+        total+=item.price*item.qty;
       });
     }
-    totalAmount.textContent = total.toLocaleString();
-    localStorage.setItem("cart", JSON.stringify(cart));
+    totalAmount.textContent=total.toLocaleString();
   }
 
- // ➕ Add to Cart
-grid.addEventListener("click", (e) => {
-  if (e.target.classList.contains("add-btn")) {
-    const id = e.target.dataset.id;
-    const product = products[id];
-    cart.push(product);
-    renderCart();
-    alert(`${product.name} added to cart!`);
-  }
-});
-
-  // Function to actually add to cart
-  window.addToCart = (product) => {
-    const existing = cart.find(item => item.name === product.name);
-    if (existing) {
-      existing.qty += 1;
-    } else {
-      cart.push({ ...product, qty: 1 });
-    }
-    renderCart();
-    alert(`${product.name} added to cart!`);
-  };
-
-  // ♻️ Quantity Change
-  cartContainer.addEventListener("input", (e) => {
-    if (e.target.type === "number") {
-      const index = e.target.dataset.index;
-      cart[index].qty = parseInt(e.target.value);
+  cartContainer.addEventListener('input',e=>{
+    if(e.target.type==="number"){
+      const index=e.target.dataset.index;
+      cart[index].qty=parseInt(e.target.value);
       renderCart();
+      localStorage.setItem("cart",JSON.stringify(cart));
     }
   });
 
-  // 🗑 Remove Item
-  cartContainer.addEventListener("click", (e) => {
-    if (e.target.classList.contains("remove-btn")) {
-      const index = e.target.dataset.index;
-      cart.splice(index, 1);
+  cartContainer.addEventListener('click',e=>{
+    if(e.target.classList.contains("remove-btn")){
+      const index=e.target.dataset.index;
+      cart.splice(index,1);
       renderCart();
+      localStorage.setItem("cart",JSON.stringify(cart));
     }
   });
 
-  // 🛒 Open / Close Cart
-  cartBtn.addEventListener("click", () => {
-    renderCart();
-    cartModal.style.display = "block";
-  });
-
-  closeCart.addEventListener("click", () => {
-    cartModal.style.display = "none";
-  });
-
-  window.addEventListener("click", (e) => {
-    if (e.target === cartModal) cartModal.style.display = "none";
-  });
-
-  // 🔍 Search Function
-  searchInput.addEventListener("input", () => {
-    const keyword = searchInput.value.toLowerCase();
-    const filtered = products.filter((p) =>
-      p.name.toLowerCase().includes(keyword)
-    );
-    renderProducts(filtered);
-  });
+  cartBtn.addEventListener('click',()=>{renderCart(); cartModal.style.display='block';});
+  closeCart.addEventListener('click',()=>{cartModal.style.display='none';});
+  window.addEventListener('click',e=>{if(e.target===cartModal) cartModal.style.display='none';});
+  searchInput.addEventListener('input',()=>{const keyword=searchInput.value.toLowerCase(); const filtered=products.filter(p=>p.name.toLowerCase().includes(keyword)); renderProducts(filtered);});
 
   renderProducts(products);
-});
-</script>
-  <!-- ✅ Product Preview Modal -->
-<div id="productPreviewModal" style="
-  display: none;
-  position: fixed;
-  z-index: 2000;
-  left: 0; top: 0;
-  width: 100%; height: 100%;
-  background-color: rgba(0,0,0,0.6);
-  align-items: center;
-  justify-content: center;
-">
-  <div style="
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    max-width: 400px;
-    text-align: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    animation: zoomIn 0.3s ease;
-  ">
-    <img id="previewImage" src="" alt="Product" style="max-width: 100%; border-radius: 8px;">
-    <h3 id="previewName" style="margin: 10px 0;"></h3>
-    <p id="previewPrice" style="font-weight: bold; color: #333;"></p>
-    <div style="margin-top: 15px;">
-      <button id="confirmAddBtn" style="background: #28a745; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer;">Add to Cart</button>
-      <button id="cancelPreviewBtn" style="background: #ccc; color: black; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer;">Cancel</button>
-    </div>
-  </div>
-</div>
-  <script>
-let selectedProduct = null;
-
-// Show product preview
-function showProductPreview(product) {
-  selectedProduct = product;
-  document.getElementById('previewImage').src = product.image;
-  document.getElementById('previewName').textContent = product.name;
-  document.getElementById('previewPrice').textContent = '₦' + product.price.toLocaleString();
-  document.getElementById('productPreviewModal').style.display = 'flex';
-}
-
-// Cancel button closes the preview
-document.getElementById('cancelPreviewBtn').addEventListener('click', () => {
-  document.getElementById('productPreviewModal').style.display = 'none';
-});
-
-// Confirm button adds to cart
-document.getElementById('confirmAddBtn').addEventListener('click', () => {
-  addToCart(selectedProduct);
-  document.getElementById('productPreviewModal').style.display = 'none';
 });
 </script>
 </body>
