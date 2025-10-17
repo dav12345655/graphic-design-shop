@@ -3,144 +3,152 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin – Online Graphic Shop</title>
+  <title>Admin Panel - Online Graphic Shop</title>
   <style>
-    body {font-family: Arial, sans-serif; background: #f5f7fb; margin: 0;}
-    header {background: #222; color: #fff; padding: 1rem;}
-    main {max-width: 1000px; margin: 1rem auto; background: #fff; padding: 1rem; border-radius: 8px;}
-    input, select {padding: 6px; margin: 4px;}
-    button {padding: 6px 10px; margin: 4px; border: none; border-radius: 5px; cursor: pointer;}
-    .primary {background: #007bff; color: #fff;}
-    .danger {background: #d9534f; color: #fff;}
-    .success {background: #28a745; color: #fff;}
-    table {width: 100%; border-collapse: collapse; margin-top: 10px;}
-    th, td {padding: 8px; border-bottom: 1px solid #ddd;}
-    img {width: 70px; height: 50px; object-fit: cover; border-radius: 6px;}
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f6fa;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      color: #2f3640;
+    }
+    .box {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    input, button {
+      padding: 8px;
+      margin: 5px;
+    }
+    button {
+      cursor: pointer;
+      background: #0984e3;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    button:hover {
+      background: #74b9ff;
+    }
+    #productList div {
+      background: #fff;
+      padding: 10px;
+      border-radius: 10px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      margin: 10px 0;
+    }
+    img {
+      border-radius: 6px;
+    }
   </style>
 </head>
 <body>
-  <header>
-    <h2>Admin Dashboard – Online Graphic Shop</h2>
-  </header>
+  <h1>Admin Panel</h1>
 
-  <main>
-    <div id="login-section">
-      <h3>Enter Admin Password</h3>
-      <input type="password" id="adminPass" placeholder="Password">
-      <button class="primary" id="loginBtn">Login</button>
-      <p style="color:gray;">Default password: <b>admin123</b></p>
-    </div>
+  <!-- LOGIN SECTION -->
+  <div id="login" class="box">
+    <h3>Login to continue</h3>
+    <input type="password" id="adminPassword" placeholder="Enter admin password" />
+    <button id="loginBtn">Login</button>
+  </div>
 
-    <div id="admin-section" style="display:none;">
-      <button class="primary" id="generateBtn">Generate 500 Designs</button>
-      <button class="success" id="saveLocal">Save to LocalStorage</button>
-      <button class="danger" id="clearLocal">Clear LocalStorage</button>
-      <button class="primary" id="exportJSON">Export JSON</button>
+  <!-- ADMIN SECTION -->
+  <div id="admin-panel" class="box" style="display:none;">
+    <h3>Add New Product</h3>
+    <input type="text" id="newName" placeholder="Product name" />
+    <input type="number" id="newPrice" placeholder="Price (₦)" />
+    <input type="text" id="newImage" placeholder="Image URL" />
+    <button id="addProductBtn">Add Product</button>
+    <button id="exportJSON">Export JSON</button>
 
-      <table id="productTable">
-        <thead>
-          <tr>
-            <th>Preview</th>
-            <th>Title</th>
-            <th>Category</th>
-            <th>Price</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+    <h3>All Products</h3>
+    <div id="productList"></div>
+  </div>
 
-      <h3>Edit Product</h3>
-      <input id="titleInput" placeholder="Title">
-      <input id="priceInput" placeholder="Price (₦)">
-      <input id="imgInput" placeholder="Image URL">
-      <input id="categoryInput" placeholder="Category">
-      <button class="success" id="updateBtn">Update</button>
-    </div>
-  </main>
-<script>
-const ADMIN_PASSWORD = "admin123";
-const STORAGE_KEY = "ogshop_products_v1";
-let products = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+  <script>
+    const ADMIN_PASSWORD = "admin123";
+    const STORAGE_KEY = "ogshop_products_v1";
+    let products = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 
-const loginSection = document.getElementById("login");
-const adminPanel = document.getElementById("admin-panel");
+    const loginSection = document.getElementById("login");
+    const adminPanel = document.getElementById("admin-panel");
 
-document.getElementById("loginBtn").onclick = () => {
-  const password = document.getElementById("adminPassword").value;
-  if (password === ADMIN_PASSWORD) {
-    loginSection.style.display = "none";
-    adminPanel.style.display = "block";
-    renderProducts();
-  } else {
-    alert("Incorrect password");
-  }
-};
+    document.getElementById("loginBtn").onclick = () => {
+      const password = document.getElementById("adminPassword").value;
+      if (password === ADMIN_PASSWORD) {
+        loginSection.style.display = "none";
+        adminPanel.style.display = "block";
+        renderProducts();
+      } else {
+        alert("Incorrect password");
+      }
+    };
 
-function saveProducts() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
-}
+    function saveProducts() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
+    }
 
-function renderProducts() {
-  const list = document.getElementById("productList");
-  list.innerHTML = "";
-  products.forEach((p, i) => {
-    const div = document.createElement("div");
-    div.style.border = "1px solid #ccc";
-    div.style.margin = "5px";
-    div.style.padding = "10px";
-    div.style.borderRadius = "10px";
-    div.innerHTML = `
-      <strong>${p.name}</strong> - ₦${p.price}<br>
-      <img src="${p.image}" width="100" style="border-radius:6px"><br>
-      <button onclick="editProduct(${i})">Edit</button>
-      <button onclick="deleteProduct(${i})">Delete</button>
-    `;
-    list.appendChild(div);
-  });
-}
+    function renderProducts() {
+      const list = document.getElementById("productList");
+      list.innerHTML = "";
+      products.forEach((p, i) => {
+        const div = document.createElement("div");
+        div.innerHTML = `
+          <strong>${p.name}</strong> - ₦${p.price}<br>
+          <img src="${p.image}" width="100"><br>
+          <button onclick="editProduct(${i})">Edit</button>
+          <button onclick="deleteProduct(${i})">Delete</button>
+        `;
+        list.appendChild(div);
+      });
+    }
 
-function editProduct(index) {
-  const p = products[index];
-  const newName = prompt("Enter new name:", p.name);
-  const newPrice = prompt("Enter new price:", p.price);
-  const newImage = prompt("Enter new image URL:", p.image);
-  if (newName && newPrice && newImage) {
-    products[index] = { ...p, name: newName, price: Number(newPrice), image: newImage };
-    saveProducts();
-    renderProducts();
-    alert("Product updated!");
-  }
-}
+    function editProduct(index) {
+      const p = products[index];
+      const newName = prompt("Enter new name:", p.name);
+      const newPrice = prompt("Enter new price:", p.price);
+      const newImage = prompt("Enter new image URL:", p.image);
+      if (newName && newPrice && newImage) {
+        products[index] = { ...p, name: newName, price: Number(newPrice), image: newImage };
+        saveProducts();
+        renderProducts();
+        alert("Product updated!");
+      }
+    }
 
-function deleteProduct(index) {
-  if (confirm("Delete this product?")) {
-    products.splice(index, 1);
-    saveProducts();
-    renderProducts();
-  }
-}
+    function deleteProduct(index) {
+      if (confirm("Delete this product?")) {
+        products.splice(index, 1);
+        saveProducts();
+        renderProducts();
+      }
+    }
 
-document.getElementById("addProductBtn").onclick = () => {
-  const name = document.getElementById("newName").value;
-  const price = Number(document.getElementById("newPrice").value);
-  const image = document.getElementById("newImage").value;
-  if (!name || !price || !image) return alert("Please fill all fields");
-  products.push({ id: Date.now(), name, price, image });
-  saveProducts();
-  renderProducts();
-  document.getElementById("newName").value = "";
-  document.getElementById("newPrice").value = "";
-  document.getElementById("newImage").value = "";
-};
+    document.getElementById("addProductBtn").onclick = () => {
+      const name = document.getElementById("newName").value;
+      const price = Number(document.getElementById("newPrice").value);
+      const image = document.getElementById("newImage").value;
+      if (!name || !price || !image) return alert("Please fill all fields");
+      products.push({ id: Date.now(), name, price, image });
+      saveProducts();
+      renderProducts();
+      document.getElementById("newName").value = "";
+      document.getElementById("newPrice").value = "";
+      document.getElementById("newImage").value = "";
+    };
 
-document.getElementById("exportJSON").onclick = () => {
-  const blob = new Blob([JSON.stringify(products, null, 2)], { type: "application/json" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "products.json";
-  a.click();
-};
-</script>
+    document.getElementById("exportJSON").onclick = () => {
+      const blob = new Blob([JSON.stringify(products, null, 2)], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "products.json";
+      a.click();
+    };
+  </script>
 </body>
 </html>
