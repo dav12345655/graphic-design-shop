@@ -153,101 +153,106 @@
   </div>
 
   <script>
-    let products = JSON.parse(localStorage.getItem("products")) || [];
-    const productList = document.getElementById("productList");
+  <script>
+document.addEventListener("DOMContentLoaded", () => {
+  let products = JSON.parse(localStorage.getItem("products")) || [];
+  const productList = document.getElementById("productList");
 
-    function renderProducts() {
-      productList.innerHTML = "";
-      products.forEach((p, index) => {
-        const div = document.createElement("div");
-        div.className = "product";
-        div.innerHTML = `
-          <div>
-            <strong>${p.name}</strong><br>
-            ₦${p.price} | ${p.category}<br>
-            <img src="${p.image}" alt="image">
-          </div>
-          <div>
-            <button onclick="deleteProduct(${index})">Delete</button>
-          </div>
-        `;
-        productList.appendChild(div);
-      });
-      localStorage.setItem("products", JSON.stringify(products));
-    }
-
-    function deleteProduct(index) {
-      products.splice(index, 1);
-      renderProducts();
-    }
-
-    document.getElementById("addProduct").onclick = () => {
-      const name = document.getElementById("name").value;
-      const price = document.getElementById("price").value;
-      const category = document.getElementById("category").value;
-      const image = document.getElementById("image").value;
-      if (!name || !price || !image) return alert("Please fill all fields");
-      products.push({ name, price, category, image });
-      renderProducts();
-      document.getElementById("name").value = "";
-      document.getElementById("price").value = "";
-      document.getElementById("category").value = "";
-      document.getElementById("image").value = "";
-    };
-
-    // Export JSON
-    document.getElementById("exportBtn").onclick = () => {
-      const blob = new Blob([JSON.stringify(products, null, 2)], { type: "application/json" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "products.json";
-      a.click();
-    };
-
-    // Import JSON
-    document.getElementById("importBtn").onclick = () => {
-      document.getElementById("importFile").click();
-    };
-    document.getElementById("importFile").onchange = (event) => {
-      const file = event.target.files[0];
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const imported = JSON.parse(e.target.result);
-          if (Array.isArray(imported)) {
-            products = imported;
-            renderProducts();
-            alert("Products imported successfully!");
-          } else {
-            alert("Invalid JSON file.");
-          }
-        } catch {
-          alert("Error reading JSON file.");
-        }
-      };
-      reader.readAsText(file);
-    };
-
-    // Cart Modal logic
-    const cartModal = document.getElementById("cart-modal");
-    const cartBtn = document.getElementById("cart-btn");
-    const closeCart = document.getElementById("close-cart");
-
-    cartBtn.addEventListener("click", () => {
-      cartModal.style.display = "block";
+  function renderProducts() {
+    productList.innerHTML = "";
+    products.forEach((p, index) => {
+      const div = document.createElement("div");
+      div.className = "product";
+      div.innerHTML = `
+        <div>
+          <strong>${p.name}</strong><br>
+          ₦${p.price} | ${p.category}<br>
+          <img src="${p.image}" alt="image">
+        </div>
+        <div>
+          <button onclick="deleteProduct(${index})">Delete</button>
+        </div>
+      `;
+      productList.appendChild(div);
     });
+    localStorage.setItem("products", JSON.stringify(products));
+  }
 
-    closeCart.addEventListener("click", () => {
-      cartModal.style.display = "none";
-    });
-
-    window.addEventListener("click", (e) => {
-      if (e.target === cartModal) {
-        cartModal.style.display = "none";
-      }
-    });
-
+  window.deleteProduct = (index) => {
+    products.splice(index, 1);
     renderProducts();
-  </script>
+  };
+
+  document.getElementById("addProduct").onclick = () => {
+    const name = document.getElementById("name").value;
+    const price = document.getElementById("price").value;
+    const category = document.getElementById("category").value;
+    const image = document.getElementById("image").value;
+    if (!name || !price || !image) return alert("Please fill all fields");
+    products.push({ name, price, category, image });
+    renderProducts();
+    document.getElementById("name").value = "";
+    document.getElementById("price").value = "";
+    document.getElementById("category").value = "";
+    document.getElementById("image").value = "";
+  };
+
+  // Export JSON
+  document.getElementById("exportBtn").onclick = () => {
+    const blob = new Blob([JSON.stringify(products, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "products.json";
+    a.click();
+  };
+
+  // Import JSON
+  document.getElementById("importBtn").onclick = () => {
+    document.getElementById("importFile").click();
+  };
+
+  document.getElementById("importFile").onchange = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const imported = JSON.parse(e.target.result);
+        if (Array.isArray(imported)) {
+          products = imported;
+          renderProducts();
+          alert("Products imported successfully!");
+        } else {
+          alert("Invalid JSON file.");
+        }
+      } catch {
+        alert("Error reading JSON file.");
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  // 🛒 CART MODAL FIX
+  const cartModal = document.getElementById("cart-modal");
+  const cartBtn = document.getElementById("cart-btn");
+  const closeCart = document.getElementById("close-cart");
+
+  cartBtn.addEventListener("click", () => {
+    cartModal.style.display = "block";
+  });
+
+  closeCart.addEventListener("click", () => {
+    cartModal.style.display = "none";
+  });
+
+  window.addEventListener("click", (e) => {
+    if (e.target === cartModal) {
+      cartModal.style.display = "none";
+    }
+  });
+
+  renderProducts();
+});
+</script>
+
 </body>
 </html>
