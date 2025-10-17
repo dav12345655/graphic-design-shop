@@ -300,140 +300,133 @@
   </footer>
 
   <script>
-   <script>
-  document.getElementById("year").textContent = new Date().getFullYear();
+document.addEventListener("DOMContentLoaded", () => {
+  const grid = document.getElementById("products-grid");
+  const cartBtn = document.getElementById("cart-btn");
+  const cartModal = document.getElementById("cart-modal");
+  const closeCart = document.getElementById("close-cart");
+  const cartContainer = document.getElementById("cart-items");
+  const totalAmount = document.getElementById("total-amount");
+  const searchInput = document.getElementById("search-input");
 
-  document.addEventListener("DOMContentLoaded", () => {
-    const grid = document.getElementById("products-grid");
-    const cartBtn = document.getElementById("cart-btn");
-    const cartModal = document.getElementById("cart-modal");
-    const closeCart = document.getElementById("close-cart");
-    const cartContainer = document.getElementById("cart-items");
-    const totalAmount = document.getElementById("total-amount");
-    const searchInput = document.getElementById("search-input");
-    const previewModal = document.getElementById("productPreviewModal");
-    const previewImage = document.getElementById("previewImage");
-    const previewName = document.getElementById("previewName");
-    const previewPrice = document.getElementById("previewPrice");
+  let products = JSON.parse(localStorage.getItem("products")) || [];
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-    let products = JSON.parse(localStorage.getItem("products")) || [];
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    let selectedProduct = null;
+  // 🖼 Render Products
+  function renderProducts(list) {
+    grid.innerHTML = "";
+    if (list.length === 0) {
+      grid.innerHTML = "<p>No products found.</p>";
+      return;
+    }
+    list.forEach((p, i) => {
+      const div = document.createElement("div");
+      div.className = "product";
+      div.innerHTML = `
+        <img src="${p.image}" alt="${p.name}">
+        <div class="info">
+          <h3>${p.name}</h3>
+          <p>₦${p.price}</p>
+          <button data-id="${i}" class="add-btn">Add to Cart</button>
+        </div>`;
+      grid.appendChild(div);
+    });
+  }
 
-    // 🟢 Render products
-    function renderProducts(list) {
-      grid.innerHTML = "";
-      if (list.length === 0) {
-        grid.innerHTML = "<p>No products found.</p>";
-        return;
-      }
-      list.forEach((p, i) => {
-        const div = document.createElement("div");
-        div.className = "product";
-        div.innerHTML = `
-          <img src="${p.image}" alt="${p.name}">
-          <div class="info">
-            <h3>${p.name}</h3>
-            <p>₦${p.price.toLocaleString()}</p>
-            <button data-id="${i}" class="preview-btn">View</button>
-          </div>`;
-        grid.appendChild(div);
+  // 🛍 Render Cart
+  function renderCart() {
+    cartContainer.innerHTML = "";
+    let total = 0;
+    if (cart.length === 0) {
+      cartContainer.innerHTML = "<p>Your cart is empty.</p>";
+    } else {
+      cart.forEach((item, index) => {
+        const itemDiv = document.createElement("div");
+        itemDiv.style.marginBottom = "10px";
+        itemDiv.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <strong>${item.name}</strong><br>
+              ₦${item.price.toLocaleString()}<br>
+              Qty: <input type="number" min="1" value="${item.qty}" data-index="${index}" 
+                     style="width:50px; text-align:center;">
+            </div>
+            <button class="remove-btn" data-index="${index}" 
+              style="background:red; color:white; border:none; padding:5px 8px; border-radius:5px; cursor:pointer;">🗑</button>
+          </div>
+        `;
+        cartContainer.appendChild(itemDiv);
+        total += item.price * item.qty;
       });
     }
+    totalAmount.textContent = total.toLocaleString();
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }
 
-    // 🛒 Render cart properly
-    function renderCart() {
-      cartContainer.innerHTML = "";
-      let total = 0;
-
-      if (cart.length === 0) {
-        cartContainer.innerHTML = "<p>Your cart is empty.</p>";
-      } else {
-        cart.forEach((item, index) => {
-          const itemTotal = item.price * item.qty;
-          total += itemTotal;
-
-          const div = document.createElement("div");
-          div.className = "cart-item";
-          div.innerHTML = `
-            <span style="flex:2;">${item.name}</span>
-            <label style="flex:1;">Qty:</label>
-            <input type="number" value="${item.qty}" min="1" data-index="${index}">
-            <span style="flex:1;">₦${itemTotal.toLocaleString()}</span>
-          `;
-          cartContainer.appendChild(div);
-        });
-      }
-
-      totalAmount.textContent = total.toLocaleString();
-      localStorage.setItem("cart", JSON.stringify(cart));
+  // ➕ Add to Cart (with preview trigger)
+  grid.addEventListener("click", (e) => {
+    if (e.target.classList.contains("add-btn")) {
+      const id = e.target.dataset.id;
+      const product = products[id];
+      showProductPreview(product); // Opens the preview modal
     }
-
-    // 🟡 Product preview modal
-    grid.addEventListener("click", (e) => {
-      if (e.target.classList.contains("preview-btn")) {
-        const id = e.target.dataset.id;
-        selectedProduct = { ...products[id], qty: 1 };
-        previewImage.src = selectedProduct.image;
-        previewName.textContent = selectedProduct.name;
-        previewPrice.textContent = "₦" + selectedProduct.price.toLocaleString();
-        previewModal.style.display = "flex";
-      }
-    });
-
-    // Cancel preview
-    document.getElementById("cancelPreviewBtn").addEventListener("click", () => {
-      previewModal.style.display = "none";
-    });
-
-    // Confirm Add to Cart
-    document.getElementById("confirmAddBtn").addEventListener("click", () => {
-      if (selectedProduct) {
-        const existingIndex = cart.findIndex(p => p.name === selectedProduct.name);
-        if (existingIndex >= 0) {
-          cart[existingIndex].qty += 1;
-        } else {
-          cart.push(selectedProduct);
-        }
-        renderCart();
-        alert(`${selectedProduct.name} added to cart!`);
-        previewModal.style.display = "none";
-      }
-    });
-
-    // 🧮 Update quantity inside cart
-    cartContainer.addEventListener("input", (e) => {
-      if (e.target.type === "number") {
-        const index = e.target.dataset.index;
-        cart[index].qty = parseInt(e.target.value);
-        renderCart();
-      }
-    });
-
-    // 🟢 Open / Close cart modal
-    cartBtn.addEventListener("click", () => {
-      renderCart();
-      cartModal.style.display = "block";
-    });
-
-    closeCart.addEventListener("click", () => {
-      cartModal.style.display = "none";
-    });
-
-    window.addEventListener("click", (e) => {
-      if (e.target === cartModal) cartModal.style.display = "none";
-      if (e.target === previewModal) previewModal.style.display = "none";
-    });
-
-    // 🔍 Search filter
-    searchInput.addEventListener("input", () => {
-      const keyword = searchInput.value.toLowerCase();
-      const filtered = products.filter((p) => p.name.toLowerCase().includes(keyword));
-      renderProducts(filtered);
-    });
-
-    renderProducts(products);
   });
+
+  // Function to actually add to cart
+  window.addToCart = (product) => {
+    const existing = cart.find(item => item.name === product.name);
+    if (existing) {
+      existing.qty += 1;
+    } else {
+      cart.push({ ...product, qty: 1 });
+    }
+    renderCart();
+    alert(`${product.name} added to cart!`);
+  };
+
+  // ♻️ Quantity Change
+  cartContainer.addEventListener("input", (e) => {
+    if (e.target.type === "number") {
+      const index = e.target.dataset.index;
+      cart[index].qty = parseInt(e.target.value);
+      renderCart();
+    }
+  });
+
+  // 🗑 Remove Item
+  cartContainer.addEventListener("click", (e) => {
+    if (e.target.classList.contains("remove-btn")) {
+      const index = e.target.dataset.index;
+      cart.splice(index, 1);
+      renderCart();
+    }
+  });
+
+  // 🛒 Open / Close Cart
+  cartBtn.addEventListener("click", () => {
+    renderCart();
+    cartModal.style.display = "block";
+  });
+
+  closeCart.addEventListener("click", () => {
+    cartModal.style.display = "none";
+  });
+
+  window.addEventListener("click", (e) => {
+    if (e.target === cartModal) cartModal.style.display = "none";
+  });
+
+  // 🔍 Search Function
+  searchInput.addEventListener("input", () => {
+    const keyword = searchInput.value.toLowerCase();
+    const filtered = products.filter((p) =>
+      p.name.toLowerCase().includes(keyword)
+    );
+    renderProducts(filtered);
+  });
+
+  renderProducts(products);
+});
 </script>
 </body>
 </html>
