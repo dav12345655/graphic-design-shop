@@ -2,64 +2,110 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=3.0" />
-  <title>Admin - Online Graphic Shop</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Online Graphic Shop</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f7f7f7;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f4f4;
       margin: 0;
       padding: 0;
     }
-    .container {
-      width: 90%;
-      max-width: 900px;
-      margin: 30px auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    h1 {
-      text-align: center;
-      color: #333;
-    }
-    input, button {
-      padding: 10px;
-      margin: 5px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-    }
-    button {
-      background: #333;
+
+    header {
+      background: #111;
       color: white;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #555;
-    }
-    .product {
+      padding: 15px;
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      justify-content: space-between;
-      background: #fafafa;
-      margin-top: 10px;
-      padding: 10px;
-      border: 1px solid #eee;
-      border-radius: 5px;
-    }
-    img {
-      height: 50px;
-      border-radius: 5px;
-    }
-    .top-buttons {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 20px;
     }
 
-    /* 🛒 Cart Modal Styles */
+    header h1 {
+      font-size: 22px;
+      margin: 0;
+    }
+
+    .cart-btn {
+      background: #ff9800;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1100px;
+      margin: 20px auto;
+    }
+
+    #search-input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 15px;
+    }
+
+    .product {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      overflow: hidden;
+      transition: transform 0.2s;
+    }
+
+    .product:hover {
+      transform: scale(1.03);
+    }
+
+    .product img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    .info {
+      padding: 10px;
+    }
+
+    .info h3 {
+      margin: 5px 0;
+      font-size: 16px;
+      color: #333;
+    }
+
+    .info p {
+      color: #777;
+      font-size: 14px;
+      margin: 5px 0;
+    }
+
+    .info button {
+      width: 100%;
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .info button:hover {
+      background: #218838;
+    }
+
+    /* Cart Modal */
     .cart-modal {
       display: none;
       position: fixed;
@@ -68,7 +114,7 @@
       top: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0,0,0,0.6);
+      background-color: rgba(0,0,0,0.5);
     }
 
     .cart-content {
@@ -79,7 +125,12 @@
       width: 90%;
       max-width: 400px;
       box-shadow: 0 0 15px rgba(0,0,0,0.2);
-      animation: slideIn 0.3s ease;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(40px);}
+      to {opacity: 1; transform: translateY(0);}
     }
 
     .close-cart {
@@ -99,46 +150,24 @@
       text-decoration: none;
     }
 
-    @keyframes slideIn {
-      from { transform: translateY(50px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    .cart-button {
-      position: fixed;
-      top: 15px;
-      right: 15px;
-      background: #007bff;
-      border: none;
-      border-radius: 50%;
-      width: 60px;
-      height: 60px;
-      font-size: 24px;
-      cursor: pointer;
-      color: white;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    footer {
+      text-align: center;
+      padding: 15px;
+      margin-top: 30px;
+      background: #222;
+      color: #ccc;
     }
   </style>
 </head>
-
 <body>
-  <button id="cart-btn" class="cart-button">🛒</button>
+  <header>
+    <h1>Online Graphic Shop</h1>
+    <button id="cart-btn" class="cart-btn">🛒 Cart</button>
+  </header>
 
   <div class="container">
-    <h1>Admin Dashboard</h1>
-    <div class="top-buttons">
-      <button id="exportBtn">Export JSON</button>
-      <input type="file" id="importFile" accept=".json" style="display:none;">
-      <button id="importBtn">Import JSON</button>
-    </div>
-
-    <input type="text" id="name" placeholder="Product Name" />
-    <input type="number" id="price" placeholder="Price (₦)" />
-    <input type="text" id="category" placeholder="Category (e.g. Flyer, Logo)" />
-    <input type="text" id="image" placeholder="Image URL" />
-    <button id="addProduct">Add Product</button>
-
-    <div id="productList"></div>
+    <input type="text" id="search-input" placeholder="Search for designs..." />
+    <div id="products-grid" class="grid"></div>
   </div>
 
   <!-- 🛒 Cart Modal -->
@@ -152,107 +181,91 @@
     </div>
   </div>
 
+  <footer>© 2025 Online Graphic Shop — Designed by Joy Gift</footer>
+
   <script>
-  <script>
-document.addEventListener("DOMContentLoaded", () => {
-  let products = JSON.parse(localStorage.getItem("products")) || [];
-  const productList = document.getElementById("productList");
+  document.addEventListener("DOMContentLoaded", () => {
+    const grid = document.getElementById("products-grid");
+    const cartBtn = document.getElementById("cart-btn");
+    const cartModal = document.getElementById("cart-modal");
+    const closeCart = document.getElementById("close-cart");
+    const cartContainer = document.getElementById("cart-items");
+    const totalAmount = document.getElementById("total-amount");
+    const searchInput = document.getElementById("search-input");
 
-  function renderProducts() {
-    productList.innerHTML = "";
-    products.forEach((p, index) => {
-      const div = document.createElement("div");
-      div.className = "product";
-      div.innerHTML = `
-        <div>
-          <strong>${p.name}</strong><br>
-          ₦${p.price} | ${p.category}<br>
-          <img src="${p.image}" alt="image">
-        </div>
-        <div>
-          <button onclick="deleteProduct(${index})">Delete</button>
-        </div>
-      `;
-      productList.appendChild(div);
-    });
-    localStorage.setItem("products", JSON.stringify(products));
-  }
+    let products = JSON.parse(localStorage.getItem("products")) || [];
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-  window.deleteProduct = (index) => {
-    products.splice(index, 1);
-    renderProducts();
-  };
-
-  document.getElementById("addProduct").onclick = () => {
-    const name = document.getElementById("name").value;
-    const price = document.getElementById("price").value;
-    const category = document.getElementById("category").value;
-    const image = document.getElementById("image").value;
-    if (!name || !price || !image) return alert("Please fill all fields");
-    products.push({ name, price, category, image });
-    renderProducts();
-    document.getElementById("name").value = "";
-    document.getElementById("price").value = "";
-    document.getElementById("category").value = "";
-    document.getElementById("image").value = "";
-  };
-
-  // Export JSON
-  document.getElementById("exportBtn").onclick = () => {
-    const blob = new Blob([JSON.stringify(products, null, 2)], { type: "application/json" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "products.json";
-    a.click();
-  };
-
-  // Import JSON
-  document.getElementById("importBtn").onclick = () => {
-    document.getElementById("importFile").click();
-  };
-
-  document.getElementById("importFile").onchange = (event) => {
-    const file = event.target.files[0];
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const imported = JSON.parse(e.target.result);
-        if (Array.isArray(imported)) {
-          products = imported;
-          renderProducts();
-          alert("Products imported successfully!");
-        } else {
-          alert("Invalid JSON file.");
-        }
-      } catch {
-        alert("Error reading JSON file.");
+    function renderProducts(list) {
+      grid.innerHTML = "";
+      if (list.length === 0) {
+        grid.innerHTML = "<p>No designs found.</p>";
+        return;
       }
-    };
-    reader.readAsText(file);
-  };
-
-  // 🛒 CART MODAL FIX
-  const cartModal = document.getElementById("cart-modal");
-  const cartBtn = document.getElementById("cart-btn");
-  const closeCart = document.getElementById("close-cart");
-
-  cartBtn.addEventListener("click", () => {
-    cartModal.style.display = "block";
-  });
-
-  closeCart.addEventListener("click", () => {
-    cartModal.style.display = "none";
-  });
-
-  window.addEventListener("click", (e) => {
-    if (e.target === cartModal) {
-      cartModal.style.display = "none";
+      list.forEach((p, i) => {
+        const div = document.createElement("div");
+        div.className = "product";
+        div.innerHTML = `
+          <img src="${p.image}" alt="${p.name}">
+          <div class="info">
+            <h3>${p.name}</h3>
+            <p>₦${p.price}</p>
+            <button data-id="${i}" class="add-btn">Add to Cart</button>
+          </div>
+        `;
+        grid.appendChild(div);
+      });
     }
+
+    function renderCart() {
+      cartContainer.innerHTML = "";
+      let total = 0;
+      cart.forEach((item) => {
+        const div = document.createElement("div");
+        div.textContent = `${item.name} - ₦${item.price}`;
+        cartContainer.appendChild(div);
+        total += parseFloat(item.price);
+      });
+      totalAmount.textContent = total.toLocaleString();
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
+
+    grid.addEventListener("click", (e) => {
+      if (e.target.classList.contains("add-btn")) {
+        const id = e.target.dataset.id;
+        const product = products[id];
+        cart.push(product);
+        renderCart();
+        alert(`${product.name} added to cart!`);
+      }
+    });
+
+    // 🛒 CART BUTTON OPEN/CLOSE
+    cartBtn.addEventListener("click", () => {
+      cartModal.style.display = "block";
+      renderCart();
+    });
+
+    closeCart.addEventListener("click", () => {
+      cartModal.style.display = "none";
+    });
+
+    window.addEventListener("click", (e) => {
+      if (e.target === cartModal) cartModal.style.display = "none";
+    });
+
+    // 🔍 SEARCH FUNCTION
+    searchInput.addEventListener("input", () => {
+      const keyword = searchInput.value.toLowerCase();
+      const filtered = products.filter((p) =>
+        p.name.toLowerCase().includes(keyword)
+      );
+      renderProducts(filtered);
+    });
+
+    renderProducts(products);
+    renderCart();
   });
-
-  renderProducts();
-});
-</script>
-
+  </script>
 </body>
 </html>
