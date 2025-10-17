@@ -1,1 +1,389 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Admin — Online Graphic Shop</title>
+<style>
+  body{font-family:Arial,system-ui;line-height:1.4;margin:0;background:#f5f7fb;color:#102027}
+  header{background:#263238;color:#fff;padding:14px 16px}
+  main{max-width:1100px;margin:18px auto;padding:12px}
+  .card{background:#fff;padding:12px;border-radius:10px;box-shadow:0 6px 18px rgba(16,24,40,0.06)}
+  .row{display:flex;gap:10px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+  input,select,textarea{padding:8px;border-radius:6px;border:1px solid #dfe6ee}
+  button{padding:8px 12px;border-radius:8px;border:0;cursor:pointer}
+  .btn-primary{background:#1e88e5;color:#fff}
+  .btn-ghost{background:#fff;border:1px solid #dfe6ee}
+  table{width:100%;border-collapse:collapse;margin-top:10px}
+  th,td{padding:8px;border-bottom:1px solid #eee;text-align:left;font-size:13px}
+  img.thumb{width:90px;height:64px;object-fit:cover;border-radius:6px}
+  .small{font-size:12px;color:#556}
+  .danger{background:#ff5252;color:#fff}
+  .success{background:#2e7d32;color:#fff}
+  .muted{color:#667085;font-size:13px}
+  footer{margin-top:14px;text-align:center;color:#667085}
+  @media(max-width:880px){ .row{flex-direction:column;align-items:stretch} table th,table td{font-size:12px} img.thumb{width:70px;height:50px} }
+</style>
+</head>
+<body>
+<header>
+  <h2>Admin — Online Graphic Shop</h2>
+</header>
+
+<main>
+  <div class="card" id="auth-card">
+    <div id="auth-area">
+      <div class="row">
+        <label class="small">Enter admin password:</label>
+        <input id="admin-pass" type="password" placeholder="Admin password" />
+        <button id="btn-auth" class="btn btn-primary">Enter</button>
+        <span class="small muted">Default password: <strong>admin123</strong> (change it in the file)</span>
+      </div>
+      <div class="small muted">Note: This is a client-side admin guard — it prevents casual access but is not server-authentication. For full security, use Firebase auth later.</div>
+    </div>
+  </div>
+
+  <div id="admin-ui" style="display:none">
+    <div class="card" style="margin-top:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div>
+          <button id="gen-btn" class="btn btn-primary">Generate 500 products</button>
+          <button id="load-local" class="btn btn-ghost">Load localStorage products</button>
+          <button id="import-btn" class="btn btn-ghost">Import products.json</button>
+          <input type="file" id="import-file" accept=".json" style="display:none" />
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button id="export-btn" class="btn btn-primary">Export products.json</button>
+          <button id="save-local" class="btn success">Save to localStorage</button>
+          <button id="clear-local" class="btn danger">Clear localStorage</button>
+        </div>
+      </div>
+
+      <hr style="margin:12px 0">
+
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+        <input id="filter-input" placeholder="Filter title or category..." style="min-width:220px" />
+        <select id="filter-category"><option value="">All categories</option></select>
+        <button id="filter-btn" class="btn btn-ghost">Filter</button>
+        <button id="reset-filter" class="btn btn-ghost">Reset</button>
+      </div>
+
+      <div style="margin-top:12px">
+        <table id="products-table">
+          <thead>
+            <tr><th>Preview</th><th>Title / Category</th><th>Price</th><th>Actions</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div style="margin-top:12px">
+        <h4>Add / Edit product</h4>
+        <div class="row">
+          <input id="p-title" placeholder="Title" style="flex:1" />
+          <input id="p-price" placeholder="Price (₦)" style="width:140px" />
+          <select id="p-category">
+            <option value="Logos">Logos</option>
+            <option value="Social Media">Social Media</option>
+            <option value="Flyers">Flyers</option>
+            <option value="Banners">Banners</option>
+            <option value="UI Kits">UI Kits</option>
+            <option value="Icons">Icons</option>
+            <option value="Posters">Posters</option>
+            <option value="Invites">Invites</option>
+          </select>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <input id="p-img" placeholder="Image URL (Unsplash or your hosted image)" style="flex:1" />
+          <input id="p-oldprice" placeholder="Old Price (optional)" style="width:140px" />
+          <button id="add-product" class="btn btn-primary">Add Product</button>
+          <button id="update-product" class="btn btn-ghost" style="display:none">Update</button>
+        </div>
+        <div id="edit-note" class="small muted" style="margin-top:8px"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="muted small">Admin UI — client-side only. Export file to make repo-wide changes.</footer>
+</main>
+
+<script>
+/*
+  Admin.html for Online Graphic Shop
+  - Default admin password (edit here if you want): ADMIN_PASSWORD
+  - Generates real Unsplash thumbnails with &sig param to vary images.
+  - Save to localStorage key: ogshop_products_v1
+  - Export function downloads products.json you can upload to GitHub.
+*/
+const ADMIN_PASSWORD = 'admin123'; // change this string to change the admin password
+
+// DOM
+const authArea = document.getElementById('auth-area');
+const adminUI = document.getElementById('admin-ui');
+const btnAuth = document.getElementById('btn-auth');
+const inPass = document.getElementById('admin-pass');
+
+const genBtn = document.getElementById('gen-btn');
+const loadLocalBtn = document.getElementById('load-local');
+const exportBtn = document.getElementById('export-btn');
+const saveLocalBtn = document.getElementById('save-local');
+const clearLocalBtn = document.getElementById('clear-local');
+const importBtn = document.getElementById('import-btn');
+const importFile = document.getElementById('import-file');
+const filterInput = document.getElementById('filter-input');
+const filterBtn = document.getElementById('filter-btn');
+const resetFilter = document.getElementById('reset-filter');
+const filterCategory = document.getElementById('filter-category');
+
+const productsTableBody = document.querySelector('#products-table tbody');
+
+const pTitle = document.getElementById('p-title');
+const pPrice = document.getElementById('p-price');
+const pOldPrice = document.getElementById('p-oldprice');
+const pCategory = document.getElementById('p-category');
+const pImg = document.getElementById('p-img');
+const addProductBtn = document.getElementById('add-product');
+const updateProductBtn = document.getElementById('update-product');
+const editNote = document.getElementById('edit-note');
+
+const STORAGE_KEY = 'ogshop_products_v1';
+
+let PRODUCTS = []; // in-memory list
+let editingId = null;
+
+// helpers
+const rand = (min,max)=>Math.floor(Math.random()*(max-min+1))+min;
+const currency = n => Number(n).toLocaleString('en-NG');
+
+// auth
+btnAuth.addEventListener('click', ()=>{
+  const v = inPass.value || '';
+  if(v === ADMIN_PASSWORD){
+    authArea.style.display = 'none';
+    adminUI.style.display = 'block';
+    loadProductsFromLocalOrWarn();
+  } else {
+    alert('Incorrect admin password.');
+  }
+});
+
+// load functions
+function loadProductsFromLocalOrWarn(){
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if(saved){
+    try{ PRODUCTS = JSON.parse(saved); renderTable(); fillCategoryFilter(); return; } catch(e){ console.warn(e); }
+  }
+  PRODUCTS = [];
+  renderTable();
+  fillCategoryFilter();
+  alert('No products found in localStorage. Click "Generate 500 products" to create real-looking products (you can export then).');
+}
+
+// generate function (500 items)
+function generateProducts(count = 500){
+  const CATEGORIES = ['Logos','Social Media','Flyers','Banners','UI Kits','Icons','Posters','Invites'];
+  const arr = [];
+  for(let i=1;i<=count;i++){
+    const cat = CATEGORIES[(i-1) % CATEGORIES.length];
+    const id = 'GFX' + String(i).padStart(4,'0');
+    const title = `${cat} Template #${i}`;
+    const price = rand(1500,12000);
+    const oldPrice = Math.random()>0.85 ? price + rand(200, Math.floor(price*0.35)) : null;
+    const rating = (3.5 + Math.random()*1.5).toFixed(1);
+    const reviews = rand(0,1200);
+    // real unsplash thumbnails (no API key). sig param ensures varied images.
+    const img = `https://source.unsplash.com/800x600/?${encodeURIComponent(cat+' graphic design')}&sig=${Date.now()%1000 + i}`;
+    const desc = `Editable ${cat.toLowerCase()} template — ready for branding and print/web use.`;
+    arr.push({ id, title, category:cat, price, oldPrice, rating, reviews, img, desc });
+  }
+  PRODUCTS = arr;
+  renderTable();
+  fillCategoryFilter();
+}
+
+// render table
+function renderTable(list = PRODUCTS){
+  productsTableBody.innerHTML = '';
+  if(!list || list.length === 0){
+    productsTableBody.innerHTML = '<tr><td colspan="4" class="muted">No products</td></tr>';
+    return;
+  }
+  for(const p of list){
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><img class="thumb" src="${p.img}" alt=""><div class="small muted" style="margin-top:6px">${p.id}</div></td>
+      <td><div style="font-weight:700">${escapeHtml(p.title)}</div><div class="small muted">${escapeHtml(p.category)}</div><div class="small">${escapeHtml(p.desc||'')}</div></td>
+      <td>₦${currency(p.price)} ${p.oldPrice?`<div class="small muted"><s>₦${currency(p.oldPrice)}</s></div>`:''}</td>
+      <td>
+        <button class="btn btn-ghost" data-action="edit" data-id="${p.id}">Edit</button>
+        <button class="btn btn-ghost" data-action="delete" data-id="${p.id}">Delete</button>
+      </td>
+    `;
+    productsTableBody.appendChild(tr);
+  }
+}
+
+// safe html escape
+function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;" }[m])); }
+
+// fill category filter
+function fillCategoryFilter(){
+  const cats = Array.from(new Set(PRODUCTS.map(p=>p.category))).filter(Boolean);
+  filterCategory.innerHTML = '<option value="">All categories</option>' + cats.map(c=>`<option value="${c}">${c}</option>`).join('');
+}
+
+// events: table buttons
+productsTableBody.addEventListener('click', (e)=>{
+  const btn = e.target.closest('button');
+  if(!btn) return;
+  const act = btn.dataset.action;
+  const id = btn.dataset.id;
+  if(act === 'edit'){ startEdit(id); }
+  if(act === 'delete'){ if(confirm('Delete this product?')){ PRODUCTS = PRODUCTS.filter(x=>x.id!==id); renderTable(); } }
+});
+
+// start edit
+function startEdit(id){
+  const p = PRODUCTS.find(x=>x.id===id);
+  if(!p) return alert('Product not found');
+  editingId = id;
+  pTitle.value = p.title;
+  pPrice.value = p.price;
+  pOldPrice.value = p.oldPrice || '';
+  pCategory.value = p.category;
+  pImg.value = p.img;
+  addProductBtn.style.display = 'none';
+  updateProductBtn.style.display = 'inline-block';
+  editNote.textContent = 'Editing ' + id + '. Click Update when done.';
+}
+
+// add new
+addProductBtn.addEventListener('click', ()=>{
+  const title = pTitle.value.trim();
+  const price = Number(pPrice.value) || 0;
+  const cat = pCategory.value || 'Logos';
+  const img = pImg.value.trim() || (`https://source.unsplash.com/800x600/?${encodeURIComponent(cat+' graphic design')}&sig=${Date.now()%1000}`);
+  if(!title || !price){ alert('Title and price required'); return; }
+  const id = 'GFX' + String(PRODUCTS.length+1+Math.floor(Math.random()*1000)).padStart(4,'0');
+  PRODUCTS.unshift({ id, title, category:cat, price, oldPrice: pOldPrice.value?Number(pOldPrice.value):null, img, desc: title });
+  renderTable();
+  clearForm();
+});
+
+// update
+updateProductBtn.addEventListener('click', ()=>{
+  if(!editingId) return;
+  const p = PRODUCTS.find(x=>x.id === editingId);
+  if(!p) return;
+  p.title = pTitle.value.trim();
+  p.price = Number(pPrice.value)||0;
+  p.oldPrice = pOldPrice.value?Number(pOldPrice.value):null;
+  p.category = pCategory.value;
+  p.img = pImg.value.trim();
+  renderTable();
+  clearForm();
+  editingId = null;
+  addProductBtn.style.display = 'inline-block';
+  updateProductBtn.style.display = 'none';
+  editNote.textContent = '';
+});
+
+// clear form
+function clearForm(){ pTitle.value=''; pPrice.value=''; pOldPrice.value=''; pImg.value=''; pCategory.value='Logos'; }
+
+// generate button
+genBtn.addEventListener('click', ()=>{
+  if(confirm('Generate 500 real-looking products and overwrite current list?')){ generateProducts(500); }
+});
+
+// load local
+loadLocalBtn.addEventListener('click', ()=>{
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if(!saved) return alert('No products in localStorage yet.');
+  try{ PRODUCTS = JSON.parse(saved); renderTable(); fillCategoryFilter(); alert('Loaded from localStorage'); } catch(e){ alert('Failed to parse localStorage data'); }
+});
+
+// save local
+saveLocalBtn.addEventListener('click', ()=>{
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(PRODUCTS));
+    alert('Saved products to localStorage — your site (index.html) will use these now.');
+  }catch(e){ alert('Failed to save (storage full?)'); }
+});
+
+// clear localStorage (products only)
+clearLocalBtn.addEventListener('click', ()=> {
+  if(confirm('Clear products from localStorage? This will not delete code in repo.')){
+    localStorage.removeItem(STORAGE_KEY);
+    PRODUCTS = [];
+    renderTable();
+    fillCategoryFilter();
+    alert('Cleared local products.');
+  }
+});
+
+// export JSON
+exportBtn.addEventListener('click', ()=>{
+  const data = JSON.stringify(PRODUCTS, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'products.json';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
+
+// import file (select)
+importBtn.addEventListener('click', ()=> importFile.click());
+importFile.addEventListener('change', (e)=>{
+  const f = e.target.files[0];
+  if(!f) return;
+  const reader = new FileReader();
+  reader.onload = (ev)=>{
+    try{
+      const data = JSON.parse(ev.target.result);
+      if(!Array.isArray(data)) return alert('Invalid JSON (expected array).');
+      PRODUCTS = data;
+      renderTable();
+      fillCategoryFilter();
+      alert('Imported products.json into admin (in-memory) — click Save to localStorage to persist.');
+    }catch(err){ alert('Failed to parse JSON: ' + err.message); }
+  };
+  reader.readAsText(f);
+});
+
+// filter
+filterBtn.addEventListener('click', ()=> {
+  const q = filterInput.value.trim().toLowerCase();
+  const cat = filterCategory.value;
+  let list = PRODUCTS.slice();
+  if(q) list = list.filter(p => (p.title||'').toLowerCase().includes(q) || (p.desc||'').toLowerCase().includes(q));
+  if(cat) list = list.filter(p => p.category === cat);
+  renderTable(list);
+});
+resetFilter.addEventListener('click', ()=> { filterInput.value=''; filterCategory.value=''; renderTable(); });
+
+// escape on paste
+function sanitizeUrl(u){ return String(u||'').trim(); }
+
+// initial load (do NOT auto-generate; prompt)
+function init(){
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if(saved){
+    try{ PRODUCTS = JSON.parse(saved); }
+    catch(e){ PRODUCTS = []; }
+  } else {
+    PRODUCTS = [];
+  }
+  renderTable();
+  fillCategoryFilter();
+}
+init();
+
+</script>
+</body>
+</html>
 
