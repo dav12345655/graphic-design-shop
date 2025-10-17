@@ -193,7 +193,7 @@
     </div>
   </div>
 
- <!-- 🌟 Footer Section -->
+<!-- 🌟 Footer Section -->
 <footer style="
   background-color: #111;
   color: #fff;
@@ -201,14 +201,26 @@
   padding: 20px 10px;
   font-size: 14px;
   margin-top: 40px;
+  border-top: 2px solid #00bcd4;
 ">
   <p style="margin: 5px 0;">Designed by <strong>ABblack</strong> © <span id="year"></span></p>
-  <p style="margin: 5px 0;">📞 <a href="tel:+2347026865570" style="color: #00bcd4; text-decoration: none;">07026865570</a></p>
+  <p style="margin: 5px 0;">📞 
+    <a href="tel:+2347026865570" style="color: #00bcd4; text-decoration: none;">07026865570</a>
+  </p>
 
   <div style="margin-top: 10px;">
-    <a href="https://wa.me/2349121383292" target="_blank" style="color: #25D366; margin: 0 10px; text-decoration: none;">WhatsApp</a> |
+    <a href="https://wa.me/2349121383292" target="_blank" 
+       style="color: #25D366; font-weight: bold; text-decoration: none;">
+       💬 Chat on WhatsApp
+    </a>
   </div>
 </footer>
+
+<script>
+  // Auto-update the footer year
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
 
 <script>
   // Auto-update the year
