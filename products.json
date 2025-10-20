@@ -1,1 +1,18 @@
+[
+  {
+    "name": "Business Card Design",
+    "price": 2500,
+    "image": "images/business-card.jpg"
+  },
+  {
+    "name": "Logo Design",
+    "price": 3500,
+    "image": "images/logo.jpg"
+  },
+  {
+    "name": "Flyer Design",
+    "price": 2000,
+    "image": "images/flyer.jpg"
+  }
+]
 
