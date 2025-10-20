@@ -70,10 +70,14 @@
         const div = document.createElement("div");
         div.className = "product-item";
         div.innerHTML = `
-          <span>${p.name} - ₦${p.price}</span>
-          <button onclick="removeProduct(${i})">Delete</button>
-        `;
-        productList.appendChild(div);
+  <a href="product.html?id=${i}">
+    <img src="${p.image}" alt="${p.name}">
+  </a>
+  <div class="info">
+    <h3>${p.name}</h3>
+    <p>₦${p.price}</p>
+    <button data-id="${i}" class="add-btn">Add to Cart</button>
+  </div>`;
       });
     }
 
