@@ -33,6 +33,10 @@
     "name": "SADDAT",
     "price": 1200,
     "image": "https://i.pinimg.com/1200x/17/95/f5/1795f507d24c22d4dbaf47aed985def3.jpg"
+  },
+  {
+    "name": "micky",
+    "price": 1000,
+    "image": "https://i.pinimg.com/736x/0f/90/1b/0f901bbe9272bb5236b9fff99436c907.jpg"
   }
 ]
-
