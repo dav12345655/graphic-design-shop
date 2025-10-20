@@ -7,107 +7,118 @@
   <style>
     body {
       font-family: "Segoe UI", sans-serif;
-      background: #f7f7f7;
+      background: #f4f4f4;
       margin: 0;
       padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
+
     header {
       background: #111;
-      color: #fff;
+      color: white;
+      padding: 15px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .product-container {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      max-width: 400px;
+      margin-top: 30px;
       padding: 15px;
       text-align: center;
     }
-    .container {
-      width: 90%;
-      max-width: 800px;
-      margin: 30px auto;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      padding: 20px;
-    }
+
     img {
       width: 100%;
       border-radius: 10px;
-      margin-bottom: 15px;
     }
+
     h2 {
-      color: #333;
+      margin: 10px 0;
     }
+
     p {
       color: #555;
-      font-size: 16px;
+      margin-bottom: 10px;
     }
-    .price {
-      font-size: 18px;
-      color: #28a745;
+
+    button {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
       font-weight: bold;
     }
-    button {
-      width: 100%;
-      padding: 12px;
-      background: #28a745;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-    a.back {
+
+    a.back-link {
       display: inline-block;
       margin-top: 15px;
-      text-decoration: none;
       color: #007bff;
+      text-decoration: none;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      background: #111;
+      color: #ccc;
+      margin-top: 40px;
+      width: 100%;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Product Details</h1>
-  </header>
-  <div class="container" id="product-details">
-    <p>Loading product details...</p>
+  <header><h1>Product Preview</h1></header>
+
+  <div id="product-container" class="product-container">
+    <p>Loading product...</p>
   </div>
 
-  <script>
-    // Get product ID from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get("id");
+  <a href="admin.html" class="back-link">← Back to Shop</a>
 
-    // Fetch product data
+  <footer>
+    <p>Designed by <strong>ABblack</strong> © <span id="year"></span></p>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get("id");
+
     fetch("products.json")
       .then(res => res.json())
       .then(products => {
-        const product = products[id];
+        const product = products[productId];
+        const container = document.getElementById("product-container");
+
         if (!product) {
-          document.getElementById("product-details").innerHTML = "<p>Product not found.</p>";
+          container.innerHTML = "<p>Product not found.</p>";
           return;
         }
 
-        document.getElementById("product-details").innerHTML = `
+        container.innerHTML = `
           <img src="${product.image}" alt="${product.name}">
           <h2>${product.name}</h2>
-          <p>${product.description || "No description available."}</p>
-          <p class="price">₦${product.price}</p>
-          <button onclick="addToCart(${id})">Add to Cart</button>
-          <a href="admin.html" class="back">← Back to Shop</a>
+          <p><strong>Price:</strong> ₦${product.price}</p>
+          <button id="add-to-cart">Add to Cart</button>
         `;
-      })
-      .catch(() => {
-        document.getElementById("product-details").innerHTML = "<p>Error loading product.</p>";
-      });
 
-    function addToCart(id) {
-      fetch("products.json")
-        .then(res => res.json())
-        .then(products => {
-          const cart = JSON.parse(localStorage.getItem("cart")) || [];
-          cart.push(products[id]);
+        document.getElementById("add-to-cart").addEventListener("click", () => {
+          let cart = JSON.parse(localStorage.getItem("cart")) || [];
+          cart.push(product);
           localStorage.setItem("cart", JSON.stringify(cart));
-          alert("Product added to cart!");
+          alert("✅ Added to cart!");
         });
-    }
+      })
+      .catch(err => console.error("Error loading product:", err));
   </script>
 </body>
 </html>
