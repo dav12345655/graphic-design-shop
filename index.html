@@ -189,14 +189,26 @@
       let products = [];
       let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-      // Fetch products from products.json
+      // 🔹 Try loading from products.json first
       fetch("products.json")
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) throw new Error("products.json not found");
+          return res.json();
+        })
         .then(data => {
           products = data;
+          localStorage.setItem("products", JSON.stringify(products)); // Backup
           renderProducts(products);
         })
-        .catch(err => console.error("Error loading products:", err));
+        .catch(err => {
+          console.warn("⚠️ Could not load products.json:", err);
+          products = JSON.parse(localStorage.getItem("products")) || [];
+          if (products.length === 0) {
+            grid.innerHTML = "<p style='color:red;'>⚠️ No products available. Please upload products.json or use Admin Panel.</p>";
+          } else {
+            renderProducts(products);
+          }
+        });
 
       function renderProducts(list) {
         grid.innerHTML = "";
@@ -224,7 +236,7 @@
         if (cart.length === 0) {
           cartContainer.innerHTML = "<p>Your cart is empty.</p>";
         } else {
-          cart.forEach((item, index) => {
+          cart.forEach((item) => {
             const div = document.createElement("div");
             div.innerHTML = `${item.name} - ₦${item.price}`;
             cartContainer.appendChild(div);
