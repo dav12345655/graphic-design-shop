@@ -5,36 +5,146 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Online Graphic Shop</title>
   <style>
-    body { font-family: "Segoe UI", sans-serif; background-color: #f8f8f8; margin:0; padding:0; color:#333;}
-    header { background: linear-gradient(90deg,#111,#333); color:white; padding:15px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.2);}
-    header h1 { margin:0; font-size:22px;}
-    .cart-btn {background:#ff9800; color:white; border:none; padding:10px 15px; font-weight:bold; border-radius:6px; cursor:pointer; transition:0.2s;}
-    .cart-btn:hover {background:#e68900;}
-    .container {width:90%; max-width:1100px; margin:20px auto;}
-    #search-input {width:100%; padding:10px; margin-bottom:15px; border-radius:5px; border:1px solid #ccc;}
-    .grid {display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:15px;}
-    .product {background:white; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.1); overflow:hidden; transition: transform 0.2s; cursor:pointer;}
-    .product:hover {transform:scale(1.03);}
-    .product img {width:100%; height:180px; object-fit:cover;}
-    .info {padding:10px;}
-    .info h3 {margin:5px 0; font-size:16px;}
-    .info p {color:#777; font-size:14px; margin:5px 0;}
-    .info button {width:100%; background:#28a745; color:white; border:none; padding:10px; border-radius:6px; cursor:pointer; font-weight:bold; transition:0.2s;}
-    .info button:hover {background:#218838;}
-    .cart-modal {display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; background-color: rgba(0,0,0,0.5);}
-    .cart-content {background:white; margin:80px auto; padding:20px; border-radius:10px; width:90%; max-width:400px; box-shadow:0 0 15px rgba(0,0,0,0.2);}
-    .close-cart {float:right; font-size:25px; cursor:pointer;}
-    .checkout-btn {display:block; background:#007bff; color:#fff; padding:10px; text-align:center; border-radius:5px; margin-top:15px; text-decoration:none;}
-    .cart-item {display:flex; justify-content:space-between; align-items:center; margin:10px 0; font-size:14px;}
-    .cart-item input {width:50px; padding:4px; border-radius:4px; border:1px solid #aaa; text-align:center;}
-    footer {text-align:center; padding:15px; margin-top:30px; background:#111; color:#ccc;}
-    .whatsapp-float {position:fixed; bottom:20px; right:20px; background-color:#25D366; color:white; border-radius:50%; width:60px; height:60px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 8px rgba(0,0,0,0.3); font-size:28px; text-decoration:none; z-index:1000;}
-    #productPreviewModal {display:none; position:fixed; z-index:2000; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center;}
-    #productPreviewModal .preview-box {background:white; padding:20px; border-radius:10px; max-width:400px; text-align:center; box-shadow:0 5px 15px rgba(0,0,0,0.3);}
-    #productPreviewModal img {max-width:100%; border-radius:8px; margin-bottom:10px;}
-    .preview-buttons button {padding:10px 15px; border:none; border-radius:6px; margin:5px; cursor:pointer; font-weight:bold;}
-    .add-to-cart-preview {background:#28a745; color:white;}
-    .cancel-preview {background:#ccc; color:black;}
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: #111;
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 22px;
+      margin: 0;
+    }
+
+    .cart-btn {
+      background: #ff9800;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1100px;
+      margin: 20px auto;
+    }
+
+    #search-input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 15px;
+    }
+
+    .product {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      transition: transform 0.2s;
+    }
+
+    .product:hover {
+      transform: scale(1.03);
+    }
+
+    .product img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    .info {
+      padding: 10px;
+    }
+
+    .info h3 {
+      margin: 5px 0;
+      font-size: 16px;
+      color: #333;
+    }
+
+    .info p {
+      color: #777;
+      font-size: 14px;
+      margin: 5px 0;
+    }
+
+    .info button {
+      width: 100%;
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      background: #111;
+      color: #ccc;
+      margin-top: 40px;
+    }
+
+    .cart-modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .cart-content {
+      background: white;
+      margin: 80px auto;
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    .close-cart {
+      float: right;
+      font-size: 25px;
+      cursor: pointer;
+    }
+
+    .checkout-btn {
+      display: block;
+      background: #007bff;
+      color: #fff;
+      padding: 10px;
+      text-align: center;
+      border-radius: 5px;
+      margin-top: 15px;
+      text-decoration: none;
+    }
   </style>
 </head>
 <body>
@@ -48,7 +158,6 @@
     <div id="products-grid" class="grid"></div>
   </div>
 
-  <!-- 🛒 Cart Modal -->
   <div id="cart-modal" class="cart-modal">
     <div class="cart-content">
       <span id="close-cart" class="close-cart">&times;</span>
@@ -59,135 +168,104 @@
     </div>
   </div>
 
-  <!-- 🌟 Product Preview Modal -->
-  <div id="productPreviewModal">
-    <div class="preview-box">
-      <img id="previewImage" src="" alt="Product Image">
-      <h3 id="previewName"></h3>
-      <p id="previewPrice" style="font-weight:bold;"></p>
-      <div class="preview-buttons">
-        <button id="confirmAddBtn" class="add-to-cart-preview">Add to Cart</button>
-        <button id="cancelPreviewBtn" class="cancel-preview">Cancel</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 🌟 Footer -->
   <footer>
     <p>Designed by <strong>ABblack</strong> © <span id="year"></span></p>
-    <p>📞 <a href="tel:+2347026865570" style="color:#00bcd4; text-decoration:none;">07026865570</a></p>
-    <a href="https://wa.me/2349121383292" target="_blank" class="whatsapp-float">💬</a>
+    <p>📞 <a href="tel:+2347026865570" style="color: #00bcd4;">07026865570</a></p>
+    <a href="https://wa.me/2349121383292" target="_blank" style="color: #25D366;">💬 Chat on WhatsApp</a>
   </footer>
 
-<script>
-document.getElementById("year").textContent = new Date().getFullYear();
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
 
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const grid = document.getElementById("products-grid");
-  const cartBtn = document.getElementById("cart-btn");
-  const cartModal = document.getElementById("cart-modal");
-  const closeCart = document.getElementById("close-cart");
-  const cartContainer = document.getElementById("cart-items");
-  const totalAmount = document.getElementById("total-amount");
-  const searchInput = document.getElementById("search-input");
+    document.addEventListener("DOMContentLoaded", () => {
+      const grid = document.getElementById("products-grid");
+      const cartBtn = document.getElementById("cart-btn");
+      const cartModal = document.getElementById("cart-modal");
+      const closeCart = document.getElementById("close-cart");
+      const cartContainer = document.getElementById("cart-items");
+      const totalAmount = document.getElementById("total-amount");
+      const searchInput = document.getElementById("search-input");
 
-  let products = [];
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+      let products = [];
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-  // 🧠 Fetch products from products.json
-  fetch("products.json")
-    .then(res => res.json())
-    .then(data => {
-      products = data;
-      renderProducts(products);
-    })
-    .catch(err => {
-      console.error("Error loading products.json:", err);
-      grid.innerHTML = "<p>⚠️ Unable to load products. Please check products.json.</p>";
-    });
+      // Fetch products from products.json
+      fetch("products.json")
+        .then(res => res.json())
+        .then(data => {
+          products = data;
+          renderProducts(products);
+        })
+        .catch(err => console.error("Error loading products:", err));
 
-  // 🖼 Render Products
-  function renderProducts(list) {
-    grid.innerHTML = "";
-    if (list.length === 0) {
-      grid.innerHTML = "<p>No products found.</p>";
-      return;
-    }
-    list.forEach((p, i) => {
-      const div = document.createElement("div");
-      div.className = "product";
-      div.innerHTML = `
-        <img src="${p.image}" alt="${p.name}">
-        <div class="info">
-          <h3>${p.name}</h3>
-          <p>₦${p.price.toLocaleString()}</p>
-          <button data-id="${i}" class="add-btn">Add to Cart</button>
-        </div>`;
-      grid.appendChild(div);
-    });
-  }
+      function renderProducts(list) {
+        grid.innerHTML = "";
+        if (list.length === 0) {
+          grid.innerHTML = "<p>No products found.</p>";
+          return;
+        }
+        list.forEach((p, i) => {
+          const div = document.createElement("div");
+          div.className = "product";
+          div.innerHTML = `
+            <img src="${p.image}" alt="${p.name}">
+            <div class="info">
+              <h3>${p.name}</h3>
+              <p>₦${p.price}</p>
+              <button data-id="${i}" class="add-btn">Add to Cart</button>
+            </div>`;
+          grid.appendChild(div);
+        });
+      }
 
-  // 🛒 Cart
-  function renderCart() {
-    cartContainer.innerHTML = "";
-    let total = 0;
-    if (cart.length === 0) {
-      cartContainer.innerHTML = "<p>Your cart is empty.</p>";
-    } else {
-      cart.forEach((item, index) => {
-        const div = document.createElement("div");
-        div.innerHTML = `
-          ${item.name} - ₦${item.price.toLocaleString()}
-          <input type="number" min="1" value="${item.quantity || 1}" 
-            onchange="updateQty(${index}, this.value)" style="width:60px; margin-left:10px;">
-        `;
-        cartContainer.appendChild(div);
-        total += item.price * (item.quantity || 1);
+      function renderCart() {
+        cartContainer.innerHTML = "";
+        let total = 0;
+        if (cart.length === 0) {
+          cartContainer.innerHTML = "<p>Your cart is empty.</p>";
+        } else {
+          cart.forEach((item, index) => {
+            const div = document.createElement("div");
+            div.innerHTML = `${item.name} - ₦${item.price}`;
+            cartContainer.appendChild(div);
+            total += parseFloat(item.price);
+          });
+        }
+        totalAmount.textContent = total.toLocaleString();
+        localStorage.setItem("cart", JSON.stringify(cart));
+      }
+
+      grid.addEventListener("click", (e) => {
+        if (e.target.classList.contains("add-btn")) {
+          const id = e.target.dataset.id;
+          const product = products[id];
+          cart.push(product);
+          renderCart();
+          alert(`${product.name} added to cart!`);
+        }
       });
-    }
-    totalAmount.textContent = total.toLocaleString();
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }
 
-  // ➕ Add to Cart
-  grid.addEventListener("click", e => {
-    if (e.target.classList.contains("add-btn")) {
-      const id = e.target.dataset.id;
-      const product = { ...products[id], quantity: 1 };
-      cart.push(product);
-      renderCart();
-      alert(`${product.name} added to cart!`);
-    }
-  });
+      cartBtn.addEventListener("click", () => {
+        renderCart();
+        cartModal.style.display = "block";
+      });
 
-  // 🛒 Open / Close Cart
-  cartBtn.addEventListener("click", () => {
-    renderCart();
-    cartModal.style.display = "block";
-  });
-  closeCart.addEventListener("click", () => (cartModal.style.display = "none"));
-  window.addEventListener("click", e => {
-    if (e.target === cartModal) cartModal.style.display = "none";
-  });
+      closeCart.addEventListener("click", () => {
+        cartModal.style.display = "none";
+      });
 
-  // 🔍 Search
-  searchInput.addEventListener("input", () => {
-    const keyword = searchInput.value.toLowerCase();
-    const filtered = products.filter(p =>
-      p.name.toLowerCase().includes(keyword)
-    );
-    renderProducts(filtered);
-  });
-});
+      window.addEventListener("click", (e) => {
+        if (e.target === cartModal) cartModal.style.display = "none";
+      });
 
-// 🧮 Quantity update function
-function updateQty(index, qty) {
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
-  cart[index].quantity = parseInt(qty) || 1;
-  localStorage.setItem("cart", JSON.stringify(cart));
-  location.reload();
-}
-</script>
+      searchInput.addEventListener("input", () => {
+        const keyword = searchInput.value.toLowerCase();
+        const filtered = products.filter((p) =>
+          p.name.toLowerCase().includes(keyword)
+        );
+        renderProducts(filtered);
+      });
+    });
+  </script>
 </body>
 </html>
