@@ -1,8 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Checkout — Online Graphic Shop</title>
 <style>
   body{font-family:Inter,system-ui,Arial;background:#f4f6fb;color:#0f172a;margin:0}
@@ -16,66 +15,23 @@
   input,textarea{padding:10px;border-radius:8px;border:1px solid #e6e9ef}
   .btn{padding:10px;border-radius:8px;border:0;background:#111;color:#fff;cursor:pointer;font-weight:700}
   .note{background:#fff8f6;border:1px solid #ffdede;padding:10px;border-radius:8px;margin-top:12px}
-
-  /* ✅ Modal Styles */
-  .modal-overlay{
-    position:fixed;top:0;left:0;width:100%;height:100%;
-    background:rgba(0,0,0,0.6);display:flex;align-items:center;
-    justify-content:center;z-index:10000;visibility:hidden;opacity:0;
-    transition:opacity .3s ease,visibility .3s ease;
-  }
-  .modal-overlay.active{visibility:visible;opacity:1;}
-  .modal{
-    background:#fff;border-radius:12px;max-width:400px;width:90%;
-    padding:24px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,0.2);
-    animation:pop .3s ease;
-  }
-  @keyframes pop{from{transform:scale(0.8);opacity:0;}to{transform:scale(1);opacity:1;}}
-  .modal h2{margin-bottom:10px;}
-  .modal p{color:#555;font-size:15px;margin-bottom:20px;}
-  .modal button{padding:10px 20px;border:none;border-radius:8px;background:#111;color:#fff;font-weight:600;cursor:pointer;}
-  .modal.error h2{color:#e11d48;}
-  .modal.success h2{color:#16a34a;}
-
-  /* ✅ Spinner (for verification) */
-  .spinner{
-    border:4px solid #f3f3f3;
-    border-top:4px solid #111;
-    border-radius:50%;
-    width:45px;height:45px;
-    animation:spin 1s linear infinite;
-    margin:0 auto 15px;
-  }
-  @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+  /* Modals (reuse similar style) */
+  .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;z-index:10000}
+  .modal-box{background:#fff;border-radius:12px;padding:20px;max-width:420px;width:92%;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,0.18)}
+  .spinner{border:4px solid #f3f3f3;border-top:4px solid #111;border-radius:50%;width:45px;height:45px;animation:spin 1s linear infinite;margin:0 auto 12px}
+  @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+  .success h2{color:#16a34a}.error h2{color:#e11d48}
+  .whatsapp-float{position:fixed;bottom:20px;right:20px;background:#25d366;color:white;border-radius:50%;width:60px;height:60px;display:flex;align-items:center;justify-content:center;font-size:28px;z-index:1000;text-decoration:none}
 </style>
 </head>
 
-<!-- ✅ Floating WhatsApp Chat Button -->
-<a href="https://wa.me/2349121383292" target="_blank" 
-   style="
-     position: fixed;
-     bottom: 20px;
-     right: 20px;
-     background-color: #25D366;
-     color: white;
-     border-radius: 50%;
-     width: 60px;
-     height: 60px;
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-     font-size: 28px;
-     text-decoration: none;
-     z-index: 1000;
-   ">
-   💬
-</a>
+<!-- Floating WhatsApp -->
+<a class="whatsapp-float" href="https://wa.me/2349121383292" target="_blank">💬</a>
 
 <body>
 <header><h1>Checkout — Online Graphic Shop</h1></header>
 <main>
-  <div class="card" id="checkout-card">
+  <div class="card">
     <h3>Order Summary</h3>
     <div id="items"></div>
     <div class="total">Total: ₦<span id="total">0</span></div>
@@ -92,7 +48,7 @@
       Name: <strong>Joy Gift</strong><br>
       Account: <strong>9121383292</strong><br>
       Bank: <strong>Opay</strong><br>
-      After payment, click "I have paid" and enter your transaction ID.
+      After payment, click "I have paid" and enter your transaction ID (required).
     </div>
 
     <div style="display:flex;gap:10px;margin-top:12px">
@@ -102,123 +58,146 @@
   </div>
 </main>
 
-<!-- ✅ Success Modal -->
-<div class="modal-overlay" id="successModal">
-  <div class="modal success">
+<!-- Success Modal -->
+<div id="successModal" class="modal-overlay">
+  <div class="modal-box success">
     <h2>✅ Payment Verified</h2>
-    <p>Thank you for your purchase! Your order has been successfully confirmed.<br>
-    You’ll be contacted soon for delivery or digital transfer.</p>
+    <p>Your payment was verified and your order was saved. We'll contact you shortly.</p>
     <button id="okBtn">Back to Home</button>
   </div>
 </div>
 
-<!-- ✅ Error Modal -->
-<div class="modal-overlay" id="errorModal">
-  <div class="modal error">
+<!-- Error Modal -->
+<div id="errorModal" class="modal-overlay">
+  <div class="modal-box error">
     <h2>⚠️ Error</h2>
     <p id="errorText">Something went wrong.</p>
     <button id="closeError">OK</button>
   </div>
 </div>
 
-<!-- ✅ Verifying Modal -->
-<div class="modal-overlay" id="verifyModal">
-  <div class="modal">
+<!-- Verifying Modal -->
+<div id="verifyModal" class="modal-overlay">
+  <div class="modal-box">
     <div class="spinner"></div>
-    <h2>Verifying Payment...</h2>
-    <p>Please wait while we confirm your transaction ID.</p>
+    <div style="font-weight:700;margin-bottom:8px">Verifying transaction...</div>
+    <div style="color:#666">We are checking the provided transaction ID.</div>
   </div>
 </div>
 
 <script>
-  let cart = JSON.parse(localStorage.getItem('ogshop_cart') || '{}') || {};
-  const savedProducts = JSON.parse(localStorage.getItem('ogshop_products_v1') || '[]') || [];
+/*
+  Checkout behavior:
+  - Uses 'cart' key in localStorage (array of product objects).
+  - Transaction ID is required and validated locally (alphanumeric, min 8, must contain letters+digits).
+  - NOTE: Real verification against Opay/bank requires a server-side API. Here we validate format and simulate verification.
+*/
 
-  function buildItems(){
-    const itemsDiv = document.getElementById('items');
-    itemsDiv.innerHTML = '';
-    let total = 0;
-    const entries = Object.entries(cart);
-    if(entries.length === 0){
-      itemsDiv.innerHTML = '<p>Your cart is empty. <a href="index.html">Continue shopping</a></p>';
-      document.getElementById('total').textContent = '0';
-      return;
-    }
-    for(const [id, qty] of entries){
-      const p = savedProducts.find(x=>x.id === id);
-      const price = p ? p.price : 0;
-      total += price * qty;
-      const row = document.createElement('div');
-      row.className = 'item';
-      row.innerHTML = `<div style="display:flex;align-items:center">
-        <img src="${p?p.img:''}" alt="">
-        <div>
-          <div style="font-weight:700">${p?p.title:id}</div>
-          <div style="color:#667085;font-size:13px">${qty} × ₦${new Intl.NumberFormat('en-NG').format(price)}</div>
-        </div></div>
-        <div style="font-weight:800">₦${new Intl.NumberFormat('en-NG').format(price*qty)}</div>`;
-      itemsDiv.appendChild(row);
-    }
-    document.getElementById('total').textContent = new Intl.NumberFormat('en-NG').format(total);
+function showModal(id){ document.getElementById(id).style.display = 'flex'; }
+function hideModal(id){ document.getElementById(id).style.display = 'none'; }
+
+function showError(text){
+  document.getElementById('errorText').textContent = text;
+  showModal('errorModal');
+}
+document.getElementById('closeError').addEventListener('click', ()=> hideModal('errorModal'));
+
+document.getElementById('back').addEventListener('click', ()=> location.href='index.html');
+
+let cart = JSON.parse(localStorage.getItem('cart') || '[]') || [];
+function buildItems(){
+  const itemsDiv = document.getElementById('items');
+  itemsDiv.innerHTML = '';
+  let total = 0;
+  if(!cart.length){
+    itemsDiv.innerHTML = '<p>Your cart is empty. <a href="index.html">Continue shopping</a></p>';
+    document.getElementById('total').textContent = '0';
+    return;
+  }
+  cart.forEach(p=>{
+    total += Number(p.price || 0);
+    const row = document.createElement('div');
+    row.className = 'item';
+    row.innerHTML = `<div style="display:flex;align-items:center">
+      <img src="${p.image||''}" alt="">
+      <div>
+        <div style="font-weight:700">${p.name||'Product'}</div>
+        <div style="color:#667085;font-size:13px">₦${new Intl.NumberFormat('en-NG').format(p.price||0)}</div>
+      </div>
+    </div>
+    <div style="font-weight:800">₦${new Intl.NumberFormat('en-NG').format((p.price||0))}</div>`;
+    itemsDiv.appendChild(row);
+  });
+  document.getElementById('total').textContent = new Intl.NumberFormat('en-NG').format(total);
+}
+buildItems();
+
+// Validation & verification
+function txIsValidFormat(tx){
+  if(!tx) return false;
+  if(!/^[A-Za-z0-9]{8,}$/.test(tx)) return false; // at least 8 alnum
+  // must contain at least one letter and one digit
+  if(!/[A-Za-z]/.test(tx) || !/[0-9]/.test(tx)) return false;
+  return true;
+}
+
+document.getElementById('pay').addEventListener('click', ()=>{
+  const name = document.getElementById('name').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  if(!name || !phone){
+    showError('Please enter your full name and phone/email.');
+    return;
   }
 
-  buildItems();
-
-  const successModal = document.getElementById('successModal');
-  const errorModal = document.getElementById('errorModal');
-  const verifyModal = document.getElementById('verifyModal');
-  const errorText = document.getElementById('errorText');
-  const closeError = document.getElementById('closeError');
-
-  document.getElementById('back').addEventListener('click', ()=> location.href='index.html');
-
-  function showError(msg){
-    errorText.textContent = msg;
-    errorModal.classList.add('active');
+  // ask for transaction id (required)
+  const tx = prompt('Enter your transaction ID (required) to confirm payment:');
+  if(!tx){ showError('Transaction ID is required. Please enter it to confirm payment.'); return; }
+  if(!txIsValidFormat(tx)){
+    showError('Invalid transaction ID. It must be at least 8 characters, alphanumeric, and include both letters and numbers.');
+    return;
   }
 
-  closeError.addEventListener('click', ()=> errorModal.classList.remove('active'));
+  // show verifying spinner
+  showModal('verifyModal');
 
-  document.getElementById('pay').addEventListener('click', ()=>{
-    const name = document.getElementById('name').value.trim();
-    const phone = document.getElementById('phone').value.trim();
+  // simulate remote verification (2s) - replace with real server check when available
+  setTimeout(()=>{
+    hideModal('verifyModal');
 
-    if(!name || !phone){
-      showError('Please enter your full name and contact information.');
+    // simulated verification logic:
+    // here we accept tx that pass txIsValidFormat — you can replace this by server API call
+    const verified = true; // simulation: format-validated tx considered verified
+    if(!verified){
+      showError('Transaction not found or not verified. Please contact support.');
       return;
     }
 
-    const tx = prompt('Enter your transaction ID to confirm payment:');
-    if(!tx || !/^[A-Za-z0-9]{6,}$/.test(tx)){
-      showError('Invalid transaction ID. Please enter a valid one (minimum 6 letters or numbers).');
-      return;
-    }
+    // Save order locally (orders array)
+    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+    const order = {
+      id: 'ORD' + Date.now(),
+      customer: { name, phone },
+      items: cart,
+      tx,
+      createdAt: new Date().toISOString()
+    };
+    orders.unshift(order);
+    localStorage.setItem('orders', JSON.stringify(orders));
 
-    verifyModal.classList.add('active');
+    // Clear cart immediately and update UI
+    localStorage.removeItem('cart');
+    cart = [];
+    buildItems();
 
-    setTimeout(()=>{
-      verifyModal.classList.remove('active');
+    // show success modal
+    showModal('successModal');
+  }, 2000);
+});
 
-      const orders = JSON.parse(localStorage.getItem('ogshop_orders_v1') || '[]');
-      const order = {
-        id: 'ORD'+Date.now(),
-        customer:{name,phone},
-        items:cart,
-        tx,
-        createdAt:new Date().toISOString()
-      };
-      orders.unshift(order);
-      localStorage.setItem('ogshop_orders_v1', JSON.stringify(orders));
-      localStorage.removeItem('ogshop_cart');
-
-      successModal.classList.add('active');
-    }, 2000);
-  });
-
-  document.getElementById('okBtn').addEventListener('click', ()=>{
-    successModal.classList.remove('active');
-    location.href = 'index.html';
-  });
+document.getElementById('okBtn').addEventListener('click', ()=> {
+  hideModal('successModal');
+  location.href = 'index.html';
+});
 </script>
 </body>
 </html>
