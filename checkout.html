@@ -17,7 +17,7 @@
   .btn{padding:10px;border-radius:8px;border:0;background:#111;color:#fff;cursor:pointer;font-weight:700}
   .note{background:#fff8f6;border:1px solid #ffdede;padding:10px;border-radius:8px;margin-top:12px}
 
-  /* ✅ Modal styles */
+  /* ✅ Modal Styles */
   .modal-overlay{
     position:fixed;top:0;left:0;width:100%;height:100%;
     background:rgba(0,0,0,0.6);display:flex;align-items:center;
@@ -36,6 +36,17 @@
   .modal button{padding:10px 20px;border:none;border-radius:8px;background:#111;color:#fff;font-weight:600;cursor:pointer;}
   .modal.error h2{color:#e11d48;}
   .modal.success h2{color:#16a34a;}
+
+  /* ✅ Spinner (for verification) */
+  .spinner{
+    border:4px solid #f3f3f3;
+    border-top:4px solid #111;
+    border-radius:50%;
+    width:45px;height:45px;
+    animation:spin 1s linear infinite;
+    margin:0 auto 15px;
+  }
+  @keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
 </style>
 </head>
 
@@ -81,7 +92,7 @@
       Name: <strong>Joy Gift</strong><br>
       Account: <strong>9121383292</strong><br>
       Bank: <strong>Opay</strong><br>
-      After payment, click "I have paid" and optionally paste your transaction ID in the box that appears.
+      After payment, click "I have paid" and enter your transaction ID.
     </div>
 
     <div style="display:flex;gap:10px;margin-top:12px">
@@ -94,9 +105,9 @@
 <!-- ✅ Success Modal -->
 <div class="modal-overlay" id="successModal">
   <div class="modal success">
-    <h2>✅ Payment Recorded</h2>
-    <p>Thank you for your purchase! Your order has been successfully saved.<br>
-    We’ll review your payment and contact you shortly.</p>
+    <h2>✅ Payment Verified</h2>
+    <p>Thank you for your purchase! Your order has been successfully confirmed.<br>
+    You’ll be contacted soon for delivery or digital transfer.</p>
     <button id="okBtn">Back to Home</button>
   </div>
 </div>
@@ -110,8 +121,16 @@
   </div>
 </div>
 
+<!-- ✅ Verifying Modal -->
+<div class="modal-overlay" id="verifyModal">
+  <div class="modal">
+    <div class="spinner"></div>
+    <h2>Verifying Payment...</h2>
+    <p>Please wait while we confirm your transaction ID.</p>
+  </div>
+</div>
+
 <script>
-  // Read cart data
   let cart = JSON.parse(localStorage.getItem('ogshop_cart') || '{}') || {};
   const savedProducts = JSON.parse(localStorage.getItem('ogshop_products_v1') || '[]') || [];
 
@@ -147,6 +166,7 @@
 
   const successModal = document.getElementById('successModal');
   const errorModal = document.getElementById('errorModal');
+  const verifyModal = document.getElementById('verifyModal');
   const errorText = document.getElementById('errorText');
   const closeError = document.getElementById('closeError');
 
@@ -168,19 +188,31 @@
       return;
     }
 
-    const tx = prompt('Enter transaction ID (optional) after payment — or press OK to continue without it.');
-    if(tx && !/^[A-Za-z0-9]{6,}$/.test(tx)){
-      showError('Invalid transaction ID. Please check and enter a valid one (at least 6 characters, letters or numbers only).');
+    const tx = prompt('Enter your transaction ID to confirm payment:');
+    if(!tx || !/^[A-Za-z0-9]{6,}$/.test(tx)){
+      showError('Invalid transaction ID. Please enter a valid one (minimum 6 letters or numbers).');
       return;
     }
 
-    const orders = JSON.parse(localStorage.getItem('ogshop_orders_v1') || '[]');
-    const order = { id: 'ORD'+Date.now(), customer:{name,phone}, items:cart, tx:tx||null, createdAt:new Date().toISOString() };
-    orders.unshift(order);
-    localStorage.setItem('ogshop_orders_v1', JSON.stringify(orders));
-    localStorage.removeItem('ogshop_cart');
+    verifyModal.classList.add('active');
 
-    successModal.classList.add('active');
+    setTimeout(()=>{
+      verifyModal.classList.remove('active');
+
+      const orders = JSON.parse(localStorage.getItem('ogshop_orders_v1') || '[]');
+      const order = {
+        id: 'ORD'+Date.now(),
+        customer:{name,phone},
+        items:cart,
+        tx,
+        createdAt:new Date().toISOString()
+      };
+      orders.unshift(order);
+      localStorage.setItem('ogshop_orders_v1', JSON.stringify(orders));
+      localStorage.removeItem('ogshop_cart');
+
+      successModal.classList.add('active');
+    }, 2000);
   });
 
   document.getElementById('okBtn').addEventListener('click', ()=>{
