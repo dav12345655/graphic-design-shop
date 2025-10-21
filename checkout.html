@@ -16,8 +16,8 @@
   input,textarea{padding:10px;border-radius:8px;border:1px solid #e6e9ef}
   .btn{padding:10px;border-radius:8px;border:0;background:#111;color:#fff;cursor:pointer;font-weight:700}
   .note{background:#fff8f6;border:1px solid #ffdede;padding:10px;border-radius:8px;margin-top:12px}
-  
-  /* ✅ Success modal styles */
+
+  /* ✅ Modal styles */
   .modal-overlay{
     position:fixed;top:0;left:0;width:100%;height:100%;
     background:rgba(0,0,0,0.6);display:flex;align-items:center;
@@ -31,9 +31,11 @@
     animation:pop .3s ease;
   }
   @keyframes pop{from{transform:scale(0.8);opacity:0;}to{transform:scale(1);opacity:1;}}
-  .modal h2{color:#111;margin-bottom:10px;}
+  .modal h2{margin-bottom:10px;}
   .modal p{color:#555;font-size:15px;margin-bottom:20px;}
   .modal button{padding:10px 20px;border:none;border-radius:8px;background:#111;color:#fff;font-weight:600;cursor:pointer;}
+  .modal.error h2{color:#e11d48;}
+  .modal.success h2{color:#16a34a;}
 </style>
 </head>
 
@@ -89,9 +91,9 @@
   </div>
 </main>
 
-<!-- ✅ Modal for professional confirmation -->
+<!-- ✅ Success Modal -->
 <div class="modal-overlay" id="successModal">
-  <div class="modal">
+  <div class="modal success">
     <h2>✅ Payment Recorded</h2>
     <p>Thank you for your purchase! Your order has been successfully saved.<br>
     We’ll review your payment and contact you shortly.</p>
@@ -99,8 +101,17 @@
   </div>
 </div>
 
+<!-- ✅ Error Modal -->
+<div class="modal-overlay" id="errorModal">
+  <div class="modal error">
+    <h2>⚠️ Error</h2>
+    <p id="errorText">Something went wrong.</p>
+    <button id="closeError">OK</button>
+  </div>
+</div>
+
 <script>
-  // Read cart and product data
+  // Read cart data
   let cart = JSON.parse(localStorage.getItem('ogshop_cart') || '{}') || {};
   const savedProducts = JSON.parse(localStorage.getItem('ogshop_products_v1') || '[]') || [];
 
@@ -134,25 +145,46 @@
 
   buildItems();
 
+  const successModal = document.getElementById('successModal');
+  const errorModal = document.getElementById('errorModal');
+  const errorText = document.getElementById('errorText');
+  const closeError = document.getElementById('closeError');
+
   document.getElementById('back').addEventListener('click', ()=> location.href='index.html');
+
+  function showError(msg){
+    errorText.textContent = msg;
+    errorModal.classList.add('active');
+  }
+
+  closeError.addEventListener('click', ()=> errorModal.classList.remove('active'));
 
   document.getElementById('pay').addEventListener('click', ()=>{
     const name = document.getElementById('name').value.trim();
     const phone = document.getElementById('phone').value.trim();
-    if(!name || !phone){ alert('Please enter your name and phone/email.'); return; }
+
+    if(!name || !phone){
+      showError('Please enter your full name and contact information.');
+      return;
+    }
+
     const tx = prompt('Enter transaction ID (optional) after payment — or press OK to continue without it.');
+    if(tx && !/^[A-Za-z0-9]{6,}$/.test(tx)){
+      showError('Invalid transaction ID. Please check and enter a valid one (at least 6 characters, letters or numbers only).');
+      return;
+    }
+
     const orders = JSON.parse(localStorage.getItem('ogshop_orders_v1') || '[]');
     const order = { id: 'ORD'+Date.now(), customer:{name,phone}, items:cart, tx:tx||null, createdAt:new Date().toISOString() };
     orders.unshift(order);
     localStorage.setItem('ogshop_orders_v1', JSON.stringify(orders));
     localStorage.removeItem('ogshop_cart');
 
-    // ✅ Show professional modal
-    document.getElementById('successModal').classList.add('active');
+    successModal.classList.add('active');
   });
 
   document.getElementById('okBtn').addEventListener('click', ()=>{
-    document.getElementById('successModal').classList.remove('active');
+    successModal.classList.remove('active');
     location.href = 'index.html';
   });
 </script>
