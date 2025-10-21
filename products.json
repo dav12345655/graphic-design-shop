@@ -1,42 +1,38 @@
 [
   {
     "name": "Party",
-    "price": "3000",
+    "price": 3000,
     "category": "FLYER",
     "image": "https://i.pinimg.com/1200x/41/61/f4/4161f44b77d1240bf7549c6dbb445055.jpg"
   },
   {
-    "name": "blast",
-    "price": "2000",
+    "name": "Blast",
+    "price": 2000,
     "category": "FLYER",
     "image": "https://i.pinimg.com/1200x/ab/d3/79/abd379cd2b568cb5503662c48d3c981f.jpg"
   },
   {
     "name": "The GOAT",
-    "price": "2000",
+    "price": 2000,
     "category": "GRAPHICS",
     "image": "https://i.pinimg.com/736x/d2/62/9a/d2629a92a49e363ed0446bcc3a98f66a.jpg"
   },
   {
     "name": "V Design",
-    "price": "2500",
+    "price": 2500,
     "category": "GRAPHICS",
     "image": "https://i.pinimg.com/1200x/3a/15/f2/3a15f2cb8387639c5abec72284267654.jpg"
   },
   {
     "name": "Asap Rocky",
-    "price": "1500",
+    "price": 1500,
     "category": "POSTER",
     "image": "https://i.pinimg.com/1200x/b7/70/ee/b770ee389ab9a35ef8fc56023b74aebf.jpg"
   },
   {
     "name": "SADDAT",
     "price": 1200,
+    "category": "POSTER",
     "image": "https://i.pinimg.com/1200x/17/95/f5/1795f507d24c22d4dbaf47aed985def3.jpg"
-  },
-  {
-    "name": "micky",
-    "price": 1000,
-    "image": "https://i.pinimg.com/736x/0f/90/1b/0f901bbe9272bb5236b9fff99436c907.jpg"
   }
 ]
