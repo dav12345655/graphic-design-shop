@@ -91,7 +91,7 @@
     }
 
     .info button {
-      width: 100%;
+      width: 48%;
       background: #28a745;
       color: white;
       border: none;
@@ -99,6 +99,11 @@
       border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
+      margin-right: 2%;
+    }
+
+    .preview-btn {
+      background: #007bff !important;
     }
 
     footer {
@@ -109,6 +114,7 @@
       margin-top: 40px;
     }
 
+    /* Cart Modal */
     .cart-modal {
       display: none;
       position: fixed;
@@ -135,6 +141,26 @@
       cursor: pointer;
     }
 
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8f8f8;
+      padding: 8px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+
+    .cart-item button {
+      background: red;
+      color: white;
+      border: none;
+      padding: 5px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
     .checkout-btn {
       display: block;
       background: #007bff;
@@ -144,6 +170,54 @@
       border-radius: 5px;
       margin-top: 15px;
       text-decoration: none;
+    }
+
+    /* Preview Modal */
+    .preview-modal {
+      display: none;
+      position: fixed;
+      z-index: 10000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+    }
+
+    .preview-content {
+      background: #fff;
+      width: 90%;
+      max-width: 500px;
+      margin: 80px auto;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      position: relative;
+    }
+
+    .preview-content img {
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .close-preview {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    .buy-now-btn {
+      background: #28a745;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -158,6 +232,7 @@
     <div id="products-grid" class="grid"></div>
   </div>
 
+  <!-- Cart Modal -->
   <div id="cart-modal" class="cart-modal">
     <div class="cart-content">
       <span id="close-cart" class="close-cart">&times;</span>
@@ -165,6 +240,17 @@
       <div id="cart-items"></div>
       <p><strong>Total:</strong> ₦<span id="total-amount">0</span></p>
       <a href="checkout.html" class="checkout-btn">Proceed to Checkout</a>
+    </div>
+  </div>
+
+  <!-- Preview Modal -->
+  <div id="preview-modal" class="preview-modal">
+    <div class="preview-content">
+      <span id="close-preview" class="close-preview">&times;</span>
+      <img id="preview-img" src="" alt="Preview Image" />
+      <h3 id="preview-name"></h3>
+      <p><strong>₦<span id="preview-price"></span></strong></p>
+      <button id="buy-now-btn" class="buy-now-btn">Buy Now</button>
     </div>
   </div>
 
@@ -185,10 +271,18 @@
       const cartContainer = document.getElementById("cart-items");
       const totalAmount = document.getElementById("total-amount");
       const searchInput = document.getElementById("search-input");
+      const previewModal = document.getElementById("preview-modal");
+      const closePreview = document.getElementById("close-preview");
+      const previewImg = document.getElementById("preview-img");
+      const previewName = document.getElementById("preview-name");
+      const previewPrice = document.getElementById("preview-price");
+      const buyNowBtn = document.getElementById("buy-now-btn");
 
       let products = [];
       let cart = JSON.parse(localStorage.getItem("cart")) || [];
+      let currentPreview = null;
 
+      // Fetch products
       fetch("products.json")
         .then(res => res.json())
         .then(data => {
@@ -207,13 +301,12 @@
           const div = document.createElement("div");
           div.className = "product";
           div.innerHTML = `
-            <a href="product.html?id=${i}">
-              <img src="${p.image}" alt="${p.name}">
-            </a>
+            <img src="${p.image}" alt="${p.name}">
             <div class="info">
               <h3>${p.name}</h3>
               <p>₦${p.price}</p>
               <button data-id="${i}" class="add-btn">Add to Cart</button>
+              <button data-id="${i}" class="preview-btn">Preview</button>
             </div>`;
           grid.appendChild(div);
         });
@@ -225,9 +318,12 @@
         if (cart.length === 0) {
           cartContainer.innerHTML = "<p>Your cart is empty.</p>";
         } else {
-          cart.forEach((item) => {
+          cart.forEach((item, index) => {
             const div = document.createElement("div");
-            div.innerHTML = `${item.name} - ₦${item.price}`;
+            div.className = "cart-item";
+            div.innerHTML = `
+              <span>${item.name} - ₦${item.price}</span>
+              <button data-index="${index}">🗑️</button>`;
             cartContainer.appendChild(div);
             total += parseFloat(item.price);
           });
@@ -244,6 +340,40 @@
           renderCart();
           alert(`${product.name} added to cart!`);
         }
+
+        if (e.target.classList.contains("preview-btn")) {
+          const id = e.target.dataset.id;
+          const p = products[id];
+          currentPreview = p;
+          previewImg.src = p.image;
+          previewName.textContent = p.name;
+          previewPrice.textContent = p.price;
+          previewModal.style.display = "block";
+        }
+      });
+
+      // Delete item from cart
+      cartContainer.addEventListener("click", (e) => {
+        if (e.target.tagName === "BUTTON") {
+          const index = e.target.dataset.index;
+          cart.splice(index, 1);
+          renderCart();
+        }
+      });
+
+      // Buy Now button from preview
+      buyNowBtn.addEventListener("click", () => {
+        if (currentPreview) {
+          cart.push(currentPreview);
+          renderCart();
+          previewModal.style.display = "none";
+          alert(`${currentPreview.name} added to cart!`);
+        }
+      });
+
+      closePreview.addEventListener("click", () => previewModal.style.display = "none");
+      window.addEventListener("click", (e) => {
+        if (e.target === previewModal) previewModal.style.display = "none";
       });
 
       cartBtn.addEventListener("click", () => {
