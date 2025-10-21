@@ -1,290 +1,203 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Online Graphic Shop</title>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <style>
-  :root{--accent:#28a745;--muted:#777;--blue:#007bff}
-  body{font-family:Segoe UI,Arial,sans-serif;background:#f4f4f4;margin:0;color:#222}
-  header{background:#111;color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap}
-  header h1{margin:0;font-size:18px}
-  .header-right{display:flex;gap:12px;align-items:center}
-  .cart-btn{background:#ff9800;color:#fff;border:none;padding:8px 12px;border-radius:6px;cursor:pointer;position:relative}
-  .cart-count{position:absolute;top:-6px;right:-8px;background:red;color:#fff;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:12px}
-  .container{width:92%;max-width:1100px;margin:18px auto}
-  #search-input{width:100%;padding:10px;border-radius:6px;border:1px solid #ccc;margin-bottom:16px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
-  .product{background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);display:flex;flex-direction:column;transition:transform .18s}
-  .product:hover{transform:scale(1.02)}
-  .product img{width:100%;height:160px;object-fit:cover}
-  .info{padding:10px;flex:1;display:flex;flex-direction:column}
-  .info h3{margin:0 0 6px;font-size:15px}
-  .info p{margin:0;color:var(--muted);font-size:13px}
-  .btn{width:100%;padding:9px;border-radius:6px;border:none;cursor:pointer;font-weight:600;background:var(--blue);color:#fff;margin-top:10px}
-  footer{padding:16px;text-align:center;background:#111;color:#ccc;margin-top:26px}
-  /* Modals & alerts */
-  .modal, .alert-overlay{display:none;position:fixed;left:0;top:0;width:100%;height:100%;z-index:9999;align-items:center;justify-content:center}
-  .dark-back{background:rgba(0,0,0,0.55)}
-  .box{background:#fff;border-radius:10px;padding:16px;max-width:420px;width:92%;box-shadow:0 8px 28px rgba(0,0,0,0.18)}
-  .close{position:absolute;right:12px;top:8px;font-size:20px;cursor:pointer;color:#333}
-  .cart-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #eee}
-  .cart-remove{background:red;color:#fff;border:none;padding:6px 8px;border-radius:6px;cursor:pointer}
-  .preview-content img{width:100%;border-radius:8px;margin-bottom:10px}
-  .add-to-cart-btn{width:100%;padding:10px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;margin-top:6px}
-  /* Alert box */
-  .alert-box{padding:0;overflow:hidden;text-align:left}
-  .alert-header{padding:14px 16px;color:#fff;font-weight:700}
-  .alert-body{padding:16px;color:#333}
-  .alert-actions{padding:0 16px 16px;text-align:right}
-  .alert-btn{padding:8px 14px;border:none;border-radius:8px;background:#111;color:#fff;cursor:pointer}
-  /* spinner */
-  .spinner{border:4px solid #f3f3f3;border-top:4px solid #111;border-radius:50%;width:42px;height:42px;animation:spin 1s linear infinite;margin:0 auto 12px}
-  @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
-  @media(max-width:420px){.product img{height:140px}}
-  .whatsapp-float{position:fixed;bottom:18px;right:18px;background:#25d366;color:white;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;text-decoration:none;z-index:10000;box-shadow:0 3px 12px rgba(0,0,0,0.2)}
+  :root{
+    --bg1:#4f46e5;
+    --bg2:#7c3aed;
+    --card:#ffffffcc;
+    --muted:#6b7280;
+    --accent:#06b6d4;
+    --success:#16a34a;
+    --danger:#ef4444;
+  }
+  html,body{
+    height:100%;margin:0;
+    font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;
+    background:linear-gradient(135deg,var(--bg1),var(--bg2));
+    color:#0f172a;
+  }
+  header{
+    background:rgba(255,255,255,0.15);
+    color:#fff;
+    padding:18px;
+    text-align:center;
+    backdrop-filter:blur(8px);
+  }
+  header h1{margin:0;font-size:22px;letter-spacing:0.3px;}
+  header p{margin:6px 0 0;opacity:0.9;font-size:14px}
+  .container{
+    max-width:1100px;
+    margin:20px auto;
+    padding:12px;
+  }
+  .product-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+    gap:18px;
+  }
+  .product{
+    background:var(--card);
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 8px 24px rgba(16,24,40,0.15);
+    display:flex;
+    flex-direction:column;
+    transition:transform 0.2s ease,box-shadow 0.2s ease;
+  }
+  .product:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(16,24,40,0.2);}
+  .product img{width:100%;height:180px;object-fit:cover;}
+  .info{padding:10px 12px;flex:1;display:flex;flex-direction:column;justify-content:space-between}
+  .info h3{margin:0;font-size:16px;font-weight:700}
+  .info p{margin:4px 0 0;color:var(--muted);font-size:14px}
+  .price{font-weight:800;font-size:15px;margin-top:8px}
+  .btn{
+    background:linear-gradient(90deg,#0ea5e9,#7c3aed);
+    color:#fff;border:0;border-radius:8px;
+    padding:10px;font-weight:700;cursor:pointer;
+    transition:opacity 0.2s ease;
+  }
+  .btn:hover{opacity:0.9;}
+  footer{text-align:center;color:#fff;padding:20px;font-size:13px;margin-top:30px;}
+
+  /* floating cart */
+  .cart-btn{
+    position:fixed;top:20px;right:20px;
+    background:#fff;color:#111;
+    border-radius:30px;padding:10px 16px;
+    display:flex;align-items:center;gap:6px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.15);
+    cursor:pointer;font-weight:700;
+    z-index:1000;
+  }
+
+  /* floating WhatsApp */
+  .whatsapp{
+    position:fixed;right:18px;bottom:18px;width:64px;height:64px;border-radius:50%;
+    background:#25D366;color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;
+    z-index:9999;box-shadow:0 10px 30px rgba(2,6,23,0.25);text-decoration:none;
+  }
 </style>
 </head>
 <body>
   <header>
-    <h1>Online Graphic Shop</h1>
-    <div class="header-right">
-      <button id="cart-btn" class="cart-btn">🛒 Cart <span id="cart-count" class="cart-count">0</span></button>
-    </div>
+    <h1>Welcome to Online Graphic Shop</h1>
+    <p>Creative designs, flyers, posters & more</p>
   </header>
 
-  <main class="container">
-    <input id="search-input" placeholder="Search designs..." />
-    <div id="products-grid" class="grid">Loading products...</div>
-  </main>
-
-  <!-- Cart Modal -->
-  <div id="cart-modal" class="modal dark-back">
-    <div class="box">
-      <span id="close-cart" class="close">&times;</span>
-      <h3>Your Cart</h3>
-      <div id="cart-items"></div>
-      <p style="margin-top:12px"><strong>Total:</strong> ₦<span id="total-amount">0</span></p>
-      <div style="display:flex;gap:10px;margin-top:12px">
-        <a href="checkout.html" style="flex:1;text-align:center;background:#007bff;color:#fff;padding:10px;border-radius:8px;text-decoration:none">Proceed to Checkout</a>
-        <button id="clear-cart" style="background:#e53e3e;color:#fff;border:none;padding:10px;border-radius:8px;cursor:pointer">Clear</button>
-      </div>
-    </div>
+  <div class="cart-btn" onclick="goToCheckout()">
+    🛒 Cart (<span id="cart-count">0</span>)
   </div>
 
-  <!-- Preview Modal -->
-  <div id="preview-modal" class="modal dark-back">
-    <div class="box preview-content">
-      <span id="close-preview" class="close">&times;</span>
-      <img id="preview-img" src="" alt="Preview" />
-      <h3 id="preview-name"></h3>
-      <p id="preview-price" style="color:var(--accent);font-weight:700"></p>
-      <button id="preview-add" class="add-to-cart-btn">Add to Cart</button>
-    </div>
+  <div class="container">
+    <div class="product-grid" id="product-grid"></div>
   </div>
 
-  <!-- Reusable Alert/Confirm Modal -->
-  <div id="alert-overlay" class="alert-overlay dark-back">
-    <div class="box alert-box">
-      <div id="alert-header" class="alert-header" style="background:#111">Message</div>
-      <div id="alert-body" class="alert-body"></div>
-      <div class="alert-actions">
-        <button id="alert-ok" class="alert-btn">OK</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Verifying spinner (used if needed) -->
-  <div id="verify-overlay" class="modal dark-back">
-    <div class="box" style="text-align:center">
-      <div class="spinner"></div>
-      <div style="font-weight:700;margin-bottom:6px">Verifying...</div>
-      <div style="color:#666">Please wait while we confirm your transaction ID.</div>
-    </div>
-  </div>
+  <footer>© <span id="year"></span> Online Graphic Shop — Designed by <strong>ABblack</strong></footer>
 
   <!-- Floating WhatsApp -->
-  <a class="whatsapp-float" href="https://wa.me/2349121383292" target="_blank" title="Chat on WhatsApp">💬</a>
-
-  <footer>
-    Designed by <strong>ABblack</strong> • 📞 <a href="tel:+2347026865570" style="color:#00bcd4;text-decoration:none">07026865570</a>
-  </footer>
+  <a class="whatsapp" href="https://wa.me/2349121383292" target="_blank" aria-label="Chat on WhatsApp">💬</a>
 
 <script>
-/* -------------------
-   Helper: unified alert
-   ------------------- */
-function showAlert(type='info', title='Notice', message='', autoCloseMs=0){
-  // type: 'success' (green) | 'error' (red) | 'info' (blue)
-  const ov = document.getElementById('alert-overlay');
-  const hdr = document.getElementById('alert-header');
-  const body = document.getElementById('alert-body');
-  hdr.textContent = title;
-  body.innerHTML = message.replace(/\n/g,'<br>');
-  hdr.style.background = type === 'success' ? '#16a34a' : type === 'error' ? '#dc2626' : '#0ea5e9';
-  ov.style.display = 'flex';
-  // ok button closes
-  const ok = document.getElementById('alert-ok');
-  ok.onclick = () => { ov.style.display='none'; };
-  if(autoCloseMs && autoCloseMs>0){
-    setTimeout(()=> { ov.style.display='none'; }, autoCloseMs);
-  }
+const products = [
+  {name:"Party",price:3000,category:"FLYER",image:"https://i.pinimg.com/1200x/41/61/f4/4161f44b77d1240bf7549c6dbb445055.jpg"},
+  {name:"Blast",price:2000,category:"FLYER",image:"https://i.pinimg.com/1200x/ab/d3/79/abd379cd2b568cb5503662c48d3c981f.jpg"},
+  {name:"The GOAT",price:2000,category:"GRAPHICS",image:"https://i.pinimg.com/736x/d2/62/9a/d2629a92a49e363ed0446bcc3a98f66a.jpg"},
+  {name:"V Design",price:2500,category:"GRAPHICS",image:"https://i.pinimg.com/1200x/3a/15/f2/3a15f2cb8387639c5abec72284267654.jpg"},
+  {name:"Asap Rocky",price:1500,category:"POSTER",image:"https://i.pinimg.com/1200x/b7/70/ee/b770ee389ab9a35ef8fc56023b74aebf.jpg"},
+  {name:"SADDAT",price:1200,category:"POSTER",image:"https://i.pinimg.com/1200x/17/95/f5/1795f507d24c22d4dbaf47aed985def3.jpg"}
+];
+
+function saveProducts(){
+  localStorage.setItem('products', JSON.stringify(products));
 }
 
-/* -------------------
-   App logic
-   ------------------- */
-document.addEventListener('DOMContentLoaded', () => {
-  const grid = document.getElementById('products-grid');
-  const searchInput = document.getElementById('search-input');
-  const cartBtn = document.getElementById('cart-btn');
-  const cartModal = document.getElementById('cart-modal');
-  const closeCart = document.getElementById('close-cart');
-  const cartItemsEl = document.getElementById('cart-items');
-  const totalAmountEl = document.getElementById('total-amount');
-  const cartCountEl = document.getElementById('cart-count');
-  const clearCartBtn = document.getElementById('clear-cart');
-
-  const previewModal = document.getElementById('preview-modal');
-  const closePreview = document.getElementById('close-preview');
-  const previewImg = document.getElementById('preview-img');
-  const previewName = document.getElementById('preview-name');
-  const previewPrice = document.getElementById('preview-price');
-  const previewAddBtn = document.getElementById('preview-add');
-
-  const verifyOverlay = document.getElementById('verify-overlay');
-
-  let products = [];
-  let cart = JSON.parse(localStorage.getItem('cart')) || [];
-
-  // load products.json (preferred) or localStorage fallback
-  fetch('products.json').then(r=>{
-    if(!r.ok) throw new Error('products.json not found');
-    return r.json();
-  }).then(data=>{
-    products = data;
-    if(!Array.isArray(products)) products = [];
-    localStorage.setItem('products', JSON.stringify(products));
-    renderProducts(products);
-  }).catch(err=>{
-    console.warn('Could not fetch products.json:', err);
-    products = JSON.parse(localStorage.getItem('products')) || [];
-    renderProducts(products);
-  });
-
-  function renderProducts(list){
-    grid.innerHTML = '';
-    if(!list || list.length === 0){
-      grid.innerHTML = '<p>No products available yet.</p>';
-      return;
-    }
-    list.forEach((p,i)=>{
-      const card = document.createElement('div');
-      card.className = 'product';
-      card.innerHTML = `
-        <img src="${escapeHtml(p.image||'')}" alt="${escapeHtml(p.name||'')}">
-        <div class="info">
-          <h3>${escapeHtml(p.name||'Unnamed')}</h3>
-          <p>₦${Number(p.price||0).toLocaleString()}</p>
-          <button class="btn preview-btn" data-id="${i}">Preview</button>
+function renderProducts(){
+  const grid=document.getElementById('product-grid');
+  grid.innerHTML='';
+  products.forEach((p,i)=>{
+    const div=document.createElement('div');
+    div.className='product';
+    div.innerHTML=`
+      <img src="${p.image}" alt="${p.name}">
+      <div class="info">
+        <div>
+          <h3>${p.name}</h3>
+          <p>${p.category}</p>
+          <div class="price">₦${p.price.toLocaleString()}</div>
         </div>
-      `;
-      grid.appendChild(card);
-    });
+        <button class="btn" onclick="previewProduct(${i})">Preview</button>
+      </div>
+    `;
+    grid.appendChild(div);
+  });
+}
+
+function loadCart(){
+  try {return JSON.parse(localStorage.getItem('cart')||'[]');}
+  catch(e){return [];}
+}
+function saveCart(cart){
+  localStorage.setItem('cart',JSON.stringify(cart));
+  updateCartCount();
+}
+function updateCartCount(){
+  const cart=loadCart();
+  document.getElementById('cart-count').textContent=cart.length;
+}
+
+function previewProduct(i){
+  const p=products[i];
+  Swal.fire({
+    title: p.name,
+    html: `
+      <img src="${p.image}" style="width:100%;border-radius:12px;margin-bottom:12px;object-fit:cover" alt="">
+      <p style="font-size:14px;color:#555">${p.category}</p>
+      <p style="font-weight:700;font-size:18px;">₦${p.price.toLocaleString()}</p>
+    `,
+    showCancelButton: true,
+    confirmButtonText: 'Add to Cart',
+    cancelButtonText: 'Close',
+    confirmButtonColor: '#4f46e5',
+    cancelButtonColor: '#6b7280',
+    reverseButtons: true,
+    background: '#fff'
+  }).then(result=>{
+    if(result.isConfirmed) addToCart(p);
+  });
+}
+
+function addToCart(product){
+  const cart=loadCart();
+  if(cart.some(x=>x.name===product.name)){
+    Swal.fire({icon:'info',title:'Already in cart',text:`${product.name} is already in your cart.`,confirmButtonColor:'#4f46e5'});
+    return;
   }
+  cart.push(product);
+  saveCart(cart);
+  Swal.fire({icon:'success',title:'Added to cart',text:`${product.name} added successfully!`,confirmButtonColor:'#16a34a'});
+}
 
-  function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-
-  // Cart UI
-  function updateCartUI(){
-    cartItemsEl.innerHTML = '';
-    let total = 0;
-    if(!cart.length){
-      cartItemsEl.innerHTML = '<p>Your cart is empty.</p>';
-    } else {
-      cart.forEach((it,idx)=>{
-        const div = document.createElement('div');
-        div.className = 'cart-item';
-        div.innerHTML = `<div style="flex:1">
-            <div style="font-weight:700">${escapeHtml(it.name)}</div>
-            <div style="color:#666">₦${Number(it.price).toLocaleString()}</div>
-          </div>
-          <button class="cart-remove" data-index="${idx}">Delete</button>`;
-        cartItemsEl.appendChild(div);
-        total += Number(it.price || 0);
-      });
-    }
-    totalAmountEl.textContent = total.toLocaleString();
-    cartCountEl.textContent = cart.length;
-    localStorage.setItem('cart', JSON.stringify(cart));
+function goToCheckout(){
+  const cart=loadCart();
+  if(!cart.length){
+    Swal.fire({icon:'info',title:'Cart Empty',text:'You have no items in your cart yet.',confirmButtonColor:'#4f46e5'});
+    return;
   }
+  window.location.href='checkout.html';
+}
 
-  // add from preview
-  previewAddBtn.addEventListener('click', ()=>{
-    const idx = Number(previewAddBtn.dataset.id);
-    const p = products[idx];
-    if(!p) { showAlert('error','Error','Product not found'); previewModal.style.display='none'; return; }
-    cart.push({...p});
-    updateCartUI();
-    previewModal.style.display = 'none';
-    showAlert('success','Added','Product added to cart',2000);
-  });
-
-  // product grid actions
-  grid.addEventListener('click', (e)=>{
-    const btn = e.target.closest('.preview-btn');
-    if(btn){
-      const i = Number(btn.dataset.id);
-      const p = products[i];
-      if(!p) { showAlert('error','Error','Product not found'); return; }
-      previewImg.src = p.image || '';
-      previewName.textContent = p.name || '';
-      previewPrice.textContent = '₦' + Number(p.price||0).toLocaleString();
-      previewAddBtn.dataset.id = i;
-      previewModal.style.display = 'flex';
-    }
-  });
-
-  // cart actions (remove/clear)
-  cartItemsEl.addEventListener('click',(e)=>{
-    const rem = e.target.closest('.cart-remove');
-    if(!rem) return;
-    const idx = Number(rem.dataset.index);
-    if(confirm('Remove this item?')) {
-      cart.splice(idx,1);
-      updateCartUI();
-      showAlert('info','Removed','Item removed from cart',1500);
-    }
-  });
-
-  clearCartBtn.addEventListener('click', ()=>{
-    if(!cart.length) return showAlert('info','Cart empty','No items to clear',1500);
-    if(confirm('Clear cart?')){
-      cart = [];
-      updateCartUI();
-      showAlert('success','Cleared','Cart cleared',1500);
-    }
-  });
-
-  // open/close cart and preview
-  cartBtn.addEventListener('click', ()=>{ updateCartUI(); cartModal.style.display='flex'; });
-  closeCart.addEventListener('click', ()=> cartModal.style.display='none');
-  closePreview.addEventListener('click', ()=> previewModal.style.display='none');
-  window.addEventListener('click', e=>{
-    if(e.target === cartModal) cartModal.style.display='none';
-    if(e.target === previewModal) previewModal.style.display='none';
-  });
-
-  // search
-  searchInput.addEventListener('input', ()=>{
-    const q = searchInput.value.trim().toLowerCase();
-    const filtered = !q ? products : products.filter(p=> (p.name||'').toLowerCase().includes(q));
-    renderProducts(filtered);
-  });
-
-  // initial UI
-  updateCartUI();
-});
+document.getElementById('year').textContent=new Date().getFullYear();
+saveProducts();
+renderProducts();
+updateCartCount();
 </script>
 </body>
 </html>
