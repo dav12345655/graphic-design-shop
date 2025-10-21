@@ -1,7 +1,8 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Checkout — Online Graphic Shop</title>
 <style>
   body{font-family:Inter,system-ui,Arial;background:#f4f6fb;color:#0f172a;margin:0}
@@ -15,8 +16,27 @@
   input,textarea{padding:10px;border-radius:8px;border:1px solid #e6e9ef}
   .btn{padding:10px;border-radius:8px;border:0;background:#111;color:#fff;cursor:pointer;font-weight:700}
   .note{background:#fff8f6;border:1px solid #ffdede;padding:10px;border-radius:8px;margin-top:12px}
+  
+  /* ✅ Success modal styles */
+  .modal-overlay{
+    position:fixed;top:0;left:0;width:100%;height:100%;
+    background:rgba(0,0,0,0.6);display:flex;align-items:center;
+    justify-content:center;z-index:10000;visibility:hidden;opacity:0;
+    transition:opacity .3s ease,visibility .3s ease;
+  }
+  .modal-overlay.active{visibility:visible;opacity:1;}
+  .modal{
+    background:#fff;border-radius:12px;max-width:400px;width:90%;
+    padding:24px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,0.2);
+    animation:pop .3s ease;
+  }
+  @keyframes pop{from{transform:scale(0.8);opacity:0;}to{transform:scale(1);opacity:1;}}
+  .modal h2{color:#111;margin-bottom:10px;}
+  .modal p{color:#555;font-size:15px;margin-bottom:20px;}
+  .modal button{padding:10px 20px;border:none;border-radius:8px;background:#111;color:#fff;font-weight:600;cursor:pointer;}
 </style>
 </head>
+
 <!-- ✅ Floating WhatsApp Chat Button -->
 <a href="https://wa.me/2349121383292" target="_blank" 
    style="
@@ -39,7 +59,7 @@
    💬
 </a>
 
-  <body>
+<body>
 <header><h1>Checkout — Online Graphic Shop</h1></header>
 <main>
   <div class="card" id="checkout-card">
@@ -66,12 +86,21 @@
       <button id="pay" class="btn" style="flex:1">I have paid</button>
       <button id="back" class="btn" style="background:#e6e6e6;color:#111">Back to shop</button>
     </div>
-
   </div>
 </main>
 
+<!-- ✅ Modal for professional confirmation -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal">
+    <h2>✅ Payment Recorded</h2>
+    <p>Thank you for your purchase! Your order has been successfully saved.<br>
+    We’ll review your payment and contact you shortly.</p>
+    <button id="okBtn">Back to Home</button>
+  </div>
+</div>
+
 <script>
-  // read cart from localStorage (same key used in index.html)
+  // Read cart and product data
   let cart = JSON.parse(localStorage.getItem('ogshop_cart') || '{}') || {};
   const savedProducts = JSON.parse(localStorage.getItem('ogshop_products_v1') || '[]') || [];
 
@@ -91,7 +120,13 @@
       total += price * qty;
       const row = document.createElement('div');
       row.className = 'item';
-      row.innerHTML = `<div style="display:flex;align-items:center"><img src="${p?p.img:''}" alt=""><div><div style="font-weight:700">${p?p.title:id}</div><div style="color:#667085;font-size:13px">${qty} × ${new Intl.NumberFormat('en-NG').format(price)}</div></div></div><div style="font-weight:800">₦${new Intl.NumberFormat('en-NG').format(price*qty)}</div>`;
+      row.innerHTML = `<div style="display:flex;align-items:center">
+        <img src="${p?p.img:''}" alt="">
+        <div>
+          <div style="font-weight:700">${p?p.title:id}</div>
+          <div style="color:#667085;font-size:13px">${qty} × ₦${new Intl.NumberFormat('en-NG').format(price)}</div>
+        </div></div>
+        <div style="font-weight:800">₦${new Intl.NumberFormat('en-NG').format(price*qty)}</div>`;
       itemsDiv.appendChild(row);
     }
     document.getElementById('total').textContent = new Intl.NumberFormat('en-NG').format(total);
@@ -104,16 +139,20 @@
   document.getElementById('pay').addEventListener('click', ()=>{
     const name = document.getElementById('name').value.trim();
     const phone = document.getElementById('phone').value.trim();
-    if(!name || !phone){ alert('Please enter name and phone/email.'); return; }
+    if(!name || !phone){ alert('Please enter your name and phone/email.'); return; }
     const tx = prompt('Enter transaction ID (optional) after payment — or press OK to continue without it.');
-    // save order locally
     const orders = JSON.parse(localStorage.getItem('ogshop_orders_v1') || '[]');
     const order = { id: 'ORD'+Date.now(), customer:{name,phone}, items:cart, tx:tx||null, createdAt:new Date().toISOString() };
     orders.unshift(order);
     localStorage.setItem('ogshop_orders_v1', JSON.stringify(orders));
-    // clear cart
     localStorage.removeItem('ogshop_cart');
-    alert('Thank you! Your order has been saved locally. Order ID: ' + order.id + (tx?('\\nTransaction ID: '+tx):''));
+
+    // ✅ Show professional modal
+    document.getElementById('successModal').classList.add('active');
+  });
+
+  document.getElementById('okBtn').addEventListener('click', ()=>{
+    document.getElementById('successModal').classList.remove('active');
     location.href = 'index.html';
   });
 </script>
