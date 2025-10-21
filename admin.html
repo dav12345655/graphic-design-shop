@@ -1,251 +1,167 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Admin Dashboard — Online Graphic Shop</title>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel — Online Graphic Shop</title>
   <style>
-    :root {
-      --primary: #4f46e5;
-      --secondary: #9333ea;
-      --bg: #f9fafb;
-      --text-dark: #111827;
-    }
     body {
+      font-family: "Segoe UI", sans-serif;
+      background: #f7f9fc;
       margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background: var(--bg);
-      color: var(--text-dark);
-    }
-    header {
-      background: linear-gradient(90deg, var(--primary), var(--secondary));
-      color: #fff;
-      text-align: center;
-      padding: 18px;
-      font-size: 22px;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-    }
-    main {
-      max-width: 900px;
-      margin: 30px auto;
-      background: #fff;
-      border-radius: 14px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
       padding: 20px;
     }
-    h2 {
-      color: var(--primary);
-      font-weight: 700;
-      margin-top: 0;
+    h1 {
+      text-align: center;
+      color: #111;
     }
-    form {
-      display: grid;
-      gap: 12px;
+    .controls {
+      text-align: center;
+      margin-bottom: 15px;
     }
-    input, select {
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #e5e7eb;
-      font-size: 15px;
-      width: 100%;
+    input, button {
+      padding: 10px 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin: 5px;
     }
     button {
-      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      background: #111;
       color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 12px;
-      font-weight: 600;
       cursor: pointer;
       transition: 0.3s;
     }
     button:hover {
-      opacity: 0.9;
-      transform: scale(1.02);
+      background: #333;
     }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 14px;
-      margin-top: 24px;
-    }
-    .card {
+    #productList {
+      background: white;
       border-radius: 10px;
-      overflow: hidden;
-      background: #fff;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-      text-align: center;
-      transition: 0.3s;
+      padding: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-top: 20px;
     }
-    .card:hover {
-      transform: translateY(-5px);
+    .product-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
     }
-    .card img {
-      width: 100%;
-      height: 140px;
-      object-fit: cover;
+    .product-item span {
+      flex: 1;
     }
-    .card h4 {
-      margin: 8px 0 4px;
-      font-size: 16px;
-      color: var(--text-dark);
+    .product-item button {
+      background: crimson;
+      border: none;
+      color: white;
+      border-radius: 5px;
+      padding: 5px 10px;
+      cursor: pointer;
     }
-    .card p {
-      margin: 0;
-      color: #6b7280;
-      font-size: 14px;
-    }
-    .card button {
-      margin: 8px 5px;
-      padding: 8px 10px;
-      font-size: 14px;
-    }
-    @media (max-width: 600px) {
-      header { font-size: 18px; }
+    #importFile {
+      display: none;
     }
   </style>
 </head>
 <body>
+  <h1>Admin Panel</h1>
 
-<header>Admin Dashboard — Online Graphic Shop</header>
+  <div class="controls">
+    <input type="text" id="name" placeholder="Product Name">
+    <input type="number" id="price" placeholder="Price">
+    <input type="text" id="image" placeholder="Image URL">
+    <button id="addProduct">Add Product</button>
+    <button id="exportJSON">Export JSON</button>
+    <button id="importJSON">Import JSON</button>
+    <input type="file" id="importFile" accept=".json">
+  </div>
 
-<main>
-  <h2>Upload New Product</h2>
-  <form id="product-form">
-    <input type="text" id="name" placeholder="Product Name" required />
-    <input type="number" id="price" placeholder="Price (₦)" required />
-    <select id="category">
-      <option value="FLYER">FLYER</option>
-      <option value="POSTER">POSTER</option>
-      <option value="GRAPHICS">GRAPHICS</option>
-      <option value="OTHER">OTHER</option>
-    </select>
-    <input type="url" id="image" placeholder="Image URL (https://...)" required />
-    <button type="submit">Add Product</button>
-  </form>
+  <div id="productList"></div>
 
-  <h2 style="margin-top:30px;">All Products</h2>
-  <div id="product-list" class="grid"></div>
-</main>
+  <script>
+    let products = JSON.parse(localStorage.getItem("products")) || [];
 
-<script>
-  // load saved products
-  let products = JSON.parse(localStorage.getItem('ogshop_products_v1') || '[]');
+    const nameInput = document.getElementById("name");
+    const priceInput = document.getElementById("price");
+    const imageInput = document.getElementById("image");
+    const addBtn = document.getElementById("addProduct");
+    const exportBtn = document.getElementById("exportJSON");
+    const importBtn = document.getElementById("importJSON");
+    const importFile = document.getElementById("importFile");
+    const productList = document.getElementById("productList");
 
-  const listDiv = document.getElementById('product-list');
-  const form = document.getElementById('product-form');
-
-  function saveProducts() {
-    localStorage.setItem('ogshop_products_v1', JSON.stringify(products));
-  }
-
-  function renderProducts() {
-    listDiv.innerHTML = '';
-    if (products.length === 0) {
-      listDiv.innerHTML = '<p style="text-align:center;color:#888;">No products uploaded yet.</p>';
-      return;
-    }
-    products.forEach((p, i) => {
-      const div = document.createElement('div');
-      div.className = 'card';
-      div.innerHTML = `
-        <img src="${p.image}" alt="${p.name}">
-        <h4>${p.name}</h4>
-        <p>₦${p.price} — ${p.category}</p>
-        <div>
-          <button onclick="previewProduct(${i})">👁 Preview</button>
-          <button style="background:#ef4444" onclick="deleteProduct(${i})">🗑 Delete</button>
-        </div>
-      `;
-      listDiv.appendChild(div);
-    });
-  }
-
-  form.addEventListener('submit', e => {
-    e.preventDefault();
-    const name = document.getElementById('name').value.trim();
-    const price = parseFloat(document.getElementById('price').value);
-    const category = document.getElementById('category').value;
-    const image = document.getElementById('image').value.trim();
-
-    if (!name || !price || !image) {
-      Swal.fire('Missing Info', 'Please fill all fields correctly.', 'warning');
-      return;
-    }
-
-    const newProduct = { id: 'P' + Date.now(), name, price, category, image };
-    products.push(newProduct);
-    saveProducts();
-    renderProducts();
-
-    Swal.fire({
-      title: 'Product Added 🎉',
-      text: `${name} has been uploaded successfully.`,
-      icon: 'success',
-      confirmButtonColor: '#4f46e5'
-    });
-
-    form.reset();
-  });
-
-  function deleteProduct(index) {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: 'This product will be permanently deleted.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#ef4444',
-      cancelButtonColor: '#6b7280',
-      confirmButtonText: 'Yes, delete it'
-    }).then(result => {
-      if (result.isConfirmed) {
-        products.splice(index, 1);
-        saveProducts();
-        renderProducts();
-        Swal.fire('Deleted!', 'Product removed successfully.', 'success');
+    function renderProducts() {
+      productList.innerHTML = "";
+      if (products.length === 0) {
+        productList.innerHTML = "<p>No products yet.</p>";
+        return;
       }
-    });
-  }
+      products.forEach((p, i) => {
+        const div = document.createElement("div");
+        div.className = "product-item";
+        div.innerHTML = `
+          <span>${p.name} - ₦${p.price}</span>
+          <button onclick="removeProduct(${i})">Delete</button>
+        `;
+        productList.appendChild(div);
+      });
+    }
 
-  function previewProduct(index) {
-    const p = products[index];
-    Swal.fire({
-      title: p.name,
-      html: `
-        <img src="${p.image}" style="width:100%;border-radius:10px;margin-bottom:10px;">
-        <p><strong>Price:</strong> ₦${p.price}</p>
-        <p><strong>Category:</strong> ${p.category}</p>
-      `,
-      confirmButtonText: 'Close',
-      confirmButtonColor: '#4f46e5'
-    });
-  }
+    addBtn.onclick = () => {
+      if (!nameInput.value || !priceInput.value || !imageInput.value) {
+        alert("Please fill all fields");
+        return;
+      }
+      products.push({
+        name: nameInput.value,
+        price: parseFloat(priceInput.value),
+        image: imageInput.value
+      });
+      localStorage.setItem("products", JSON.stringify(products));
+      renderProducts();
+      nameInput.value = priceInput.value = imageInput.value = "";
+    };
 
-  renderProducts();
-</script>
+    window.removeProduct = (index) => {
+      products.splice(index, 1);
+      localStorage.setItem("products", JSON.stringify(products));
+      renderProducts();
+    };
 
-<!-- ✅ Floating WhatsApp Button -->
-<a href="https://wa.me/2349121383292" target="_blank" 
-   style="
-     position: fixed;
-     bottom: 20px;
-     right: 20px;
-     background-color: #25D366;
-     color: white;
-     border-radius: 50%;
-     width: 60px;
-     height: 60px;
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-     font-size: 28px;
-     text-decoration: none;
-     z-index: 1000;">
-   💬
-</a>
+    exportBtn.onclick = () => {
+      const blob = new Blob([JSON.stringify(products, null, 2)], {type: "application/json"});
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "products.json";
+      link.click();
+    };
 
+    importBtn.onclick = () => importFile.click();
+
+    importFile.onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const imported = JSON.parse(event.target.result);
+          if (Array.isArray(imported)) {
+            products = imported;
+            localStorage.setItem("products", JSON.stringify(products));
+            renderProducts();
+            alert("Products imported successfully!");
+          } else {
+            alert("Invalid JSON format!");
+          }
+        } catch (err) {
+          alert("Error reading file!");
+        }
+      };
+      reader.readAsText(file);
+    };
+
+    renderProducts();
+  </script>
 </body>
 </html>
