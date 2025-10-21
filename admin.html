@@ -1,402 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Online Graphic Shop</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin - Online Graphic Shop</title>
   <style>
-    body {
-      font-family: "Segoe UI", sans-serif;
-      background-color: #f4f4f4;
-      margin: 0;
-      padding: 0;
-    }
-
-    header {
-      background: #111;
-      color: white;
-      padding: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    header h1 {
-      font-size: 22px;
-      margin: 0;
-    }
-
-    .cart-btn {
-      background: #ff9800;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      font-weight: bold;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .container {
-      width: 90%;
-      max-width: 1100px;
-      margin: 20px auto;
-    }
-
-    #search-input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-      gap: 15px;
-    }
-
-    .product {
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-      transition: transform 0.2s;
-    }
-
-    .product:hover {
-      transform: scale(1.03);
-    }
-
-    .product img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-    }
-
-    .info {
-      padding: 10px;
-    }
-
-    .info h3 {
-      margin: 5px 0;
-      font-size: 16px;
-      color: #333;
-    }
-
-    .info p {
-      color: #777;
-      font-size: 14px;
-      margin: 5px 0;
-    }
-
-    .info button {
-      width: 48%;
-      background: #28a745;
-      color: white;
-      border: none;
-      padding: 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-      margin-right: 2%;
-    }
-
-    .preview-btn {
-      background: #007bff !important;
-    }
-
-    footer {
-      text-align: center;
-      padding: 15px;
-      background: #111;
-      color: #ccc;
-      margin-top: 40px;
-    }
-
-    /* Cart Modal */
-    .cart-modal {
-      display: none;
-      position: fixed;
-      z-index: 9999;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-    }
-
-    .cart-content {
-      background: white;
-      margin: 80px auto;
-      padding: 20px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 400px;
-    }
-
-    .close-cart {
-      float: right;
-      font-size: 25px;
-      cursor: pointer;
-    }
-
-    .cart-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #f8f8f8;
-      padding: 8px;
-      border-radius: 6px;
-      margin-bottom: 8px;
-    }
-
-    .cart-item button {
-      background: red;
-      color: white;
-      border: none;
-      padding: 5px 8px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 13px;
-    }
-
-    .checkout-btn {
-      display: block;
-      background: #007bff;
-      color: #fff;
-      padding: 10px;
-      text-align: center;
-      border-radius: 5px;
-      margin-top: 15px;
-      text-decoration: none;
-    }
-
-    /* Preview Modal */
-    .preview-modal {
-      display: none;
-      position: fixed;
-      z-index: 10000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.7);
-    }
-
-    .preview-content {
-      background: #fff;
-      width: 90%;
-      max-width: 500px;
-      margin: 80px auto;
-      padding: 20px;
-      border-radius: 10px;
-      text-align: center;
-      position: relative;
-    }
-
-    .preview-content img {
-      width: 100%;
-      border-radius: 8px;
-      margin-bottom: 10px;
-    }
-
-    .close-preview {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      font-size: 22px;
-      cursor: pointer;
-    }
-
-    .buy-now-btn {
-      background: #28a745;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-      margin-top: 10px;
-    }
+    body{font-family:Segoe UI,Arial,sans-serif;background:#f7f7f7;padding:18px}
+    h1{text-align:center}
+    .controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:14px}
+    input[type=text],input[type=number]{padding:8px;border-radius:6px;border:1px solid #ccc}
+    button{padding:8px 10px;border-radius:6px;border:none;cursor:pointer}
+    #productList{max-width:900px;margin:12px auto;background:#fff;padding:12px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+    .product-item{display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #eee;align-items:center}
+    .product-item img{height:48px;border-radius:6px;object-fit:cover;margin-right:12px}
+    .actions button{background:red;color:#fff;border:none;padding:6px 8px;border-radius:6px;cursor:pointer}
   </style>
 </head>
 <body>
-  <header>
-    <h1>Online Graphic Shop</h1>
-    <button id="cart-btn" class="cart-btn">🛒 Cart</button>
-  </header>
+  <h1>Admin Panel — Online Graphic Shop</h1>
 
-  <div class="container">
-    <input type="text" id="search-input" placeholder="Search for designs..." />
-    <div id="products-grid" class="grid"></div>
+  <div class="controls">
+    <input id="name" type="text" placeholder="Product name (e.g. Flyer A)" />
+    <input id="price" type="number" placeholder="Price (₦)" />
+    <input id="image" type="text" placeholder="Image URL (https://...)" />
+    <button id="addProduct">Add Product</button>
+    <button id="exportJSON">Export products.json</button>
+    <input id="importFile" type="file" accept=".json" style="display:none" />
+    <button id="importBtn">Import JSON</button>
   </div>
 
-  <!-- Cart Modal -->
-  <div id="cart-modal" class="cart-modal">
-    <div class="cart-content">
-      <span id="close-cart" class="close-cart">&times;</span>
-      <h2>Your Cart</h2>
-      <div id="cart-items"></div>
-      <p><strong>Total:</strong> ₦<span id="total-amount">0</span></p>
-      <a href="checkout.html" class="checkout-btn">Proceed to Checkout</a>
-    </div>
-  </div>
-
-  <!-- Preview Modal -->
-  <div id="preview-modal" class="preview-modal">
-    <div class="preview-content">
-      <span id="close-preview" class="close-preview">&times;</span>
-      <img id="preview-img" src="" alt="Preview Image" />
-      <h3 id="preview-name"></h3>
-      <p><strong>₦<span id="preview-price"></span></strong></p>
-      <button id="buy-now-btn" class="buy-now-btn">Buy Now</button>
-    </div>
-  </div>
-
-  <footer>
-    <p>Designed by <strong>ABblack</strong> © <span id="year"></span></p>
-    <p>📞 <a href="tel:+2347026865570" style="color: #00bcd4;">07026865570</a></p>
-    <a href="https://wa.me/2349121383292" target="_blank" style="color: #25D366;">💬 Chat on WhatsApp</a>
-  </footer>
+  <div id="productList"></div>
 
   <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
+    // admin local product editor
+    let products = JSON.parse(localStorage.getItem('products')) || [];
 
-    document.addEventListener("DOMContentLoaded", () => {
-      const grid = document.getElementById("products-grid");
-      const cartBtn = document.getElementById("cart-btn");
-      const cartModal = document.getElementById("cart-modal");
-      const closeCart = document.getElementById("close-cart");
-      const cartContainer = document.getElementById("cart-items");
-      const totalAmount = document.getElementById("total-amount");
-      const searchInput = document.getElementById("search-input");
-      const previewModal = document.getElementById("preview-modal");
-      const closePreview = document.getElementById("close-preview");
-      const previewImg = document.getElementById("preview-img");
-      const previewName = document.getElementById("preview-name");
-      const previewPrice = document.getElementById("preview-price");
-      const buyNowBtn = document.getElementById("buy-now-btn");
+    const nameInput = document.getElementById('name');
+    const priceInput = document.getElementById('price');
+    const imageInput = document.getElementById('image');
+    const addBtn = document.getElementById('addProduct');
+    const exportBtn = document.getElementById('exportJSON');
+    const productList = document.getElementById('productList');
+    const importFile = document.getElementById('importFile');
+    const importBtn = document.getElementById('importBtn');
 
-      let products = [];
-      let cart = JSON.parse(localStorage.getItem("cart")) || [];
-      let currentPreview = null;
-
-      // Fetch products
-      fetch("products.json")
-        .then(res => res.json())
-        .then(data => {
-          products = data;
-          renderProducts(products);
-        })
-        .catch(err => console.error("Error loading products:", err));
-
-      function renderProducts(list) {
-        grid.innerHTML = "";
-        if (list.length === 0) {
-          grid.innerHTML = "<p>No products found.</p>";
-          return;
-        }
-        list.forEach((p, i) => {
-          const div = document.createElement("div");
-          div.className = "product";
-          div.innerHTML = `
-            <img src="${p.image}" alt="${p.name}">
-            <div class="info">
-              <h3>${p.name}</h3>
-              <p>₦${p.price}</p>
-              <button data-id="${i}" class="add-btn">Add to Cart</button>
-              <button data-id="${i}" class="preview-btn">Preview</button>
-            </div>`;
-          grid.appendChild(div);
-        });
-      }
-
-      function renderCart() {
-        cartContainer.innerHTML = "";
-        let total = 0;
-        if (cart.length === 0) {
-          cartContainer.innerHTML = "<p>Your cart is empty.</p>";
-        } else {
-          cart.forEach((item, index) => {
-            const div = document.createElement("div");
-            div.className = "cart-item";
-            div.innerHTML = `
-              <span>${item.name} - ₦${item.price}</span>
-              <button data-index="${index}">🗑️</button>`;
-            cartContainer.appendChild(div);
-            total += parseFloat(item.price);
-          });
-        }
-        totalAmount.textContent = total.toLocaleString();
-        localStorage.setItem("cart", JSON.stringify(cart));
-      }
-
-      grid.addEventListener("click", (e) => {
-        if (e.target.classList.contains("add-btn")) {
-          const id = e.target.dataset.id;
-          const product = products[id];
-          cart.push(product);
-          renderCart();
-          alert(`${product.name} added to cart!`);
-        }
-
-        if (e.target.classList.contains("preview-btn")) {
-          const id = e.target.dataset.id;
-          const p = products[id];
-          currentPreview = p;
-          previewImg.src = p.image;
-          previewName.textContent = p.name;
-          previewPrice.textContent = p.price;
-          previewModal.style.display = "block";
-        }
+    function render() {
+      productList.innerHTML = '';
+      if (!products.length) productList.innerHTML = '<p>No products yet.</p>';
+      products.forEach((p,i)=>{
+        const row = document.createElement('div');
+        row.className = 'product-item';
+        row.innerHTML = `
+          <div style="display:flex;align-items:center">
+            <img src="${p.image||''}" alt="">
+            <div>
+              <div style="font-weight:700">${escapeHtml(p.name)}</div>
+              <div>₦${Number(p.price||0).toLocaleString()}</div>
+            </div>
+          </div>
+          <div class="actions">
+            <button onclick="removeProduct(${i})">Delete</button>
+          </div>
+        `;
+        productList.appendChild(row);
       });
+      localStorage.setItem('products', JSON.stringify(products));
+    }
 
-      // Delete item from cart
-      cartContainer.addEventListener("click", (e) => {
-        if (e.target.tagName === "BUTTON") {
-          const index = e.target.dataset.index;
-          cart.splice(index, 1);
-          renderCart();
-        }
-      });
+    function escapeHtml(s){ return String(s).replace(/[&<>"']/g,(m)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
-      // Buy Now button from preview
-      buyNowBtn.addEventListener("click", () => {
-        if (currentPreview) {
-          cart.push(currentPreview);
-          renderCart();
-          previewModal.style.display = "none";
-          alert(`${currentPreview.name} added to cart!`);
-        }
-      });
-
-      closePreview.addEventListener("click", () => previewModal.style.display = "none");
-      window.addEventListener("click", (e) => {
-        if (e.target === previewModal) previewModal.style.display = "none";
-      });
-
-      cartBtn.addEventListener("click", () => {
-        renderCart();
-        cartModal.style.display = "block";
-      });
-
-      closeCart.addEventListener("click", () => {
-        cartModal.style.display = "none";
-      });
-
-      window.addEventListener("click", (e) => {
-        if (e.target === cartModal) cartModal.style.display = "none";
-      });
-
-      searchInput.addEventListener("input", () => {
-        const keyword = searchInput.value.toLowerCase();
-        const filtered = products.filter((p) =>
-          p.name.toLowerCase().includes(keyword)
-        );
-        renderProducts(filtered);
-      });
+    addBtn.addEventListener('click', ()=>{
+      const name = nameInput.value.trim();
+      const price = Number(priceInput.value) || 0;
+      const image = imageInput.value.trim();
+      if(!name||!image||!price) return alert('Please fill name, price, image');
+      products.push({ name, price, image });
+      nameInput.value = priceInput.value = imageInput.value = '';
+      render();
+      alert('Product added locally. Click Export to download products.json and upload to GitHub.');
     });
+
+    window.removeProduct = (index)=>{ products.splice(index,1); render(); }
+
+    exportBtn.addEventListener('click', ()=>{
+      const blob = new Blob([JSON.stringify(products,null,2)],{type:'application/json'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'products.json';
+      a.click();
+    });
+
+    importBtn.addEventListener('click', ()=> importFile.click());
+    importFile.addEventListener('change', (e)=>{
+      const f = e.target.files[0];
+      if(!f) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const arr = JSON.parse(reader.result);
+          if (!Array.isArray(arr)) throw new Error('Invalid JSON');
+          products = arr;
+          render();
+          alert('Imported products. Don\'t forget to Export and upload products.json to GitHub.');
+        } catch (err) {
+          alert('Invalid JSON file.');
+        }
+      };
+      reader.readAsText(f);
+    });
+
+    render();
   </script>
 </body>
 </html>
