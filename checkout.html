@@ -1,203 +1,359 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Checkout — Online Graphic Shop</title>
+
+<!-- SweetAlert2 (for modern alerts/modals) -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <style>
-  body{font-family:Inter,system-ui,Arial;background:#f4f6fb;color:#0f172a;margin:0}
-  header{background:#111;color:#fff;padding:14px 18px;text-align:center}
-  main{max-width:900px;margin:24px auto;padding:18px}
-  .card{background:#fff;border-radius:12px;padding:14px;box-shadow:0 8px 24px rgba(16,24,40,0.06)}
-  .item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px dashed #eee}
-  .item img{width:80px;height:60px;object-fit:cover;border-radius:6px;margin-right:10px}
-  .total{font-weight:900;font-size:20px;margin-top:12px}
-  .form{margin-top:12px;display:grid;gap:8px}
-  input,textarea{padding:10px;border-radius:8px;border:1px solid #e6e9ef}
-  .btn{padding:10px;border-radius:8px;border:0;background:#111;color:#fff;cursor:pointer;font-weight:700}
-  .note{background:#fff8f6;border:1px solid #ffdede;padding:10px;border-radius:8px;margin-top:12px}
-  /* Modals (reuse similar style) */
-  .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;z-index:10000}
-  .modal-box{background:#fff;border-radius:12px;padding:20px;max-width:420px;width:92%;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,0.18)}
-  .spinner{border:4px solid #f3f3f3;border-top:4px solid #111;border-radius:50%;width:45px;height:45px;animation:spin 1s linear infinite;margin:0 auto 12px}
-  @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
-  .success h2{color:#16a34a}.error h2{color:#e11d48}
-  .whatsapp-float{position:fixed;bottom:20px;right:20px;background:#25d366;color:white;border-radius:50%;width:60px;height:60px;display:flex;align-items:center;justify-content:center;font-size:28px;z-index:1000;text-decoration:none}
+  :root{
+    --bg1:#4f46e5; /* indigo-600 */
+    --bg2:#7c3aed; /* violet-600 */
+    --card:#ffffffcc;
+    --muted:#6b7280;
+    --accent:#06b6d4;
+    --success:#16a34a;
+    --danger:#ef4444;
+  }
+
+  html,body{height:100%;margin:0}
+  body{
+    font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;
+    background: linear-gradient(135deg,var(--bg1),var(--bg2));
+    color:#0f172a;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:28px 12px;
+    box-sizing:border-box;
+    min-height:100vh;
+  }
+
+  .container{
+    width:100%;
+    max-width:980px;
+    margin:18px auto;
+  }
+
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin-bottom:18px;
+    color:#fff;
+  }
+
+  header h1{margin:0;font-size:20px;letter-spacing:0.2px}
+  header p{margin:0;opacity:0.9;font-size:13px}
+
+  .card{
+    background:var(--card);
+    border-radius:14px;
+    padding:18px;
+    box-shadow:0 10px 30px rgba(2,6,23,0.25);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:1fr 360px;
+    gap:18px;
+  }
+
+  @media(max-width:880px){
+    .grid{grid-template-columns:1fr; padding-bottom:18px}
+  }
+
+  .left{padding:8px}
+  .right{padding:8px}
+
+  .items-list{background:#fff;border-radius:10px;padding:12px;max-height:420px;overflow:auto}
+  .item{
+    display:flex;
+    gap:12px;
+    align-items:center;
+    padding:10px 6px;
+    border-bottom:1px solid #f1f5f9;
+  }
+  .item img{width:78px;height:56px;object-fit:cover;border-radius:8px}
+  .item .meta{flex:1}
+  .item .meta b{display:block}
+  .item .meta small{color:var(--muted);display:block;margin-top:6px;font-size:13px}
+  .item .price{font-weight:800}
+
+  .total-row{display:flex;justify-content:space-between;align-items:center;padding:14px 6px;font-weight:800;font-size:18px}
+
+  .form{margin-top:12px;display:grid;gap:10px}
+  .form input,.form textarea{
+    width:100%;padding:10px;border-radius:10px;border:1px solid #e6edf4;font-size:15px;
+    box-sizing:border-box;
+  }
+  .btn{
+    display:inline-block;padding:12px 14px;border-radius:10px;border:0;color:white;font-weight:800;cursor:pointer;
+    background:linear-gradient(90deg,#06b6d4,#06b6d4);
+  }
+  .btn-primary{background:linear-gradient(90deg,#0ea5e9,#7c3aed)}
+  .btn-ghost{background:transparent;border:1px solid rgba(15,23,42,0.06);color:#0f172a}
+
+  .note{
+    margin-top:12px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.8);font-size:14px;color:#334155;
+  }
+
+  footer{margin-top:16px;color:#fff;text-align:center;font-size:13px}
+
+  /* floating WhatsApp */
+  .whatsapp{
+    position:fixed;right:18px;bottom:18px;width:64px;height:64px;border-radius:50%;
+    background:#25D366;color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;
+    z-index:9999;box-shadow:0 10px 30px rgba(2,6,23,0.25);text-decoration:none;
+  }
 </style>
 </head>
-
-<!-- Floating WhatsApp -->
-<a class="whatsapp-float" href="https://wa.me/2349121383292" target="_blank">💬</a>
-
 <body>
-<header><h1>Checkout — Online Graphic Shop</h1></header>
-<main>
-  <div class="card">
-    <h3>Order Summary</h3>
-    <div id="items"></div>
-    <div class="total">Total: ₦<span id="total">0</span></div>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Checkout — Online Graphic Shop</h1>
+        <p>Confirm payment & delivery details to complete your order</p>
+      </div>
+      <div style="text-align:right">
+        <small style="color:#fff;opacity:0.9">Payment beneficiary</small>
+        <div style="margin-top:6px;font-weight:700;color:#fff">Joy Gift • Opay</div>
+        <div style="color:#fff;opacity:0.9">Acct: 9121383292</div>
+      </div>
+    </header>
 
-    <h4 style="margin-top:16px">Delivery / Contact</h4>
-    <div class="form">
-      <input id="name" placeholder="Full name" />
-      <input id="phone" placeholder="Phone or Email" />
-      <textarea id="address" rows="3" placeholder="Address (optional)"></textarea>
+    <div class="card">
+      <div class="grid">
+        <!-- LEFT: items + contact form -->
+        <div class="left">
+          <div class="items-list card-inner" id="items-list">
+            <!-- rendered items -->
+          </div>
+
+          <div class="total-row" style="background:transparent">
+            <div>Total</div>
+            <div>₦<span id="total-amount">0</span></div>
+          </div>
+
+          <div class="form">
+            <input id="cust-name" placeholder="Full name" />
+            <input id="cust-phone" placeholder="Phone or email" />
+            <textarea id="cust-address" rows="3" placeholder="Delivery address (optional)"></textarea>
+          </div>
+
+          <div class="note">
+            <strong>Important:</strong> After you pay to the account shown above, click <em>I have paid</em> and enter your **Transaction ID** (required). The system validates the format and simulates verification. For real verification you would integrate a server-side API.
+          </div>
+
+        </div>
+
+        <!-- RIGHT: payment actions -->
+        <div class="right">
+          <div style="background:linear-gradient(180deg,#ffffffcc,#ffffffbb);padding:14px;border-radius:10px">
+            <h3 style="margin:0 0 8px">Payment</h3>
+            <p style="color:var(--muted);margin:0 0 12px">Account name: <strong>Joy Gift</strong><br>Bank: <strong>Opay</strong><br>Account: <strong>9121383292</strong></p>
+
+            <label style="display:block;margin-bottom:8px"><strong>Transaction ID (required)</strong></label>
+            <input id="txid" placeholder="e.g. TRX12345678AB" />
+
+            <div style="display:flex;gap:8px;margin-top:14px">
+              <button id="pay-btn" class="btn btn-primary" style="flex:1">I have paid</button>
+              <button id="back-shop" class="btn btn-ghost" style="flex:1">Back to shop</button>
+            </div>
+
+            <div style="margin-top:12px;text-align:center">
+              <small style="color:var(--muted)">Need help? Chat with us on WhatsApp.</small>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;background:rgba(255,255,255,0.85);padding:12px;border-radius:10px;text-align:center">
+            <strong style="font-size:14px">Order Summary</strong>
+            <div style="margin-top:8px;color:var(--muted);font-size:14px" id="summary-count">0 items</div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="note">
-      <strong>Payment details</strong><br>
-      Name: <strong>Joy Gift</strong><br>
-      Account: <strong>9121383292</strong><br>
-      Bank: <strong>Opay</strong><br>
-      After payment, click "I have paid" and enter your transaction ID (required).
-    </div>
-
-    <div style="display:flex;gap:10px;margin-top:12px">
-      <button id="pay" class="btn" style="flex:1">I have paid</button>
-      <button id="back" class="btn" style="background:#e6e6e6;color:#111">Back to shop</button>
-    </div>
+    <footer>
+      Designed by <strong>ABblack</strong> • 📞 <a href="tel:+2347026865570" style="color:#c7f9ff;text-decoration:none">07026865570</a>
+    </footer>
   </div>
-</main>
 
-<!-- Success Modal -->
-<div id="successModal" class="modal-overlay">
-  <div class="modal-box success">
-    <h2>✅ Payment Verified</h2>
-    <p>Your payment was verified and your order was saved. We'll contact you shortly.</p>
-    <button id="okBtn">Back to Home</button>
-  </div>
-</div>
-
-<!-- Error Modal -->
-<div id="errorModal" class="modal-overlay">
-  <div class="modal-box error">
-    <h2>⚠️ Error</h2>
-    <p id="errorText">Something went wrong.</p>
-    <button id="closeError">OK</button>
-  </div>
-</div>
-
-<!-- Verifying Modal -->
-<div id="verifyModal" class="modal-overlay">
-  <div class="modal-box">
-    <div class="spinner"></div>
-    <div style="font-weight:700;margin-bottom:8px">Verifying transaction...</div>
-    <div style="color:#666">We are checking the provided transaction ID.</div>
-  </div>
-</div>
+  <!-- Floating WhatsApp -->
+  <a class="whatsapp" href="https://wa.me/2349121383292" target="_blank" aria-label="Chat on WhatsApp">💬</a>
 
 <script>
 /*
-  Checkout behavior:
-  - Uses 'cart' key in localStorage (array of product objects).
-  - Transaction ID is required and validated locally (alphanumeric, min 8, must contain letters+digits).
-  - NOTE: Real verification against Opay/bank requires a server-side API. Here we validate format and simulate verification.
+  Checkout workflow:
+  - Reads cart from localStorage key 'cart' (expects array of { name, price, image }).
+  - Transaction ID required; validated format: alphanumeric, min 8 chars, must include at least one letter & one digit.
+  - Uses SweetAlert2 for all alerts & verification UI.
+  - After "verification" passes, saves order to localStorage 'orders' and clears 'cart'.
 */
 
-function showModal(id){ document.getElementById(id).style.display = 'flex'; }
-function hideModal(id){ document.getElementById(id).style.display = 'none'; }
+(function(){
+  const itemsList = document.getElementById('items-list');
+  const totalAmountEl = document.getElementById('total-amount');
+  const summaryCount = document.getElementById('summary-count');
+  const payBtn = document.getElementById('pay-btn');
+  const backShop = document.getElementById('back-shop');
 
-function showError(text){
-  document.getElementById('errorText').textContent = text;
-  showModal('errorModal');
-}
-document.getElementById('closeError').addEventListener('click', ()=> hideModal('errorModal'));
+  const nameInput = document.getElementById('cust-name');
+  const phoneInput = document.getElementById('cust-phone');
+  const addressInput = document.getElementById('cust-address');
+  const txInput = document.getElementById('txid');
 
-document.getElementById('back').addEventListener('click', ()=> location.href='index.html');
+  // read cart
+  let cart = [];
+  try { cart = JSON.parse(localStorage.getItem('cart') || '[]') || []; } catch(e){ cart = []; }
 
-let cart = JSON.parse(localStorage.getItem('cart') || '[]') || [];
-function buildItems(){
-  const itemsDiv = document.getElementById('items');
-  itemsDiv.innerHTML = '';
-  let total = 0;
-  if(!cart.length){
-    itemsDiv.innerHTML = '<p>Your cart is empty. <a href="index.html">Continue shopping</a></p>';
-    document.getElementById('total').textContent = '0';
-    return;
-  }
-  cart.forEach(p=>{
-    total += Number(p.price || 0);
-    const row = document.createElement('div');
-    row.className = 'item';
-    row.innerHTML = `<div style="display:flex;align-items:center">
-      <img src="${p.image||''}" alt="">
-      <div>
-        <div style="font-weight:700">${p.name||'Product'}</div>
-        <div style="color:#667085;font-size:13px">₦${new Intl.NumberFormat('en-NG').format(p.price||0)}</div>
-      </div>
-    </div>
-    <div style="font-weight:800">₦${new Intl.NumberFormat('en-NG').format((p.price||0))}</div>`;
-    itemsDiv.appendChild(row);
-  });
-  document.getElementById('total').textContent = new Intl.NumberFormat('en-NG').format(total);
-}
-buildItems();
-
-// Validation & verification
-function txIsValidFormat(tx){
-  if(!tx) return false;
-  if(!/^[A-Za-z0-9]{8,}$/.test(tx)) return false; // at least 8 alnum
-  // must contain at least one letter and one digit
-  if(!/[A-Za-z]/.test(tx) || !/[0-9]/.test(tx)) return false;
-  return true;
-}
-
-document.getElementById('pay').addEventListener('click', ()=>{
-  const name = document.getElementById('name').value.trim();
-  const phone = document.getElementById('phone').value.trim();
-  if(!name || !phone){
-    showError('Please enter your full name and phone/email.');
-    return;
+  function renderCart(){
+    itemsList.innerHTML = '';
+    if(!cart.length){
+      itemsList.innerHTML = '<p style="color:#475569">Your cart is empty. <a href="index.html">Go back to shop</a></p>';
+      totalAmountEl.textContent = '0';
+      summaryCount.textContent = '0 items';
+      return;
+    }
+    let total = 0;
+    cart.forEach((p, i)=>{
+      total += Number(p.price || 0);
+      const row = document.createElement('div');
+      row.className = 'item';
+      row.innerHTML = `
+        <img src="${escape(p.image||'')}" alt="${escape(p.name||'Product')}">
+        <div class="meta">
+          <b>${escape(p.name||'Product')}</b>
+          <small>${escape(p.description||'')}</small>
+        </div>
+        <div class="price">₦${Number(p.price||0).toLocaleString()}</div>
+      `;
+      itemsList.appendChild(row);
+    });
+    totalAmountEl.textContent = Number(total).toLocaleString();
+    summaryCount.textContent = `${cart.length} item${cart.length>1?'s':''}`;
   }
 
-  // ask for transaction id (required)
-  const tx = prompt('Enter your transaction ID (required) to confirm payment:');
-  if(!tx){ showError('Transaction ID is required. Please enter it to confirm payment.'); return; }
-  if(!txIsValidFormat(tx)){
-    showError('Invalid transaction ID. It must be at least 8 characters, alphanumeric, and include both letters and numbers.');
-    return;
+  function escape(s){ return String(s||'').replace(/[&<>"']/g,(m)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+  // Transaction ID format validator
+  function txValid(tx){
+    if(!tx) return false;
+    if(!/^[A-Za-z0-9]{8,}$/.test(tx)) return false; // min 8 alnum
+    if(!/[A-Za-z]/.test(tx)) return false;
+    if(!/[0-9]/.test(tx)) return false;
+    return true;
   }
 
-  // show verifying spinner
-  showModal('verifyModal');
+  // show SweetAlert2 for validation & verification
+  function showError(msg){
+    Swal.fire({ icon:'error', title:'Error', text: msg, confirmButtonColor:'#ef4444' });
+  }
+  function showInfo(msg){
+    Swal.fire({ icon:'info', title:'Info', text: msg, confirmButtonColor:'#0ea5e9' });
+  }
 
-  // simulate remote verification (2s) - replace with real server check when available
-  setTimeout(()=>{
-    hideModal('verifyModal');
+  payBtn.addEventListener('click', async ()=>{
+    const name = nameInput.value.trim();
+    const phone = phoneInput.value.trim();
+    const tx = txInput.value.trim();
 
-    // simulated verification logic:
-    // here we accept tx that pass txIsValidFormat — you can replace this by server API call
-    const verified = true; // simulation: format-validated tx considered verified
-    if(!verified){
-      showError('Transaction not found or not verified. Please contact support.');
+    if(!cart.length){
+      showError('Your cart is empty. Add items before checking out.');
+      return;
+    }
+    if(!name || !phone){
+      showError('Please enter your full name and phone/email.');
+      return;
+    }
+    if(!tx){
+      showError('Transaction ID is required. Please enter the ID you received after payment.');
+      return;
+    }
+    if(!txValid(tx)){
+      showError('Invalid transaction ID. It must be at least 8 characters, alphanumeric, and contain both letters and numbers.');
       return;
     }
 
-    // Save order locally (orders array)
+    // Show verifying spinner (SweetAlert2)
+    Swal.fire({
+      title: 'Verifying transaction...',
+      html: 'Checking transaction ID — please wait.',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+      showConfirmButton: false,
+    });
+
+    // Simulate verification delay (replace with server call to payment provider for real verification)
+    await new Promise(r => setTimeout(r, 2000));
+
+    // Simulated verification: format-validated tx considered "verified"
+    // If you have a server API to verify tx, replace this block with an AJAX call and set verified accordingly.
+    const verified = true;
+
+    Swal.close();
+
+    if(!verified){
+      showError('Transaction ID could not be verified. Please confirm the payment and try again or contact support.');
+      return;
+    }
+
+    // Save order locally (orders array), clear cart
     const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+    const orderId = 'ORD' + Date.now();
     const order = {
-      id: 'ORD' + Date.now(),
-      customer: { name, phone },
+      id: orderId,
+      customer: { name, phone, address: addressInput.value.trim() },
       items: cart,
+      total: cart.reduce((s,i)=>s + Number(i.price||0), 0),
       tx,
       createdAt: new Date().toISOString()
     };
     orders.unshift(order);
     localStorage.setItem('orders', JSON.stringify(orders));
 
-    // Clear cart immediately and update UI
+    // clear cart
     localStorage.removeItem('cart');
     cart = [];
-    buildItems();
+    renderCart();
 
-    // show success modal
-    showModal('successModal');
-  }, 2000);
-});
+    // Show success modal with order summary
+    const itemsHtml = order.items.slice(0,6).map(it=>`<div style="display:flex;justify-content:space-between;margin:6px 0"><div>${escape(it.name)}</div><div>₦${Number(it.price||0).toLocaleString()}</div></div>`).join('');
+    const more = order.items.length > 6 ? `<div style="color:var(--muted);margin-top:6px">+ ${order.items.length-6} more items</div>` : '';
 
-document.getElementById('okBtn').addEventListener('click', ()=> {
-  hideModal('successModal');
-  location.href = 'index.html';
-});
+    await Swal.fire({
+      title: '✅ Payment Verified',
+      html: `<div style="text-align:left">
+               <div style="font-weight:700;margin-bottom:8px">Order ID: ${orderId}</div>
+               ${itemsHtml}
+               ${more}
+               <div style="margin-top:10px;font-weight:800;">Total: ₦${Number(order.total).toLocaleString()}</div>
+             </div>`,
+      icon: 'success',
+      confirmButtonText: 'Back to Home',
+      confirmButtonColor: '#16a34a'
+    });
+
+    // redirect home (user pressed OK)
+    window.location.href = 'index.html';
+  });
+
+  backShop.addEventListener('click', ()=> window.location.href = 'index.html');
+
+  // initial render
+  renderCart();
+
+})();
 </script>
 </body>
 </html>
