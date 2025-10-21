@@ -1,203 +1,181 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Online Graphic Shop</title>
-
-<!-- SweetAlert2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <style>
-  :root{
-    --bg1:#4f46e5;
-    --bg2:#7c3aed;
-    --card:#ffffffcc;
-    --muted:#6b7280;
-    --accent:#06b6d4;
-    --success:#16a34a;
-    --danger:#ef4444;
+  body {
+    font-family: "Segoe UI", sans-serif;
+    margin: 0; padding: 0;
+    background: #f0f4f8; color: #333;
   }
-  html,body{
-    height:100%;margin:0;
-    font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;
-    background:linear-gradient(135deg,var(--bg1),var(--bg2));
-    color:#0f172a;
+  header {
+    background: linear-gradient(90deg,#111,#333);
+    color: white; padding: 15px;
+    display: flex; justify-content: space-between; align-items: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   }
-  header{
-    background:rgba(255,255,255,0.15);
-    color:#fff;
-    padding:18px;
-    text-align:center;
-    backdrop-filter:blur(8px);
+  header h1 { font-size: 22px; margin: 0; }
+  .wallet-btn, .cart-btn {
+    background: #ff9800;
+    color: white; border: none; padding: 10px 15px;
+    border-radius: 6px; font-weight: bold; cursor: pointer; margin-left: 10px;
+    transition: 0.2s;
   }
-  header h1{margin:0;font-size:22px;letter-spacing:0.3px;}
-  header p{margin:6px 0 0;opacity:0.9;font-size:14px}
-  .container{
-    max-width:1100px;
-    margin:20px auto;
-    padding:12px;
-  }
-  .product-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-    gap:18px;
-  }
-  .product{
-    background:var(--card);
-    border-radius:12px;
-    overflow:hidden;
-    box-shadow:0 8px 24px rgba(16,24,40,0.15);
-    display:flex;
-    flex-direction:column;
-    transition:transform 0.2s ease,box-shadow 0.2s ease;
-  }
-  .product:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(16,24,40,0.2);}
-  .product img{width:100%;height:180px;object-fit:cover;}
-  .info{padding:10px 12px;flex:1;display:flex;flex-direction:column;justify-content:space-between}
-  .info h3{margin:0;font-size:16px;font-weight:700}
-  .info p{margin:4px 0 0;color:var(--muted);font-size:14px}
-  .price{font-weight:800;font-size:15px;margin-top:8px}
-  .btn{
-    background:linear-gradient(90deg,#0ea5e9,#7c3aed);
-    color:#fff;border:0;border-radius:8px;
-    padding:10px;font-weight:700;cursor:pointer;
-    transition:opacity 0.2s ease;
-  }
-  .btn:hover{opacity:0.9;}
-  footer{text-align:center;color:#fff;padding:20px;font-size:13px;margin-top:30px;}
+  .wallet-btn:hover, .cart-btn:hover { background: #e68900; }
+  .container { width: 90%; max-width: 1100px; margin: 20px auto; }
+  #search-input { width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border:1px solid #ccc;}
+  .grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(230px,1fr)); gap:15px;}
+  .product { background:white; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.1); overflow:hidden; transition:0.2s;}
+  .product:hover { transform: scale(1.03);}
+  .product img { width:100%; height:180px; object-fit:cover;}
+  .info { padding:10px; text-align:center;}
+  .info h3 { margin:5px 0; font-size:16px; color:#333; }
+  .info button { padding:10px 15px; border:none; border-radius:6px; cursor:pointer; font-weight:bold; transition:0.2s;}
+  .preview-btn { background:#007bff; color:white; width:100%; }
+  .preview-btn:hover { background:#0061cc; }
 
-  /* floating cart */
-  .cart-btn{
-    position:fixed;top:20px;right:20px;
-    background:#fff;color:#111;
-    border-radius:30px;padding:10px 16px;
-    display:flex;align-items:center;gap:6px;
-    box-shadow:0 8px 20px rgba(0,0,0,0.15);
-    cursor:pointer;font-weight:700;
-    z-index:1000;
-  }
+  /* Cart Modal */
+  .cart-modal { display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; background-color: rgba(0,0,0,0.5);}
+  .cart-content { background:white; margin:80px auto; padding:20px; border-radius:10px; width:90%; max-width:400px; box-shadow:0 0 15px rgba(0,0,0,0.2);}
+  .cart-item { display:flex; justify-content:space-between; align-items:center; margin:10px 0; font-size:14px;}
+  .cart-item button { background:red; color:white; border:none; padding:5px 8px; border-radius:5px; cursor:pointer; }
+  .close-cart { float:right; font-size:25px; cursor:pointer; }
+  .checkout-btn { display:block; background:#28a745; color:#fff; padding:10px; text-align:center; border-radius:5px; margin-top:15px; text-decoration:none; }
 
-  /* floating WhatsApp */
-  .whatsapp{
-    position:fixed;right:18px;bottom:18px;width:64px;height:64px;border-radius:50%;
-    background:#25D366;color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;
-    z-index:9999;box-shadow:0 10px 30px rgba(2,6,23,0.25);text-decoration:none;
-  }
+  /* Product Preview Modal */
+  #productPreviewModal { display:none; position:fixed; z-index:2000; left:0; top:0; width:100%; height:100%; background-color: rgba(0,0,0,0.6); align-items:center; justify-content:center;}
+  #productPreviewModal .preview-box { background:white; padding:20px; border-radius:10px; max-width:400px; text-align:center; box-shadow:0 5px 15px rgba(0,0,0,0.3);}
+  #productPreviewModal img { max-width:100%; border-radius:8px; margin-bottom:10px;}
+  .preview-buttons button { padding:10px 15px; border:none; border-radius:6px; margin:5px; cursor:pointer; font-weight:bold;}
+  .add-to-cart-preview { background:#28a745; color:white;}
+  .cancel-preview { background:#ccc; color:black;}
+
+  /* Floating WhatsApp */
+  .whatsapp-float { position:fixed; bottom:20px; right:20px; background-color:#25D366; color:white; border-radius:50%; width:60px; height:60px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 8px rgba(0,0,0,0.3); font-size:28px; text-decoration:none; z-index:1000;}
+
 </style>
 </head>
 <body>
-  <header>
-    <h1>Welcome to Online Graphic Shop</h1>
-    <p>Creative designs, flyers, posters & more</p>
-  </header>
-
-  <div class="cart-btn" onclick="goToCheckout()">
-    🛒 Cart (<span id="cart-count">0</span>)
+<header>
+  <h1>Online Graphic Shop</h1>
+  <div>
+    <span id="wallet-display">Wallet: ₦0.00</span>
+    <button class="wallet-btn" id="depositBtn">Deposit</button>
+    <button id="cart-btn" class="cart-btn">🛒 Cart</button>
   </div>
+</header>
 
-  <div class="container">
-    <div class="product-grid" id="product-grid"></div>
+<div class="container">
+  <input type="text" id="search-input" placeholder="Search for designs..." />
+  <div id="products-grid" class="grid"></div>
+</div>
+
+<!-- Cart Modal -->
+<div id="cart-modal" class="cart-modal">
+  <div class="cart-content">
+    <span id="close-cart" class="close-cart">&times;</span>
+    <h2>Your Cart</h2>
+    <div id="cart-items"></div>
+    <p><strong>Total:</strong> ₦<span id="total-amount">0</span></p>
+    <a href="checkout.html" class="checkout-btn">Proceed to Checkout</a>
   </div>
+</div>
 
-  <footer>© <span id="year"></span> Online Graphic Shop — Designed by <strong>ABblack</strong></footer>
+<!-- Product Preview Modal -->
+<div id="productPreviewModal">
+  <div class="preview-box">
+    <img id="previewImage" src="" alt="Product">
+    <h3 id="previewName"></h3>
+    <p id="previewPrice" style="font-weight:bold;"></p>
+    <div class="preview-buttons">
+      <button id="confirmAddBtn" class="add-to-cart-preview">Add to Cart</button>
+      <button id="cancelPreviewBtn" class="cancel-preview">Cancel</button>
+    </div>
+  </div>
+</div>
 
-  <!-- Floating WhatsApp -->
-  <a class="whatsapp" href="https://wa.me/2349121383292" target="_blank" aria-label="Chat on WhatsApp">💬</a>
+<!-- Floating WhatsApp -->
+<a href="https://wa.me/2349121383292" target="_blank" class="whatsapp-float">💬</a>
 
 <script>
-const products = [
-  {name:"Party",price:3000,category:"FLYER",image:"https://i.pinimg.com/1200x/41/61/f4/4161f44b77d1240bf7549c6dbb445055.jpg"},
-  {name:"Blast",price:2000,category:"FLYER",image:"https://i.pinimg.com/1200x/ab/d3/79/abd379cd2b568cb5503662c48d3c981f.jpg"},
-  {name:"The GOAT",price:2000,category:"GRAPHICS",image:"https://i.pinimg.com/736x/d2/62/9a/d2629a92a49e363ed0446bcc3a98f66a.jpg"},
-  {name:"V Design",price:2500,category:"GRAPHICS",image:"https://i.pinimg.com/1200x/3a/15/f2/3a15f2cb8387639c5abec72284267654.jpg"},
-  {name:"Asap Rocky",price:1500,category:"POSTER",image:"https://i.pinimg.com/1200x/b7/70/ee/b770ee389ab9a35ef8fc56023b74aebf.jpg"},
-  {name:"SADDAT",price:1200,category:"POSTER",image:"https://i.pinimg.com/1200x/17/95/f5/1795f507d24c22d4dbaf47aed985def3.jpg"}
-];
+document.addEventListener("DOMContentLoaded", () => {
+  const grid = document.getElementById("products-grid");
+  const cartBtn = document.getElementById("cart-btn");
+  const cartModal = document.getElementById("cart-modal");
+  const closeCart = document.getElementById("close-cart");
+  const cartContainer = document.getElementById("cart-items");
+  const totalAmount = document.getElementById("total-amount");
+  const searchInput = document.getElementById("search-input");
+  const walletDisplay = document.getElementById("wallet-display");
+  const depositBtn = document.getElementById("depositBtn");
 
-function saveProducts(){
-  localStorage.setItem('products', JSON.stringify(products));
-}
+  let products = [];
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  let wallet = parseFloat(localStorage.getItem("wallet") || "0");
 
-function renderProducts(){
-  const grid=document.getElementById('product-grid');
-  grid.innerHTML='';
-  products.forEach((p,i)=>{
-    const div=document.createElement('div');
-    div.className='product';
-    div.innerHTML=`
-      <img src="${p.image}" alt="${p.name}">
-      <div class="info">
-        <div>
+  // Update wallet display
+  function updateWalletDisplay(){
+    walletDisplay.textContent = 'Wallet: ₦'+wallet.toLocaleString();
+    localStorage.setItem("wallet", wallet);
+  }
+  updateWalletDisplay();
+
+  // Deposit money
+  depositBtn.addEventListener("click", ()=>{
+    const amount = parseFloat(prompt("Enter amount to deposit:"));
+    if(!amount || amount<=0){ alert("Invalid amount."); return; }
+    wallet += amount;
+    updateWalletDisplay();
+    alert("💰 Deposit successful! Your wallet balance is ₦"+wallet.toLocaleString());
+  });
+
+  // Fetch products
+  fetch("products.json")
+    .then(res=>res.json())
+    .then(data=>{
+      products = data.map((p,i)=>({...p,id:i}));
+      renderProducts(products);
+    }).catch(err=>console.error("Error loading products:",err));
+
+  function renderProducts(list){
+    grid.innerHTML = "";
+    if(list.length===0){ grid.innerHTML="<p>No products found.</p>"; return; }
+    list.forEach((p,i)=>{
+      const div = document.createElement("div");
+      div.className="product";
+      div.innerHTML=`
+        <img src="${p.image}" alt="${p.name}">
+        <div class="info">
           <h3>${p.name}</h3>
-          <p>${p.category}</p>
-          <div class="price">₦${p.price.toLocaleString()}</div>
-        </div>
-        <button class="btn" onclick="previewProduct(${i})">Preview</button>
-      </div>
-    `;
-    grid.appendChild(div);
-  });
-}
-
-function loadCart(){
-  try {return JSON.parse(localStorage.getItem('cart')||'[]');}
-  catch(e){return [];}
-}
-function saveCart(cart){
-  localStorage.setItem('cart',JSON.stringify(cart));
-  updateCartCount();
-}
-function updateCartCount(){
-  const cart=loadCart();
-  document.getElementById('cart-count').textContent=cart.length;
-}
-
-function previewProduct(i){
-  const p=products[i];
-  Swal.fire({
-    title: p.name,
-    html: `
-      <img src="${p.image}" style="width:100%;border-radius:12px;margin-bottom:12px;object-fit:cover" alt="">
-      <p style="font-size:14px;color:#555">${p.category}</p>
-      <p style="font-weight:700;font-size:18px;">₦${p.price.toLocaleString()}</p>
-    `,
-    showCancelButton: true,
-    confirmButtonText: 'Add to Cart',
-    cancelButtonText: 'Close',
-    confirmButtonColor: '#4f46e5',
-    cancelButtonColor: '#6b7280',
-    reverseButtons: true,
-    background: '#fff'
-  }).then(result=>{
-    if(result.isConfirmed) addToCart(p);
-  });
-}
-
-function addToCart(product){
-  const cart=loadCart();
-  if(cart.some(x=>x.name===product.name)){
-    Swal.fire({icon:'info',title:'Already in cart',text:`${product.name} is already in your cart.`,confirmButtonColor:'#4f46e5'});
-    return;
+          <p>₦${p.price}</p>
+          <button class="preview-btn" data-id="${i}">Preview</button>
+        </div>`;
+      grid.appendChild(div);
+    });
   }
-  cart.push(product);
-  saveCart(cart);
-  Swal.fire({icon:'success',title:'Added to cart',text:`${product.name} added successfully!`,confirmButtonColor:'#16a34a'});
-}
 
-function goToCheckout(){
-  const cart=loadCart();
-  if(!cart.length){
-    Swal.fire({icon:'info',title:'Cart Empty',text:'You have no items in your cart yet.',confirmButtonColor:'#4f46e5'});
-    return;
+  // Cart functions
+  function renderCart(){
+    cartContainer.innerHTML="";
+    let total=0;
+    if(cart.length===0){
+      cartContainer.innerHTML="<p>Your cart is empty.</p>";
+    } else {
+      cart.forEach((item,index)=>{
+        const div = document.createElement("div");
+        div.className="cart-item";
+        div.innerHTML=`${item.name} - ₦${parseFloat(item.price).toLocaleString()} 
+        <button data-index="${index}">Delete</button>`;
+        cartContainer.appendChild(div);
+        total += parseFloat(item.price);
+      });
+    }
+    totalAmount.textContent = total.toLocaleString();
+    localStorage.setItem("cart", JSON.stringify(cart));
   }
-  window.location.href='checkout.html';
-}
 
-document.getElementById('year').textContent=new Date().getFullYear();
-saveProducts();
-renderProducts();
-updateCartCount();
-</script>
-</body>
-</html>
+  grid.addEventListener("click", (e)=>{
+    if(e.target.classList.contains("preview-btn")){
+      const id =
