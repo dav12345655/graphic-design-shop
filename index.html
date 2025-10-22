@@ -5,128 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Online Graphic Shop</title>
 <style>
-  body {
-    font-family: "Segoe UI", sans-serif;
-    margin: 0;
-    padding: 0;
-    background: #f4f4f4;
-    color: #333;
-  }
-
-  header {
-    background: #111;
-    color: white;
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-
-  header h1 { font-size: 20px; margin: 0; }
-  .wallet-btn, .cart-btn {
-    background: #ff9800;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-left: 8px;
-  }
-
-  .container {
-    width: 90%;
-    max-width: 1100px;
-    margin: 20px auto;
-  }
-
-  #products-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-    gap: 15px;
-  }
-
-  .product {
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    overflow: hidden;
-    transition: transform 0.2s;
-  }
-
+  body { font-family: "Segoe UI", sans-serif; margin: 0; background: #f4f4f4; }
+  header { background: #111; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+  header h1 { margin: 0; font-size: 18px; }
+  .wallet-btn, .cart-btn { background: #ff9800; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-left: 5px; }
+  .container { width: 90%; max-width: 1100px; margin: 20px auto; }
+  #products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 15px; }
+  .product { background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.1); transition: transform 0.2s; }
   .product:hover { transform: scale(1.03); }
   .product img { width: 100%; height: 180px; object-fit: cover; }
-
-  .info {
-    padding: 10px;
-    text-align: center;
-  }
-
+  .info { padding: 10px; text-align: center; }
   .info h3 { margin: 5px 0; font-size: 16px; }
-  .info button {
-    background: #2196f3;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-  }
+  .info button { background: #2196f3; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
 
-  /* Cart Modal */
-  .cart-modal, .deposit-modal, #previewModal {
-    display: none;
-    position: fixed;
-    z-index: 2000;
-    left: 0; top: 0;
-    width: 100%; height: 100%;
-    background-color: rgba(0,0,0,0.6);
-    justify-content: center;
-    align-items: center;
-  }
-
-  .modal-content {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    max-width: 400px;
-    width: 90%;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    text-align: center;
-  }
-
+  .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; }
+  .modal-content { background: white; padding: 20px; border-radius: 10px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
   .modal-content h3 { margin: 10px 0; }
-  .modal-content input { width: 80%; padding: 8px; margin: 8px 0; border-radius: 6px; border: 1px solid #ccc; }
-  .modal-content button { margin-top: 8px; padding: 8px 12px; border-radius: 6px; border: none; cursor: pointer; }
-
+  .modal-content img { width: 100%; border-radius: 6px; }
   .close-btn { float: right; cursor: pointer; font-size: 20px; }
+  footer { text-align: center; padding: 15px; background: #111; color: #ccc; margin-top: 20px; }
 
-  footer {
-    text-align: center;
-    padding: 15px;
-    background: #111;
-    color: #ccc;
-    margin-top: 20px;
-  }
-
-  /* Floating WhatsApp */
-  .whatsapp-float {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #25D366;
-    color: white;
-    border-radius: 50%;
-    width: 60px; height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    text-decoration: none;
-    z-index: 3000;
-  }
+  .whatsapp-float { position: fixed; bottom: 20px; right: 20px; background-color: #25D366; color: white; border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 28px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); text-decoration: none; z-index: 3000; }
 </style>
 </head>
 <body>
@@ -144,10 +43,10 @@
 </div>
 
 <!-- Product Preview Modal -->
-<div id="previewModal" class="cart-modal">
+<div id="previewModal" class="modal">
   <div class="modal-content">
     <span class="close-btn" id="closePreview">&times;</span>
-    <img id="previewImg" src="" alt="" style="width:100%;border-radius:8px">
+    <img id="previewImg" src="" alt="">
     <h3 id="previewName"></h3>
     <p>₦<span id="previewPrice"></span></p>
     <button id="addToCartBtn" style="background:#28a745;color:white;">Add to Cart</button>
@@ -155,7 +54,7 @@
 </div>
 
 <!-- Cart Modal -->
-<div id="cartModal" class="cart-modal">
+<div id="cartModal" class="modal">
   <div class="modal-content">
     <span class="close-btn" id="closeCart">&times;</span>
     <h3>Your Cart</h3>
@@ -165,11 +64,11 @@
 </div>
 
 <!-- Deposit Modal -->
-<div id="depositModal" class="deposit-modal">
+<div id="depositModal" class="modal">
   <div class="modal-content">
     <span class="close-btn" id="closeDeposit">&times;</span>
     <h3>Deposit Money</h3>
-    <input type="number" id="depositAmount" placeholder="Enter amount" />
+    <input type="number" id="depositAmount" placeholder="Enter amount">
     <button id="confirmDeposit" style="background:#2196f3;color:white;">Deposit</button>
   </div>
 </div>
@@ -183,7 +82,6 @@
 <script>
 document.getElementById('year').textContent = new Date().getFullYear();
 
-// Products array (replace with fetch from JSON if needed)
 let products = [
   {id:0,name:"Party",price:3000,image:"https://i.pinimg.com/1200x/41/61/f4/4161f44b77d1240bf7549c6dbb445055.jpg"},
   {id:1,name:"Blast",price:2000,image:"https://i.pinimg.com/1200x/ab/d3/79/abd379cd2b568cb5503662c48d3c981f.jpg"},
@@ -193,11 +91,12 @@ let products = [
 
 let cart = JSON.parse(localStorage.getItem('shop_cart') || '[]');
 let wallet = parseFloat(localStorage.getItem('shop_wallet') || '0');
+document.getElementById('walletAmount').textContent = wallet.toFixed(2);
 
-function renderProducts(){
+function renderProducts() {
   const grid = document.getElementById('products-grid');
   grid.innerHTML = '';
-  products.forEach(p=>{
+  products.forEach(p => {
     const div = document.createElement('div');
     div.className='product';
     div.innerHTML=`
@@ -214,14 +113,102 @@ function renderProducts(){
 function renderCart(){
   const cartDiv = document.getElementById('cartItems');
   const totalSpan = document.getElementById('cartTotal');
-  cartDiv.innerHTML = '';
-  let total = 0;
+  cartDiv.innerHTML='';
+  let total=0;
   cart.forEach((item,index)=>{
-    total += item.price;
+    total+=item.price;
     const row = document.createElement('div');
-    row.style.display='flex'; row.style.justifyContent='space-between'; row.style.marginBottom='8px';
+    row.style.display='flex';
+    row.style.justifyContent='space-between';
+    row.style.marginBottom='8px';
     row.innerHTML=`${item.name} - ₦${item.price} <button data-index="${index}" style="background:red;color:white;border:none;border-radius:5px;">Delete</button>`;
     cartDiv.appendChild(row);
   });
   totalSpan.textContent=total.toLocaleString();
-  localStorage.setItem('shop_cart',JSON.stringify(cart
+  localStorage.setItem('shop_cart',JSON.stringify(cart));
+}
+
+renderProducts();
+renderCart();
+
+// Wallet deposit
+const walletBtn = document.getElementById('walletBtn');
+const depositModal = document.getElementById('depositModal');
+const closeDeposit = document.getElementById('closeDeposit');
+const confirmDeposit = document.getElementById('confirmDeposit');
+
+walletBtn.addEventListener('click',()=>depositModal.style.display='flex');
+closeDeposit.addEventListener('click',()=>depositModal.style.display='none');
+confirmDeposit.addEventListener('click',()=>{
+  const amt = parseFloat(document.getElementById('depositAmount').value);
+  if(isNaN(amt)||amt<=0){ alert('Please enter a valid amount'); return;}
+  wallet+=amt;
+  localStorage.setItem('shop_wallet',wallet);
+  document.getElementById('walletAmount').textContent=wallet.toFixed(2);
+  depositModal.style.display='none';
+  alert(`₦${amt} deposited successfully!`);
+});
+
+// Preview modal
+let previewId=null;
+const previewModal = document.getElementById('previewModal');
+const closePreview = document.getElementById('closePreview');
+const previewImg = document.getElementById('previewImg');
+const previewName = document.getElementById('previewName');
+const previewPrice = document.getElementById('previewPrice');
+const addToCartBtn = document.getElementById('addToCartBtn');
+
+document.querySelectorAll('.previewBtn').forEach(btn=>{
+  btn.addEventListener('click',e=>{
+    const id=parseInt(e.target.dataset.id);
+    const p=products.find(x=>x.id===id);
+    if(p){
+      previewId=id;
+      previewImg.src=p.image;
+      previewName.textContent=p.name;
+      previewPrice.textContent=p.price;
+      previewModal.style.display='flex';
+    }
+  });
+});
+
+closePreview.addEventListener('click',()=>previewModal.style.display='none');
+
+addToCartBtn.addEventListener('click',()=>{
+  if(previewId!==null){
+    const p=products.find(x=>x.id===previewId);
+    cart.push(p);
+    renderCart();
+    previewModal.style.display='none';
+    alert(`${p.name} added to cart!`);
+  }
+});
+
+// Cart modal
+const cartModal = document.getElementById('cartModal');
+const cartBtn = document.getElementById('cartBtn');
+const closeCart = document.getElementById('closeCart');
+
+cartBtn.addEventListener('click',()=>cartModal.style.display='flex');
+closeCart.addEventListener('click',()=>cartModal.style.display='none');
+
+// Cart delete
+document.getElementById('cartItems').addEventListener('click',e=>{
+  if(e.target.tagName==='BUTTON'){
+    const index=parseInt(e.target.dataset.index);
+    if(!isNaN(index)){
+      cart.splice(index,1);
+      renderCart();
+    }
+  }
+});
+
+// Close modals on outside click
+window.addEventListener('click',e=>{
+  if(e.target===cartModal) cartModal.style.display='none';
+  if(e.target===previewModal) previewModal.style.display='none';
+  if(e.target===depositModal) depositModal.style.display='none';
+});
+</script>
+</body>
+</html>
