@@ -4,49 +4,6 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Checkout — Online Graphic Shop</title>
-// ===== USER SESSION + WALLET UPDATE =====
-const userEmail = localStorage.getItem('loggedInUser');
-if(!userEmail){
-  Swal.fire({
-    icon:'warning',
-    title:'Login Required',
-    text:'Please login to continue.',
-    confirmButtonText:'Go to Login'
-  }).then(()=> window.location.href = 'login.html');
-}
-
-function getWalletBalance(){
-  const wallets = JSON.parse(localStorage.getItem('wallets') || '{}');
-  return wallets[userEmail] || 0;
-}
-function setWalletBalance(amount){
-  const wallets = JSON.parse(localStorage.getItem('wallets') || '{}');
-  wallets[userEmail] = amount;
-  localStorage.setItem('wallets', JSON.stringify(wallets));
-}
-
-// Show wallet at top-right dynamically
-const walletDisplay = document.createElement('div');
-walletDisplay.style.cssText = 'position:fixed;top:12px;left:12px;background:#fff;padding:8px 14px;border-radius:20px;box-shadow:0 4px 10px rgba(0,0,0,0.15);font-weight:700;color:#0f172a;z-index:999;';
-walletDisplay.innerHTML = `💰 Wallet: ₦<span id="wallet-balance">${getWalletBalance().toLocaleString()}</span>`;
-document.body.appendChild(walletDisplay);
-
-// Deduct from wallet during checkout if enough balance
-const originalPayClick = payBtn.onclick || payBtn.addEventListener;
-payBtn.addEventListener('click', ()=>{
-  const total = parseFloat(document.getElementById('total-amount').textContent.replace(/,/g,''));
-  const current = getWalletBalance();
-
-  if(current < total){
-    Swal.fire({icon:'error',title:'Insufficient Wallet Balance',text:'Please deposit more funds in your wallet before checkout.'});
-    return;
-  }
-
-  // Deduct and update wallet
-  const newBalance = current - total;
-  setWalletBalance(newBalance);
-  document.getElementById('wallet-balance').textContent = newBalance.toLocaleString();
-});
 
 <!-- SweetAlert2 (for modern alerts/modals) -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -175,13 +132,10 @@ payBtn.addEventListener('click', ()=>{
 
     <div class="card">
       <div class="grid">
-        <!-- LEFT: items + contact form -->
         <div class="left">
-          <div class="items-list card-inner" id="items-list">
-            <!-- rendered items -->
-          </div>
+          <div class="items-list card-inner" id="items-list"></div>
 
-          <div class="total-row" style="background:transparent">
+          <div class="total-row">
             <div>Total</div>
             <div>₦<span id="total-amount">0</span></div>
           </div>
@@ -193,18 +147,16 @@ payBtn.addEventListener('click', ()=>{
           </div>
 
           <div class="note">
-            <strong>Important:</strong> After you pay to the account shown above, click <em>I have paid</em> and enter your **Transaction ID** (required). The system validates the format and simulates verification. For real verification you would integrate a server-side API.
+            <strong>Important:</strong> After you pay to the account shown above, click <em>I have paid</em> and enter your Transaction ID (required). The system validates the format and simulates verification.
           </div>
-
         </div>
 
-        <!-- RIGHT: payment actions -->
         <div class="right">
           <div style="background:linear-gradient(180deg,#ffffffcc,#ffffffbb);padding:14px;border-radius:10px">
             <h3 style="margin:0 0 8px">Payment</h3>
             <p style="color:var(--muted);margin:0 0 12px">Account name: <strong>Joy Gift</strong><br>Bank: <strong>Opay</strong><br>Account: <strong>9121383292</strong></p>
 
-            <label style="display:block;margin-bottom:8px"><strong>Transaction ID (required)</strong></label>
+            <label><strong>Transaction ID (required)</strong></label>
             <input id="txid" placeholder="e.g. TRX12345678AB" />
 
             <div style="display:flex;gap:8px;margin-top:14px">
@@ -226,22 +178,43 @@ payBtn.addEventListener('click', ()=>{
     </div>
 
     <footer>
-      Designed by <strong>ABblack</strong> • 📞 <a href="tel:+2347026865570" style="color:#c7f9ff;text-decoration:none">07026865570</a>
+      Designed by <strong>ABblack</strong> • 📞 
+      <a href="tel:+2347026865570" style="color:#c7f9ff;text-decoration:none">07026865570</a>
     </footer>
   </div>
 
-  <!-- Floating WhatsApp -->
-  <a class="whatsapp" href="https://wa.me/2349121383292" target="_blank" aria-label="Chat on WhatsApp">💬</a>
+  <a class="whatsapp" href="https://wa.me/2349121383292" target="_blank">💬</a>
 
 <script>
-/*
-  Checkout workflow:
-  - Reads cart from localStorage key 'cart' (expects array of { name, price, image }).
-  - Transaction ID required; validated format: alphanumeric, min 8 chars, must include at least one letter & one digit.
-  - Uses SweetAlert2 for all alerts & verification UI.
-  - After "verification" passes, saves order to localStorage 'orders' and clears 'cart'.
-*/
+// ===== USER SESSION + WALLET UPDATE =====
+const userEmail = localStorage.getItem('loggedInUser');
+if(!userEmail){
+  Swal.fire({
+    icon:'warning',
+    title:'Login Required',
+    text:'Please login to continue.',
+    confirmButtonText:'Go to Login'
+  }).then(()=> window.location.href = 'login.html');
+}
 
+function getWalletBalance(){
+  const wallets = JSON.parse(localStorage.getItem('wallets') || '{}');
+  return wallets[userEmail] || 0;
+}
+function setWalletBalance(amount){
+  const wallets = JSON.parse(localStorage.getItem('wallets') || '{}');
+  wallets[userEmail] = amount;
+  localStorage.setItem('wallets', JSON.stringify(wallets));
+}
+
+// Show wallet at top
+const walletDisplay = document.createElement('div');
+walletDisplay.style.cssText = 'position:fixed;top:12px;left:12px;background:#fff;padding:8px 14px;border-radius:20px;box-shadow:0 4px 10px rgba(0,0,0,0.15);font-weight:700;color:#0f172a;z-index:999;';
+walletDisplay.innerHTML = `💰 Wallet: ₦<span id="wallet-balance">${getWalletBalance().toLocaleString()}</span>`;
+document.body.appendChild(walletDisplay);
+</script>
+
+<script>
 (function(){
   const itemsList = document.getElementById('items-list');
   const totalAmountEl = document.getElementById('total-amount');
@@ -254,7 +227,6 @@ payBtn.addEventListener('click', ()=>{
   const addressInput = document.getElementById('cust-address');
   const txInput = document.getElementById('txid');
 
-  // read cart
   let cart = [];
   try { cart = JSON.parse(localStorage.getItem('cart') || '[]') || []; } catch(e){ cart = []; }
 
@@ -267,135 +239,52 @@ payBtn.addEventListener('click', ()=>{
       return;
     }
     let total = 0;
-    cart.forEach((p, i)=>{
-      total += Number(p.price || 0);
+    cart.forEach((p)=>{ total += Number(p.price||0);
       const row = document.createElement('div');
       row.className = 'item';
-      row.innerHTML = `
-        <img src="${escape(p.image||'')}" alt="${escape(p.name||'Product')}">
-        <div class="meta">
-          <b>${escape(p.name||'Product')}</b>
-          <small>${escape(p.description||'')}</small>
-        </div>
-        <div class="price">₦${Number(p.price||0).toLocaleString()}</div>
-      `;
+      row.innerHTML = `<img src="${p.image}" alt="${p.name}"><div class="meta"><b>${p.name}</b></div><div class="price">₦${Number(p.price).toLocaleString()}</div>`;
       itemsList.appendChild(row);
     });
-    totalAmountEl.textContent = Number(total).toLocaleString();
+    totalAmountEl.textContent = total.toLocaleString();
     summaryCount.textContent = `${cart.length} item${cart.length>1?'s':''}`;
   }
 
-  function escape(s){ return String(s||'').replace(/[&<>"']/g,(m)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-
-  // Transaction ID format validator
   function txValid(tx){
-    if(!tx) return false;
-    if(!/^[A-Za-z0-9]{8,}$/.test(tx)) return false; // min 8 alnum
-    if(!/[A-Za-z]/.test(tx)) return false;
-    if(!/[0-9]/.test(tx)) return false;
-    return true;
-  }
-
-  // show SweetAlert2 for validation & verification
-  function showError(msg){
-    Swal.fire({ icon:'error', title:'Error', text: msg, confirmButtonColor:'#ef4444' });
-  }
-  function showInfo(msg){
-    Swal.fire({ icon:'info', title:'Info', text: msg, confirmButtonColor:'#0ea5e9' });
+    return /^[A-Za-z0-9]{8,}$/.test(tx) && /[A-Za-z]/.test(tx) && /[0-9]/.test(tx);
   }
 
   payBtn.addEventListener('click', async ()=>{
     const name = nameInput.value.trim();
     const phone = phoneInput.value.trim();
     const tx = txInput.value.trim();
+    const total = parseFloat(totalAmountEl.textContent.replace(/,/g,'')) || 0;
+    const current = getWalletBalance();
 
-    if(!cart.length){
-      showError('Your cart is empty. Add items before checking out.');
-      return;
-    }
-    if(!name || !phone){
-      showError('Please enter your full name and phone/email.');
-      return;
-    }
-    if(!tx){
-      showError('Transaction ID is required. Please enter the ID you received after payment.');
-      return;
-    }
-    if(!txValid(tx)){
-      showError('Invalid transaction ID. It must be at least 8 characters, alphanumeric, and contain both letters and numbers.');
+    if(!cart.length) return Swal.fire({icon:'error',title:'Empty Cart',text:'Add items before checking out.'});
+    if(!name || !phone) return Swal.fire({icon:'error',title:'Missing Info',text:'Please enter your full name and contact.'});
+    if(!txValid(tx)) return Swal.fire({icon:'error',title:'Invalid Transaction ID',text:'Transaction ID must be alphanumeric, at least 8 chars.'});
+
+    if(current < total){
+      Swal.fire({icon:'error',title:'Insufficient Wallet',text:'Deposit more funds before checkout.'});
       return;
     }
 
-    // Show verifying spinner (SweetAlert2)
-    Swal.fire({
-      title: 'Verifying transaction...',
-      html: 'Checking transaction ID — please wait.',
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-      showConfirmButton: false,
-    });
-
-    // Simulate verification delay (replace with server call to payment provider for real verification)
-    await new Promise(r => setTimeout(r, 2000));
-
-    // Simulated verification: format-validated tx considered "verified"
-    // If you have a server API to verify tx, replace this block with an AJAX call and set verified accordingly.
-    const verified = true;
-
+    Swal.fire({title:'Verifying transaction...',allowOutsideClick:false,didOpen:()=>Swal.showLoading()});
+    await new Promise(r=>setTimeout(r,1500));
     Swal.close();
 
-    if(!verified){
-      showError('Transaction ID could not be verified. Please confirm the payment and try again or contact support.');
-      return;
-    }
+    const newBal = current - total;
+    setWalletBalance(newBal);
+    document.getElementById('wallet-balance').textContent = newBal.toLocaleString();
 
-    // Save order locally (orders array), clear cart
-    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-    const orderId = 'ORD' + Date.now();
-    const order = {
-      id: orderId,
-      customer: { name, phone, address: addressInput.value.trim() },
-      items: cart,
-      total: cart.reduce((s,i)=>s + Number(i.price||0), 0),
-      tx,
-      createdAt: new Date().toISOString()
-    };
-    orders.unshift(order);
-    localStorage.setItem('orders', JSON.stringify(orders));
-
-    // clear cart
-    localStorage.removeItem('cart');
-    cart = [];
-    renderCart();
-
-    // Show success modal with order summary
-    const itemsHtml = order.items.slice(0,6).map(it=>`<div style="display:flex;justify-content:space-between;margin:6px 0"><div>${escape(it.name)}</div><div>₦${Number(it.price||0).toLocaleString()}</div></div>`).join('');
-    const more = order.items.length > 6 ? `<div style="color:var(--muted);margin-top:6px">+ ${order.items.length-6} more items</div>` : '';
-
-    await Swal.fire({
-      title: '✅ Payment Verified',
-      html: `<div style="text-align:left">
-               <div style="font-weight:700;margin-bottom:8px">Order ID: ${orderId}</div>
-               ${itemsHtml}
-               ${more}
-               <div style="margin-top:10px;font-weight:800;">Total: ₦${Number(order.total).toLocaleString()}</div>
-             </div>`,
-      icon: 'success',
-      confirmButtonText: 'Back to Home',
-      confirmButtonColor: '#16a34a'
+    localStorage.setItem('cart','[]');
+    Swal.fire({icon:'success',title:'Payment Successful',text:'Your order has been placed successfully!'}).then(()=>{
+      window.location.href='index.html';
     });
-
-    // redirect home (user pressed OK)
-    window.location.href = 'index.html';
   });
 
-  backShop.addEventListener('click', ()=> window.location.href = 'index.html');
-
-  // initial render
+  backShop.addEventListener('click',()=>window.location.href='index.html');
   renderCart();
-
 })();
 </script>
 </body>
