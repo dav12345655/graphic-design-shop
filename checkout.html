@@ -4,6 +4,49 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Checkout — Online Graphic Shop</title>
+// ===== USER SESSION + WALLET UPDATE =====
+const userEmail = localStorage.getItem('loggedInUser');
+if(!userEmail){
+  Swal.fire({
+    icon:'warning',
+    title:'Login Required',
+    text:'Please login to continue.',
+    confirmButtonText:'Go to Login'
+  }).then(()=> window.location.href = 'login.html');
+}
+
+function getWalletBalance(){
+  const wallets = JSON.parse(localStorage.getItem('wallets') || '{}');
+  return wallets[userEmail] || 0;
+}
+function setWalletBalance(amount){
+  const wallets = JSON.parse(localStorage.getItem('wallets') || '{}');
+  wallets[userEmail] = amount;
+  localStorage.setItem('wallets', JSON.stringify(wallets));
+}
+
+// Show wallet at top-right dynamically
+const walletDisplay = document.createElement('div');
+walletDisplay.style.cssText = 'position:fixed;top:12px;left:12px;background:#fff;padding:8px 14px;border-radius:20px;box-shadow:0 4px 10px rgba(0,0,0,0.15);font-weight:700;color:#0f172a;z-index:999;';
+walletDisplay.innerHTML = `💰 Wallet: ₦<span id="wallet-balance">${getWalletBalance().toLocaleString()}</span>`;
+document.body.appendChild(walletDisplay);
+
+// Deduct from wallet during checkout if enough balance
+const originalPayClick = payBtn.onclick || payBtn.addEventListener;
+payBtn.addEventListener('click', ()=>{
+  const total = parseFloat(document.getElementById('total-amount').textContent.replace(/,/g,''));
+  const current = getWalletBalance();
+
+  if(current < total){
+    Swal.fire({icon:'error',title:'Insufficient Wallet Balance',text:'Please deposit more funds in your wallet before checkout.'});
+    return;
+  }
+
+  // Deduct and update wallet
+  const newBalance = current - total;
+  setWalletBalance(newBalance);
+  document.getElementById('wallet-balance').textContent = newBalance.toLocaleString();
+});
 
 <!-- SweetAlert2 (for modern alerts/modals) -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
