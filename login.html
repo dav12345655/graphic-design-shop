@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Login — Online Graphic Shop</title>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+  :root{
+    --bg1:#4f46e5;
+    --bg2:#7c3aed;
+    --card:#ffffffdd;
+    --accent:#06b6d4;
+    --success:#16a34a;
+  }
+  html,body{
+    height:100%;
+    margin:0;
+    font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;
+    background:linear-gradient(135deg,var(--bg1),var(--bg2));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .card{
+    width:90%;
+    max-width:420px;
+    background:var(--card);
+    padding:24px;
+    border-radius:14px;
+    box-shadow:0 10px 30px rgba(2,6,23,0.25);
+    text-align:center;
+  }
+  h1{margin:0 0 8px;font-size:22px;color:#111;}
+  p{margin:0 0 20px;color:#555;font-size:14px;}
+  input{
+    width:100%;
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    font-size:15px;
+    margin-bottom:14px;
+    box-sizing:border-box;
+  }
+  button{
+    width:100%;
+    padding:12px;
+    border:0;
+    border-radius:8px;
+    font-weight:700;
+    color:#fff;
+    font-size:15px;
+    cursor:pointer;
+    background:linear-gradient(90deg,#0ea5e9,#7c3aed);
+  }
+  small{color:#555;}
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>Welcome Back</h1>
+    <p>Sign in with your email to continue</p>
+    <input type="email" id="email" placeholder="Enter your email address" />
+    <button id="loginBtn">Continue</button>
+    <small>Don’t have an account? Just enter your email — it’ll be created automatically.</small>
+  </div>
+
+<script>
+  document.getElementById('loginBtn').addEventListener('click',()=>{
+    const email = document.getElementById('email').value.trim();
+    if(!email || !email.includes('@')){
+      Swal.fire({icon:'error',title:'Invalid Email',text:'Please enter a valid email address.'});
+      return;
+    }
+
+    // Save login to localStorage
+    localStorage.setItem('loggedInUser', email);
+
+    // Initialize wallet if new
+    const wallets = JSON.parse(localStorage.getItem('wallets') || '{}');
+    if(!wallets[email]) wallets[email] = 0.00;
+    localStorage.setItem('wallets', JSON.stringify(wallets));
+
+    Swal.fire({
+      icon:'success',
+      title:'Login Successful',
+      text:`Welcome ${email}! Redirecting...`,
+      showConfirmButton:false,
+      timer:1500
+    });
+
+    setTimeout(()=> window.location.href = 'index.html', 1500);
+  });
+
+  // Auto-redirect if already logged in
+  const existing = localStorage.getItem('loggedInUser');
+  if(existing){
+    window.location.href = 'index.html';
+  }
+</script>
+</body>
+</html>
