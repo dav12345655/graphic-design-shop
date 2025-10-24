@@ -39,7 +39,7 @@
   .item .price{font-weight:800}
   .total-row{display:flex;justify-content:space-between;align-items:center;padding:14px 6px;font-weight:800;font-size:18px}
   .form{margin-top:12px;display:grid;gap:10px}
-  .form input,.form textarea{width:100%;padding:10px;border-radius:10px;border:1px solid #e6edf4;font-size:15px;}
+  .form input{width:100%;padding:10px;border-radius:10px;border:1px solid #e6edf4;font-size:15px;}
   .btn{display:inline-block;padding:12px 14px;border-radius:10px;border:0;color:white;font-weight:800;cursor:pointer;
        background:linear-gradient(90deg,#06b6d4,#06b6d4);}
   .btn-primary{background:linear-gradient(90deg,#0ea5e9,#7c3aed)}
@@ -66,7 +66,7 @@
     <header>
       <div>
         <h1>Checkout — Online Graphic Shop</h1>
-        <p>Confirm payment & delivery details to complete your order</p>
+        <p>Confirm payment details to complete your order</p>
       </div>
       <div style="text-align:right">
         <small style="color:#fff;opacity:0.9">Payment beneficiary</small>
@@ -89,6 +89,22 @@
             <input id="cust-phone" placeholder="Phone or email" />
           </div>
 
+          <div class="note">
+            <strong>Note:</strong> Ensure you have enough wallet balance to cover your total before clicking “Pay Now.”
+          </div>
+        </div>
+
+        <div class="right">
+          <div style="background:linear-gradient(180deg,#ffffffcc,#ffffffbb);padding:14px;border-radius:10px">
+            <h3 style="margin:0 0 8px">Payment</h3>
+            <p style="color:var(--muted);margin:0 0 12px">
+              Account name: <strong>Joy Gift</strong><br>
+              Bank: <strong>Opay</strong><br>
+              Account: <strong>9121383292</strong>
+            </p>
+
+            <div style="display:flex;gap:8px;margin-top:14px">
+              <button id="pay-btn" class="btn btn-primary" style="flex:1">Pay Now</button>
               <button id="back-shop" class="btn btn-ghost" style="flex:1">Back to shop</button>
             </div>
 
@@ -167,7 +183,6 @@ document.getElementById('deposit-btn').addEventListener('click', async()=>{
   const backShop=document.getElementById('back-shop');
   const nameInput=document.getElementById('cust-name');
   const phoneInput=document.getElementById('cust-phone');
-  const txInput=document.getElementById('txid');
   let cart=[];
   try{cart=JSON.parse(localStorage.getItem('cart')||'[]');}catch(e){cart=[];}
 
@@ -191,19 +206,16 @@ document.getElementById('deposit-btn').addEventListener('click', async()=>{
     summaryCount.textContent=`${cart.length} item${cart.length>1?'s':''}`;
   }
 
-  function txValid(tx){return /^[A-Za-z0-9]{8,}$/.test(tx)&&/[A-Za-z]/.test(tx)&&/[0-9]/.test(tx);}
-
   payBtn.addEventListener('click',async()=>{
-    const name=nameInput.value.trim(),phone=phoneInput.value.trim(),tx=txInput.value.trim();
+    const name=nameInput.value.trim(),phone=phoneInput.value.trim();
     const total=parseFloat(totalAmountEl.textContent.replace(/,/g,''))||0;
     const current=getWalletBalance();
 
     if(!cart.length)return Swal.fire({icon:'error',title:'Empty Cart',text:'Add items before checking out.'});
     if(!name||!phone)return Swal.fire({icon:'error',title:'Missing Info',text:'Please enter your full name and contact.'});
-    if(!txValid(tx))return Swal.fire({icon:'error',title:'Invalid Transaction ID',text:'Transaction ID must be alphanumeric, at least 8 chars.'});
     if(current<total)return Swal.fire({icon:'error',title:'Insufficient Wallet',text:'Deposit more funds before checkout.'});
 
-    Swal.fire({title:'Verifying transaction...',allowOutsideClick:false,didOpen:()=>Swal.showLoading()});
+    Swal.fire({title:'Processing payment...',allowOutsideClick:false,didOpen:()=>Swal.showLoading()});
     await new Promise(r=>setTimeout(r,1500)); Swal.close();
 
     const newBal=current-total; setWalletBalance(newBal);
