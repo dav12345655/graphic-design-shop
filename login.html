@@ -1,105 +1,146 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Login — Online Graphic Shop</title>
-
-<!-- SweetAlert2 -->
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Login | Online Graphic Shop</title>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <style>
-  :root{
-    --bg1:#4f46e5;
-    --bg2:#7c3aed;
-    --card:#ffffffdd;
-    --accent:#06b6d4;
-    --success:#16a34a;
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
   }
-  html,body{
-    height:100%;
-    margin:0;
-    font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;
-    background:linear-gradient(135deg,var(--bg1),var(--bg2));
-    display:flex;
-    align-items:center;
-    justify-content:center;
+  .card {
+    background: #fff;
+    padding: 30px 28px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    width: 100%;
+    max-width: 380px;
   }
-  .card{
-    width:90%;
-    max-width:420px;
-    background:var(--card);
-    padding:24px;
-    border-radius:14px;
-    box-shadow:0 10px 30px rgba(2,6,23,0.25);
-    text-align:center;
+  h2 {
+    text-align: center;
+    margin: 0 0 20px;
+    color: #111827;
   }
-  h1{margin:0 0 8px;font-size:22px;color:#111;}
-  p{margin:0 0 20px;color:#555;font-size:14px;}
-  input{
-    width:100%;
-    padding:12px;
-    border:1px solid #ccc;
-    border-radius:8px;
-    font-size:15px;
-    margin-bottom:14px;
-    box-sizing:border-box;
+  input {
+    width: 100%;
+    padding: 12px 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin-bottom: 14px;
+    font-size: 15px;
   }
-  button{
-    width:100%;
-    padding:12px;
-    border:0;
-    border-radius:8px;
-    font-weight:700;
-    color:#fff;
-    font-size:15px;
-    cursor:pointer;
-    background:linear-gradient(90deg,#0ea5e9,#7c3aed);
+  button {
+    width: 100%;
+    background: linear-gradient(90deg,#0ea5e9,#7c3aed);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
   }
-  small{color:#555;}
+  .toggle {
+    text-align: center;
+    margin-top: 12px;
+    font-size: 14px;
+  }
+  .toggle a {
+    color: #7c3aed;
+    text-decoration: none;
+    font-weight: 600;
+  }
 </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Welcome Back</h1>
-    <p>Sign in with your email to continue</p>
-    <input type="email" id="email" placeholder="Enter your email address" />
-    <button id="loginBtn">Continue</button>
-    <small>Don’t have an account? Just enter your email — it’ll be created automatically.</small>
+
+<div class="card">
+  <h2 id="form-title">Login</h2>
+  <input id="email" type="email" placeholder="Email address" required>
+  <input id="password" type="password" placeholder="Password" required>
+  <button id="submit-btn">Login</button>
+
+  <div class="toggle">
+    <span id="toggle-text">Don’t have an account? <a href="#" id="toggle-link">Sign up</a></span>
   </div>
+</div>
 
 <script>
-  document.getElementById('loginBtn').addEventListener('click',()=>{
-    const email = document.getElementById('email').value.trim();
-    if(!email || !email.includes('@')){
-      Swal.fire({icon:'error',title:'Invalid Email',text:'Please enter a valid email address.'});
-      return;
-    }
+  const emailInput = document.getElementById('email');
+  const passwordInput = document.getElementById('password');
+  const submitBtn = document.getElementById('submit-btn');
+  const toggleLink = document.getElementById('toggle-link');
+  const formTitle = document.getElementById('form-title');
 
-    // Save login to localStorage
-    localStorage.setItem('loggedInUser', email);
+  let isLogin = true;
 
-    // Initialize wallet if new
-    const wallets = JSON.parse(localStorage.getItem('wallets') || '{}');
-    if(!wallets[email]) wallets[email] = 0.00;
-    localStorage.setItem('wallets', JSON.stringify(wallets));
-
-    Swal.fire({
-      icon:'success',
-      title:'Login Successful',
-      text:`Welcome ${email}! Redirecting...`,
-      showConfirmButton:false,
-      timer:1500
-    });
-
-    setTimeout(()=> window.location.href = 'index.html', 1500);
-  });
-
-  // Auto-redirect if already logged in
-  const existing = localStorage.getItem('loggedInUser');
-  if(existing){
+  // If already logged in
+  if(localStorage.getItem('loggedInUser')){
     window.location.href = 'index.html';
   }
+
+  toggleLink.addEventListener('click', e => {
+    e.preventDefault();
+    isLogin = !isLogin;
+    formTitle.textContent = isLogin ? 'Login' : 'Sign Up';
+    submitBtn.textContent = isLogin ? 'Login' : 'Create Account';
+    document.getElementById('toggle-text').innerHTML = 
+      isLogin 
+      ? `Don’t have an account? <a href="#" id="toggle-link">Sign up</a>` 
+      : `Already have an account? <a href="#" id="toggle-link">Login</a>`;
+    document.getElementById('toggle-link').addEventListener('click', toggleLink.onclick);
+  });
+
+  submitBtn.addEventListener('click', () => {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
+
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+      return Swal.fire({icon:'error',title:'Invalid Email',text:'Please enter a valid email address.'});
+    }
+
+    if(password.length < 4){
+      return Swal.fire({icon:'error',title:'Weak Password',text:'Password must be at least 4 characters.'});
+    }
+
+    let users = JSON.parse(localStorage.getItem('users') || '{}');
+
+    if(isLogin){
+      // LOGIN
+      if(!users[email]) {
+        Swal.fire({icon:'error',title:'Account not found',text:'Please sign up first.'});
+        return;
+      }
+      if(users[email].password !== password){
+        Swal.fire({icon:'error',title:'Incorrect Password',text:'Try again.'});
+        return;
+      }
+
+      localStorage.setItem('loggedInUser', email);
+      Swal.fire({icon:'success',title:'Login successful',showConfirmButton:false,timer:1500})
+      .then(()=> window.location.href = 'index.html');
+    } else {
+      // SIGN UP
+      if(users[email]){
+        Swal.fire({icon:'error',title:'Email exists',text:'This email is already registered.'});
+        return;
+      }
+      users[email] = { password, wallet: 0 };
+      localStorage.setItem('users', JSON.stringify(users));
+      localStorage.setItem('loggedInUser', email);
+      Swal.fire({icon:'success',title:'Account created!',text:'Welcome aboard!'}).then(()=>{
+        window.location.href = 'index.html';
+      });
+    }
+  });
 </script>
+
 </body>
 </html>
