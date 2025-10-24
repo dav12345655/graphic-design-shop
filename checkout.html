@@ -5,114 +5,59 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Checkout — Online Graphic Shop</title>
 
-<!-- SweetAlert2 (for modern alerts/modals) -->
+<!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
   :root{
-    --bg1:#4f46e5; /* indigo-600 */
-    --bg2:#7c3aed; /* violet-600 */
-    --card:#ffffffcc;
-    --muted:#6b7280;
-    --accent:#06b6d4;
-    --success:#16a34a;
-    --danger:#ef4444;
+    --bg1:#4f46e5; --bg2:#7c3aed;
+    --card:#ffffffcc; --muted:#6b7280;
+    --accent:#06b6d4; --success:#16a34a; --danger:#ef4444;
   }
-
   html,body{height:100%;margin:0}
   body{
     font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;
-    background: linear-gradient(135deg,var(--bg1),var(--bg2));
+    background:linear-gradient(135deg,var(--bg1),var(--bg2));
     color:#0f172a;
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
-    display:flex;
-    align-items:flex-start;
-    justify-content:center;
-    padding:28px 12px;
-    box-sizing:border-box;
-    min-height:100vh;
+    display:flex;align-items:flex-start;justify-content:center;
+    padding:28px 12px;box-sizing:border-box;min-height:100vh;
   }
-
-  .container{
-    width:100%;
-    max-width:980px;
-    margin:18px auto;
-  }
-
-  header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:12px;
-    margin-bottom:18px;
-    color:#fff;
-  }
-
-  header h1{margin:0;font-size:20px;letter-spacing:0.2px}
+  .container{width:100%;max-width:980px;margin:18px auto;}
+  header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;color:#fff;}
+  header h1{margin:0;font-size:20px}
   header p{margin:0;opacity:0.9;font-size:13px}
-
-  .card{
-    background:var(--card);
-    border-radius:14px;
-    padding:18px;
-    box-shadow:0 10px 30px rgba(2,6,23,0.25);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-  }
-
-  .grid{
-    display:grid;
-    grid-template-columns:1fr 360px;
-    gap:18px;
-  }
-
-  @media(max-width:880px){
-    .grid{grid-template-columns:1fr; padding-bottom:18px}
-  }
-
-  .left{padding:8px}
-  .right{padding:8px}
-
+  .card{background:var(--card);border-radius:14px;padding:18px;box-shadow:0 10px 30px rgba(2,6,23,0.25);backdrop-filter:blur(6px);}
+  .grid{display:grid;grid-template-columns:1fr 360px;gap:18px;}
+  @media(max-width:880px){.grid{grid-template-columns:1fr}}
+  .left,.right{padding:8px}
   .items-list{background:#fff;border-radius:10px;padding:12px;max-height:420px;overflow:auto}
-  .item{
-    display:flex;
-    gap:12px;
-    align-items:center;
-    padding:10px 6px;
-    border-bottom:1px solid #f1f5f9;
-  }
+  .item{display:flex;gap:12px;align-items:center;padding:10px 6px;border-bottom:1px solid #f1f5f9;}
   .item img{width:78px;height:56px;object-fit:cover;border-radius:8px}
   .item .meta{flex:1}
   .item .meta b{display:block}
   .item .meta small{color:var(--muted);display:block;margin-top:6px;font-size:13px}
   .item .price{font-weight:800}
-
   .total-row{display:flex;justify-content:space-between;align-items:center;padding:14px 6px;font-weight:800;font-size:18px}
-
   .form{margin-top:12px;display:grid;gap:10px}
-  .form input,.form textarea{
-    width:100%;padding:10px;border-radius:10px;border:1px solid #e6edf4;font-size:15px;
-    box-sizing:border-box;
-  }
-  .btn{
-    display:inline-block;padding:12px 14px;border-radius:10px;border:0;color:white;font-weight:800;cursor:pointer;
-    background:linear-gradient(90deg,#06b6d4,#06b6d4);
-  }
+  .form input,.form textarea{width:100%;padding:10px;border-radius:10px;border:1px solid #e6edf4;font-size:15px;}
+  .btn{display:inline-block;padding:12px 14px;border-radius:10px;border:0;color:white;font-weight:800;cursor:pointer;
+       background:linear-gradient(90deg,#06b6d4,#06b6d4);}
   .btn-primary{background:linear-gradient(90deg,#0ea5e9,#7c3aed)}
   .btn-ghost{background:transparent;border:1px solid rgba(15,23,42,0.06);color:#0f172a}
-
-  .note{
-    margin-top:12px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.8);font-size:14px;color:#334155;
-  }
-
+  .note{margin-top:12px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.8);font-size:14px;color:#334155;}
   footer{margin-top:16px;color:#fff;text-align:center;font-size:13px}
-
-  /* floating WhatsApp */
-  .whatsapp{
-    position:fixed;right:18px;bottom:18px;width:64px;height:64px;border-radius:50%;
+  .whatsapp{position:fixed;right:18px;bottom:18px;width:64px;height:64px;border-radius:50%;
     background:#25D366;color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;
-    z-index:9999;box-shadow:0 10px 30px rgba(2,6,23,0.25);text-decoration:none;
+    z-index:9999;box-shadow:0 10px 30px rgba(2,6,23,0.25);text-decoration:none;}
+  /* Wallet top bar */
+  #wallet-bar{
+    position:fixed;top:12px;left:12px;background:#fff;
+    padding:8px 14px;border-radius:25px;box-shadow:0 4px 10px rgba(0,0,0,0.15);
+    display:flex;align-items:center;gap:10px;font-weight:700;color:#0f172a;z-index:999;
+  }
+  #deposit-btn{
+    background:linear-gradient(90deg,#0ea5e9,#7c3aed);
+    border:none;color:#fff;padding:6px 10px;border-radius:12px;font-size:13px;cursor:pointer;
   }
 </style>
 </head>
@@ -133,8 +78,7 @@
     <div class="card">
       <div class="grid">
         <div class="left">
-          <div class="items-list card-inner" id="items-list"></div>
-
+          <div class="items-list" id="items-list"></div>
           <div class="total-row">
             <div>Total</div>
             <div>₦<span id="total-amount">0</span></div>
@@ -147,15 +91,18 @@
           </div>
 
           <div class="note">
-            <strong>Important:</strong> After you pay to the account shown above, click <em>I have paid</em> and enter your Transaction ID (required). The system validates the format and simulates verification.
+            <strong>Important:</strong> After you pay to the account shown above, click <em>I have paid</em> and enter your Transaction ID (required).
           </div>
         </div>
 
         <div class="right">
           <div style="background:linear-gradient(180deg,#ffffffcc,#ffffffbb);padding:14px;border-radius:10px">
             <h3 style="margin:0 0 8px">Payment</h3>
-            <p style="color:var(--muted);margin:0 0 12px">Account name: <strong>Joy Gift</strong><br>Bank: <strong>Opay</strong><br>Account: <strong>9121383292</strong></p>
-
+            <p style="color:var(--muted);margin:0 0 12px">
+              Account name: <strong>Joy Gift</strong><br>
+              Bank: <strong>Opay</strong><br>
+              Account: <strong>9121383292</strong>
+            </p>
             <label><strong>Transaction ID (required)</strong></label>
             <input id="txid" placeholder="e.g. TRX12345678AB" />
 
@@ -186,101 +133,104 @@
   <a class="whatsapp" href="https://wa.me/2349121383292" target="_blank">💬</a>
 
 <script>
-// ===== USER SESSION + WALLET UPDATE =====
 const userEmail = localStorage.getItem('loggedInUser');
 if(!userEmail){
-  Swal.fire({
-    icon:'warning',
-    title:'Login Required',
-    text:'Please login to continue.',
-    confirmButtonText:'Go to Login'
-  }).then(()=> window.location.href = 'login.html');
+  Swal.fire({icon:'warning',title:'Login Required',text:'Please login to continue.',confirmButtonText:'Go to Login'})
+  .then(()=>window.location.href='login.html');
 }
 
+function getWallets(){ return JSON.parse(localStorage.getItem('wallets')||'{}'); }
 function getWalletBalance(){
-  const wallets = JSON.parse(localStorage.getItem('wallets') || '{}');
-  return wallets[userEmail] || 0;
+  const w=getWallets(); return w[userEmail]||0;
 }
 function setWalletBalance(amount){
-  const wallets = JSON.parse(localStorage.getItem('wallets') || '{}');
-  wallets[userEmail] = amount;
-  localStorage.setItem('wallets', JSON.stringify(wallets));
+  const w=getWallets(); w[userEmail]=amount; localStorage.setItem('wallets',JSON.stringify(w));
 }
 
-// Show wallet at top
-const walletDisplay = document.createElement('div');
-walletDisplay.style.cssText = 'position:fixed;top:12px;left:12px;background:#fff;padding:8px 14px;border-radius:20px;box-shadow:0 4px 10px rgba(0,0,0,0.15);font-weight:700;color:#0f172a;z-index:999;';
-walletDisplay.innerHTML = `💰 Wallet: ₦<span id="wallet-balance">${getWalletBalance().toLocaleString()}</span>`;
-document.body.appendChild(walletDisplay);
+const walletBar=document.createElement('div');
+walletBar.id='wallet-bar';
+walletBar.innerHTML=`💰 Wallet: ₦<span id="wallet-balance">${getWalletBalance().toLocaleString()}</span>
+<button id="deposit-btn">Deposit</button>`;
+document.body.appendChild(walletBar);
+
+document.getElementById('deposit-btn').addEventListener('click', async()=>{
+  const {value:amount}=await Swal.fire({
+    title:'Deposit Funds',
+    input:'number',
+    inputLabel:'Enter amount to deposit (₦)',
+    inputAttributes:{min:1},
+    showCancelButton:true,
+    confirmButtonText:'Deposit',
+    confirmButtonColor:'#4f46e5'
+  });
+  if(!amount || amount<=0)return;
+
+  Swal.fire({title:'Processing deposit...',allowOutsideClick:false,didOpen:()=>Swal.showLoading()});
+  await new Promise(r=>setTimeout(r,2000));
+  Swal.close();
+
+  const newBal=getWalletBalance()+parseFloat(amount);
+  setWalletBalance(newBal);
+  document.getElementById('wallet-balance').textContent=newBal.toLocaleString();
+
+  Swal.fire({icon:'success',title:'Deposit successful!',text:'Your wallet has been credited.'});
+});
 </script>
 
 <script>
 (function(){
-  const itemsList = document.getElementById('items-list');
-  const totalAmountEl = document.getElementById('total-amount');
-  const summaryCount = document.getElementById('summary-count');
-  const payBtn = document.getElementById('pay-btn');
-  const backShop = document.getElementById('back-shop');
-
-  const nameInput = document.getElementById('cust-name');
-  const phoneInput = document.getElementById('cust-phone');
-  const addressInput = document.getElementById('cust-address');
-  const txInput = document.getElementById('txid');
-
-  let cart = [];
-  try { cart = JSON.parse(localStorage.getItem('cart') || '[]') || []; } catch(e){ cart = []; }
+  const itemsList=document.getElementById('items-list');
+  const totalAmountEl=document.getElementById('total-amount');
+  const summaryCount=document.getElementById('summary-count');
+  const payBtn=document.getElementById('pay-btn');
+  const backShop=document.getElementById('back-shop');
+  const nameInput=document.getElementById('cust-name');
+  const phoneInput=document.getElementById('cust-phone');
+  const txInput=document.getElementById('txid');
+  let cart=[];
+  try{cart=JSON.parse(localStorage.getItem('cart')||'[]');}catch(e){cart=[];}
 
   function renderCart(){
-    itemsList.innerHTML = '';
+    itemsList.innerHTML='';
     if(!cart.length){
-      itemsList.innerHTML = '<p style="color:#475569">Your cart is empty. <a href="index.html">Go back to shop</a></p>';
-      totalAmountEl.textContent = '0';
-      summaryCount.textContent = '0 items';
-      return;
+      itemsList.innerHTML='<p style="color:#475569">Your cart is empty. <a href="index.html">Go back to shop</a></p>';
+      totalAmountEl.textContent='0'; summaryCount.textContent='0 items'; return;
     }
-    let total = 0;
-    cart.forEach((p)=>{ total += Number(p.price||0);
-      const row = document.createElement('div');
-      row.className = 'item';
-      row.innerHTML = `<img src="${p.image}" alt="${p.name}"><div class="meta"><b>${p.name}</b></div><div class="price">₦${Number(p.price).toLocaleString()}</div>`;
+    let total=0;
+    cart.forEach(p=>{
+      total+=Number(p.price||0);
+      const row=document.createElement('div');
+      row.className='item';
+      row.innerHTML=`<img src="${p.image}" alt="${p.name}">
+        <div class="meta"><b>${p.name}</b></div>
+        <div class="price">₦${Number(p.price).toLocaleString()}</div>`;
       itemsList.appendChild(row);
     });
-    totalAmountEl.textContent = total.toLocaleString();
-    summaryCount.textContent = `${cart.length} item${cart.length>1?'s':''}`;
+    totalAmountEl.textContent=total.toLocaleString();
+    summaryCount.textContent=`${cart.length} item${cart.length>1?'s':''}`;
   }
 
-  function txValid(tx){
-    return /^[A-Za-z0-9]{8,}$/.test(tx) && /[A-Za-z]/.test(tx) && /[0-9]/.test(tx);
-  }
+  function txValid(tx){return /^[A-Za-z0-9]{8,}$/.test(tx)&&/[A-Za-z]/.test(tx)&&/[0-9]/.test(tx);}
 
-  payBtn.addEventListener('click', async ()=>{
-    const name = nameInput.value.trim();
-    const phone = phoneInput.value.trim();
-    const tx = txInput.value.trim();
-    const total = parseFloat(totalAmountEl.textContent.replace(/,/g,'')) || 0;
-    const current = getWalletBalance();
+  payBtn.addEventListener('click',async()=>{
+    const name=nameInput.value.trim(),phone=phoneInput.value.trim(),tx=txInput.value.trim();
+    const total=parseFloat(totalAmountEl.textContent.replace(/,/g,''))||0;
+    const current=getWalletBalance();
 
-    if(!cart.length) return Swal.fire({icon:'error',title:'Empty Cart',text:'Add items before checking out.'});
-    if(!name || !phone) return Swal.fire({icon:'error',title:'Missing Info',text:'Please enter your full name and contact.'});
-    if(!txValid(tx)) return Swal.fire({icon:'error',title:'Invalid Transaction ID',text:'Transaction ID must be alphanumeric, at least 8 chars.'});
-
-    if(current < total){
-      Swal.fire({icon:'error',title:'Insufficient Wallet',text:'Deposit more funds before checkout.'});
-      return;
-    }
+    if(!cart.length)return Swal.fire({icon:'error',title:'Empty Cart',text:'Add items before checking out.'});
+    if(!name||!phone)return Swal.fire({icon:'error',title:'Missing Info',text:'Please enter your full name and contact.'});
+    if(!txValid(tx))return Swal.fire({icon:'error',title:'Invalid Transaction ID',text:'Transaction ID must be alphanumeric, at least 8 chars.'});
+    if(current<total)return Swal.fire({icon:'error',title:'Insufficient Wallet',text:'Deposit more funds before checkout.'});
 
     Swal.fire({title:'Verifying transaction...',allowOutsideClick:false,didOpen:()=>Swal.showLoading()});
-    await new Promise(r=>setTimeout(r,1500));
-    Swal.close();
+    await new Promise(r=>setTimeout(r,1500)); Swal.close();
 
-    const newBal = current - total;
-    setWalletBalance(newBal);
-    document.getElementById('wallet-balance').textContent = newBal.toLocaleString();
-
+    const newBal=current-total; setWalletBalance(newBal);
+    document.getElementById('wallet-balance').textContent=newBal.toLocaleString();
     localStorage.setItem('cart','[]');
-    Swal.fire({icon:'success',title:'Payment Successful',text:'Your order has been placed successfully!'}).then(()=>{
-      window.location.href='index.html';
-    });
+
+    Swal.fire({icon:'success',title:'Payment Successful',text:'Your order has been placed successfully!'})
+    .then(()=>window.location.href='index.html');
   });
 
   backShop.addEventListener('click',()=>window.location.href='index.html');
