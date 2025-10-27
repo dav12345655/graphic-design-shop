@@ -16,9 +16,6 @@
     --bg2:#7c3aed;
     --card:#ffffffcc;
     --muted:#6b7280;
-    --accent:#06b6d4;
-    --success:#16a34a;
-    --danger:#ef4444;
   }
   html,body{
     height:100%;margin:0;
@@ -29,16 +26,11 @@
   header{
     background:rgba(255,255,255,0.15);
     color:#fff;
-    padding:25px 10px;
+    padding:40px 10px;
     text-align:center;
     backdrop-filter:blur(8px);
   }
-  header h1{
-    margin:0;
-    font-size:32px;
-    font-weight:900;
-    letter-spacing:0.4px;
-  }
+  header h1{margin:0;font-size:36px;font-weight:900;}
   header p{margin:6px 0 0;opacity:0.9;font-size:14px}
   .container{
     max-width:1100px;
@@ -77,7 +69,7 @@
   /* floating buttons */
   .top-buttons {
     position: fixed;
-    top: 110px;
+    top: 140px;
     right: 20px;
     display:flex;
     flex-direction:column;
@@ -85,24 +77,18 @@
     z-index:1000;
     align-items:flex-end;
   }
-  .cart-btn{
-    background:#fff;color:#111;
-    border-radius:30px;padding:10px 16px;
-    display:flex;align-items:center;gap:6px;
-    box-shadow:0 8px 20px rgba(0,0,0,0.15);
-    cursor:pointer;font-weight:700;
-  }
-  .wallet-display{
+  .cart-btn, .wallet-display {
     background:#fff;
     color:#111;
-    padding:10px 16px;
     border-radius:30px;
+    padding:10px 16px;
+    display:flex;
+    align-items:center;
+    gap:6px;
     box-shadow:0 8px 20px rgba(0,0,0,0.15);
-    font-weight:700;cursor:pointer;
-    display:flex;gap:8px;align-items:center;
+    cursor:pointer;
+    font-weight:700;
   }
-
-  /* logout button */
   .logout-btn {
     background:#ef4444;
     color:#fff;
@@ -115,17 +101,10 @@
     cursor:pointer;
   }
   .logout-btn:hover{opacity:0.9;}
-
-  /* floating WhatsApp */
   .whatsapp{
     position:fixed;right:18px;bottom:18px;width:64px;height:64px;border-radius:50%;
     background:#25D366;color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;
     z-index:9999;box-shadow:0 10px 30px rgba(2,6,23,0.25);text-decoration:none;
-  }
-
-  @media(max-width:520px){
-    .top-buttons { right: 10px; gap:8px; top: 90px; }
-    header h1 { font-size:24px; }
   }
 </style>
 </head>
@@ -151,7 +130,7 @@
 
   <footer>© <span id="year"></span> Online Graphic Shop — Designed by <strong>ABblack</strong></footer>
 
-  <a class="whatsapp" href="https://wa.me/2349121383292" target="_blank" aria-label="Chat on WhatsApp">💬</a>
+  <a class="whatsapp" href="https://wa.me/2349121383292" target="_blank">💬</a>
 
   <!-- Deposit Modal -->
   <div id="depositModal" style="display:none;position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;z-index:2000">
@@ -167,14 +146,15 @@
   </div>
 
 <script>
-const MIN_DEPOSIT=100, MAX_DEPOSIT=50000;
-const products=[
+document.getElementById("year").textContent=new Date().getFullYear();
+
+// Load products (from Admin)
+let storedProducts = JSON.parse(localStorage.getItem("products")) || [];
+let products = storedProducts.length ? storedProducts : [
   {name:"Party",price:3000,category:"FLYER",image:"https://i.pinimg.com/1200x/41/61/f4/4161f44b77d1240bf7549c6dbb445055.jpg"},
   {name:"Blast",price:2000,category:"FLYER",image:"https://i.pinimg.com/1200x/ab/d3/79/abd379cd2b568cb5503662c48d3c981f.jpg"},
   {name:"The GOAT",price:2000,category:"GRAPHICS",image:"https://i.pinimg.com/736x/d2/62/9a/d2629a92a49e363ed0446bcc3a98f66a.jpg"},
-  {name:"V Design",price:2500,category:"GRAPHICS",image:"https://i.pinimg.com/1200x/3a/15/f2/3a15f2cb8387639c5abec72284267654.jpg"},
-  {name:"Asap Rocky",price:1500,category:"POSTER",image:"https://i.pinimg.com/1200x/b7/70/ee/b770ee389ab9a35ef8fc56023b74aebf.jpg"},
-  {name:"SADDAT",price:1200,category:"POSTER",image:"https://i.pinimg.com/1200x/17/95/f5/1795f507d24c22d4dbaf47aed985def3.jpg"}
+  {name:"V Design",price:2500,category:"GRAPHICS",image:"https://i.pinimg.com/1200x/3a/15/f2/3a15f2cb8387639c5abec72284267654.jpg"}
 ];
 
 function readCart(){try{return JSON.parse(localStorage.getItem('ogshop_cart'))||[];}catch{return[];}}
@@ -244,7 +224,7 @@ walletDisplay.onclick=()=>depositModal.style.display='flex';
 cancelDeposit.onclick=()=>depositModal.style.display='none';
 startDepositBtn.onclick=()=>{
   const amt=Number(depositAmountInput.value);
-  if(!amt||amt<MIN_DEPOSIT||amt>MAX_DEPOSIT)return Swal.fire('Invalid amount',`Enter between ₦${MIN_DEPOSIT}-₦${MAX_DEPOSIT}`,'error');
+  if(!amt||amt<100||amt>50000)return Swal.fire('Invalid amount','Enter between ₦100–₦50,000','error');
   depositModal.style.display='none';
   Swal.fire({title:'Processing...',didOpen:()=>Swal.showLoading()});
   setTimeout(()=>{
@@ -255,11 +235,15 @@ startDepositBtn.onclick=()=>{
 
 cartBtn.onclick=()=>{
   if(!cart.length)return Swal.fire('Cart Empty','Add items before checkout.','info');
-  let html=cart.map((x,i)=>`<div style="display:flex;justify-content:space-between;padding:5px 0">
-    <span>${x.name} - ₦${x.price.toLocaleString()}</span>
-    <button class='btn' style='padding:5px 8px;background:#ef4444' onclick='removeItem(${i})'>X</button>
-  </div>`).join('');
-  Swal.fire({title:'Your Cart',html,showCancelButton:true,confirmButtonText:'Checkout'}).then(r=>{
+  Swal.fire({
+    title:'Your Cart',
+    html:cart.map((x,i)=>`<div style="display:flex;justify-content:space-between;padding:5px 0">
+      <span>${x.name} - ₦${x.price.toLocaleString()}</span>
+      <button class='btn' style='padding:5px 8px;background:#ef4444' onclick='removeItem(${i})'>X</button>
+    </div>`).join(''),
+    showCancelButton:true,
+    confirmButtonText:'Checkout'
+  }).then(r=>{
     if(r.isConfirmed)window.location='checkout.html';
   });
 };
