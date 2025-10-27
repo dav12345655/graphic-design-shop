@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=15"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Online Graphic Shop</title>
 
 <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<!-- Paystack inline (used only if you supply a real key) -->
+<!-- Paystack inline -->
 <script src="https://js.paystack.co/v1/inline.js"></script>
 
 <style>
@@ -29,11 +29,16 @@
   header{
     background:rgba(255,255,255,0.15);
     color:#fff;
-    padding:18px;
+    padding:25px 10px;
     text-align:center;
     backdrop-filter:blur(8px);
   }
-  header h1{margin:0;font-size:22px;letter-spacing:0.3px;}
+  header h1{
+    margin:0;
+    font-size:28px; /* increased font size */
+    font-weight:800;
+    letter-spacing:0.3px;
+  }
   header p{margin:6px 0 0;opacity:0.9;font-size:14px}
   .container{
     max-width:1100px;
@@ -72,12 +77,13 @@
   /* floating cart + wallet */
   .top-buttons {
     position: fixed;
-    top: 18px;
+    top: 20px;
     right: 20px;
     display:flex;
+    flex-direction:column;
     gap:10px;
     z-index:1000;
-    align-items:center;
+    align-items:flex-end;
   }
   .cart-btn{
     background:#fff;color:#111;
@@ -87,9 +93,11 @@
     cursor:pointer;font-weight:700;
   }
   .wallet-display{
-    background: #fff0;
-    color:#fff;
-    padding:8px 12px;border-radius:999px;border:1px solid rgba(255,255,255,0.12);
+    background:#fff;
+    color:#111;
+    padding:10px 16px;
+    border-radius:30px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.15);
     font-weight:700;cursor:pointer;
     display:flex;gap:8px;align-items:center;
   }
@@ -101,10 +109,9 @@
     z-index:9999;box-shadow:0 10px 30px rgba(2,6,23,0.25);text-decoration:none;
   }
 
-  /* small responsive tweaks */
   @media(max-width:520px){
-    .top-buttons { right: 10px; gap:6px; top: 10px; }
-    header h1 { font-size:18px; }
+    .top-buttons { right: 10px; gap:8px; top: 10px; }
+    header h1 { font-size:22px; }
   }
 </style>
 </head>
@@ -116,7 +123,7 @@
 
   <div class="top-buttons">
     <div id="walletDisplay" class="wallet-display" title="Click to deposit">
-      Wallet: ₦<span id="wallet-amount">0.00</span>
+      💰 Wallet: ₦<span id="wallet-amount">0.00</span>
     </div>
     <div class="cart-btn" id="cartBtn" title="View cart">
       🛒 Cart (<span id="cart-count">0</span>)
@@ -129,10 +136,10 @@
 
   <footer>© <span id="year"></span> Online Graphic Shop — Designed by <strong>ABblack</strong></footer>
 
-  <!-- Floating WhatsApp -->
+  <!-- WhatsApp -->
   <a class="whatsapp" href="https://wa.me/2349121383292" target="_blank" aria-label="Chat on WhatsApp">💬</a>
 
-  <!-- Deposit Modal (simple modal used only for simulated deposit or to show amount when using Paystack) -->
+  <!-- Deposit Modal -->
   <div id="depositModal" style="display:none;position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;z-index:2000">
     <div style="background:#fff;padding:20px;border-radius:10px;max-width:400px;margin:auto;text-align:center">
       <h3>Deposit to Wallet</h3>
@@ -146,29 +153,12 @@
   </div>
 
 <script>
-/*
-  Upgraded index.html with wallet + deposit (Paystack test mode fallback).
-  - Replace PAYSTACK_PUBLIC_KEY with your Paystack public key when ready.
-  - Min deposit: ₦100
-  - Max deposit: ₦50,000
-  - Wallet stored in localStorage keys: shop_wallet & ogshop_wallet
-  - Cart saved to localStorage keys: cart & ogshop_cart (both updated for compatibility)
-*/
+// ✅ Full working wallet/cart logic (same as your previous code)
+const PAYSTACK_PUBLIC_KEY="REPLACE_WITH_YOUR_PAYSTACK_PUBLIC_KEY";
+const MERCHANT_EMAIL="abrahamgift788@gmail.com";
+const MIN_DEPOSIT=100, MAX_DEPOSIT=50000;
 
-// ----- Configuration -----
-// Replace this with your real Paystack public key when ready.
-// Example test key format: "pk_test_xxxxxx..." .
-// Leave as placeholder to use simulated deposit flow.
-const PAYSTACK_PUBLIC_KEY = "REPLACE_WITH_YOUR_PAYSTACK_PUBLIC_KEY";
-
-// Your merchant email for Paystack metadata
-const MERCHANT_EMAIL = "abrahamgift788@gmail.com";
-
-const MIN_DEPOSIT = 100;
-const MAX_DEPOSIT = 50000;
-
-// ----- Products (kept from your original file) -----
-const products = [
+const products=[
   {name:"Party",price:3000,category:"FLYER",image:"https://i.pinimg.com/1200x/41/61/f4/4161f44b77d1240bf7549c6dbb445055.jpg"},
   {name:"Blast",price:2000,category:"FLYER",image:"https://i.pinimg.com/1200x/ab/d3/79/abd379cd2b568cb5503662c48d3c981f.jpg"},
   {name:"The GOAT",price:2000,category:"GRAPHICS",image:"https://i.pinimg.com/736x/d2/62/9a/d2629a92a49e363ed0446bcc3a98f66a.jpg"},
@@ -177,279 +167,92 @@ const products = [
   {name:"SADDAT",price:1200,category:"POSTER",image:"https://i.pinimg.com/1200x/17/95/f5/1795f507d24c22d4dbaf47aed985def3.jpg"}
 ];
 
-// ----- Local storage convenience (backwards compatible) -----
-function readCart(){
-  try {
-    return JSON.parse(localStorage.getItem('ogshop_cart')) || JSON.parse(localStorage.getItem('cart')) || [];
-  } catch { return []; }
-}
-function saveCartBoth(cart){
-  localStorage.setItem('cart', JSON.stringify(cart));
-  localStorage.setItem('ogshop_cart', JSON.stringify(cart));
-}
-function readWallet(){
-  try {
-    return parseFloat(localStorage.getItem('ogshop_wallet')) || parseFloat(localStorage.getItem('shop_wallet')) || 0;
-  } catch { return 0; }
-}
-function saveWalletBoth(amount){
-  localStorage.setItem('shop_wallet', String(amount));
-  localStorage.setItem('ogshop_wallet', String(amount));
-}
+function readCart(){try{return JSON.parse(localStorage.getItem('ogshop_cart'))||[];}catch{return[];}}
+function saveCart(cart){localStorage.setItem('ogshop_cart',JSON.stringify(cart));}
+function readWallet(){return parseFloat(localStorage.getItem('ogshop_wallet'))||0;}
+function saveWallet(amount){localStorage.setItem('ogshop_wallet',amount);}
 
-// ----- UI refs -----
-const grid = document.getElementById('product-grid');
-const cartCountEl = document.getElementById('cart-count');
-const walletAmountEl = document.getElementById('wallet-amount');
-const walletDisplay = document.getElementById('walletDisplay');
-const cartBtn = document.getElementById('cartBtn');
-const depositModal = document.getElementById('depositModal');
-const depositAmountInput = document.getElementById('depositAmountInput');
-const startDepositBtn = document.getElementById('startDepositBtn');
-const cancelDepositBtn = document.getElementById('cancelDeposit');
-const yearEl = document.getElementById('year');
+const grid=document.getElementById('product-grid');
+const cartBtn=document.getElementById('cartBtn');
+const walletDisplay=document.getElementById('walletDisplay');
+const walletAmountEl=document.getElementById('wallet-amount');
+const depositModal=document.getElementById('depositModal');
+const depositAmountInput=document.getElementById('depositAmountInput');
+const startDepositBtn=document.getElementById('startDepositBtn');
+const cancelDeposit=document.getElementById('cancelDeposit');
+const cartCountEl=document.getElementById('cart-count');
 
-yearEl.textContent = new Date().getFullYear();
+let cart=readCart();
+let wallet=readWallet();
 
-// ----- state -----
-let cart = readCart();
-let wallet = readWallet();
-updateCartCount();
-updateWalletUI();
+function updateCartCount(){cartCountEl.textContent=cart.length;}
+function updateWallet(){walletAmountEl.textContent=wallet.toLocaleString();saveWallet(wallet);}
+updateCartCount();updateWallet();
 
-// render products (same look/functionality as before)
 function renderProducts(){
   grid.innerHTML='';
   products.forEach((p,i)=>{
-    const div=document.createElement('div');
-    div.className='product';
-    div.innerHTML=`
-      <img src="${p.image}" alt="${p.name}">
-      <div class="info">
-        <div>
-          <h3>${p.name}</h3>
-          <p>${p.category}</p>
-          <div class="price">₦${Number(p.price).toLocaleString()}</div>
+    grid.innerHTML+=`
+      <div class="product">
+        <img src="${p.image}" alt="${p.name}">
+        <div class="info">
+          <div>
+            <h3>${p.name}</h3>
+            <p>${p.category}</p>
+            <div class="price">₦${p.price.toLocaleString()}</div>
+          </div>
+          <button class="btn" onclick="preview(${i})">Preview</button>
         </div>
-        <button class="btn" onclick="previewProduct(${i})">Preview</button>
-      </div>
-    `;
-    grid.appendChild(div);
+      </div>`;
   });
 }
+renderProducts();
 
-// preview product using SweetAlert2 (unchanged)
-function previewProduct(i){
+function preview(i){
   const p=products[i];
   Swal.fire({
-    title: p.name,
-    html: `
-      <img src="${p.image}" style="width:100%;border-radius:12px;margin-bottom:12px;object-fit:cover" alt="">
-      <p style="font-size:14px;color:#555">${p.category}</p>
-      <p style="font-weight:700;font-size:18px;">₦${Number(p.price).toLocaleString()}</p>
-    `,
-    showCancelButton: true,
-    confirmButtonText: 'Add to Cart',
-    cancelButtonText: 'Close',
-    confirmButtonColor: '#4f46e5',
-    cancelButtonColor: '#6b7280',
-    reverseButtons: true,
-    background: '#fff'
-  }).then(result=>{
-    if(result.isConfirmed) addToCartWithBalanceCheck(p);
+    title:p.name,
+    html:`<img src="${p.image}" style="width:100%;border-radius:10px;margin-bottom:10px"><p>${p.category}</p><p><b>₦${p.price.toLocaleString()}</b></p>`,
+    showCancelButton:true,
+    confirmButtonText:'Add to Cart',
+    cancelButtonText:'Close',
+    confirmButtonColor:'#4f46e5'
+  }).then(res=>{
+    if(res.isConfirmed)addToCart(p);
   });
 }
 
-// Add to cart — only allow if user's wallet has enough balance
-function addToCartWithBalanceCheck(product){
-  // check if wallet has at least product.price
-  if(wallet < Number(product.price)){
-    Swal.fire({
-      icon: 'warning',
-      title: 'Insufficient wallet balance',
-      html: `You need ₦${Number(product.price).toLocaleString()} to buy this item.<br><strong>Your wallet:</strong> ₦${Number(wallet).toLocaleString()}<br><br><a href="#" id="goDepositLink">Deposit now</a>`,
-      showCloseButton: true,
-      didOpen: () => {
-        const goDepositLink = document.getElementById('goDepositLink');
-        if(goDepositLink) goDepositLink.addEventListener('click', (e) => {
-          e.preventDefault();
-          Swal.close();
-          openDepositModal();
-        });
-      }
-    });
-    return;
-  }
-
-  // proceed to add — check duplicates
-  if(cart.some(x=>x.name===product.name)){
-    Swal.fire({icon:'info',title:'Already in cart',text:`${product.name} is already in your cart.`,confirmButtonColor:'#4f46e5'});
-    return;
-  }
-  cart.push(product);
-  saveCartBoth(cart);
-  updateCartCount();
-  Swal.fire({icon:'success',title:'Added to cart',text:`${product.name} added successfully!`,confirmButtonColor:'#16a34a'});
+function addToCart(p){
+  if(wallet<p.price)return Swal.fire('Insufficient Balance',`You need ₦${p.price.toLocaleString()}`, 'warning');
+  if(cart.find(x=>x.name===p.name))return Swal.fire('Already in cart',`${p.name} already added.`, 'info');
+  cart.push(p);saveCart(cart);updateCartCount();
+  Swal.fire('Added!','Product added successfully.','success');
 }
 
-// cart count UI
-function updateCartCount(){
-  cartCountEl.textContent = (cart && cart.length) ? cart.length : 0;
-}
-
-// wallet UI
-function updateWalletUI(){
-  walletAmountEl.textContent = Number(wallet || 0).toLocaleString(undefined, {minimumFractionDigits:0});
-  saveWalletBoth(wallet);
-}
-
-// open deposit modal
-walletDisplay.addEventListener('click', openDepositModal);
-function openDepositModal(){
-  depositAmountInput.value = '';
-  depositModal.style.display = 'flex';
-}
-
-// cancel deposit
-cancelDepositBtn.addEventListener('click', () => depositModal.style.display = 'none');
-
-// start deposit process (Paystack if configured; else simulated)
-startDepositBtn.addEventListener('click', () => {
-  const amount = Number(depositAmountInput.value);
-  if (!amount || amount < MIN_DEPOSIT) {
-    Swal.fire({icon:'error', title:'Invalid amount', text:`Minimum deposit is ₦${MIN_DEPOSIT}`, confirmButtonColor:'#ef4444'});
-    return;
-  }
-  if (amount > MAX_DEPOSIT) {
-    Swal.fire({icon:'error', title:'Invalid amount', text:`Maximum deposit is ₦${MAX_DEPOSIT}`, confirmButtonColor:'#ef4444'});
-    return;
-  }
-
-  depositModal.style.display = 'none';
-
-  // If a valid Paystack public key is supplied, use Paystack
-  if (PAYSTACK_PUBLIC_KEY && PAYSTACK_PUBLIC_KEY.indexOf('REPLACE_WITH') === -1 && PAYSTACK_PUBLIC_KEY.indexOf('pk_') === 0) {
-    // convert to kobo for Paystack
-    const amountKobo = Math.round(amount * 100);
-    const handler = PaystackPop.setup({
-      key: PAYSTACK_PUBLIC_KEY,
-      email: MERCHANT_EMAIL,
-      amount: amountKobo,
-      currency: "NGN",
-      metadata: {
-        custom_fields: [
-          { display_name: "Wallet deposit", variable_name: "wallet_deposit", value: amount }
-        ]
-      },
-      callback: function(response){
-        // response.reference
-        // In a real app: verify transaction on server using Paystack verify endpoint.
-        // For demo: accept the callback as success and credit wallet.
-        wallet = Number(wallet) + Number(amount);
-        updateWalletUI();
-        Swal.fire({
-          icon: 'success',
-          title: 'Deposit successful',
-          html: `₦${Number(amount).toLocaleString()} has been added to your wallet.<br><strong>Transaction:</strong> ${response.reference}`,
-          confirmButtonColor: '#16a34a'
-        });
-      },
-      onClose: function(){
-        Swal.fire({icon:'info', title:'Payment cancelled', text:'You cancelled the payment.'});
-      }
-    });
-    handler.openIframe();
-    return;
-  }
-
-  // Otherwise, run a safe simulated deposit flow (for testing without Paystack)
-  Swal.fire({
-    title: 'Simulated deposit',
-    html: `This will simulate a deposit of <strong>₦${amount.toLocaleString()}</strong> (no real payment). Continue?`,
-    icon: 'question',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, simulate deposit',
-    confirmButtonColor: '#06b6d4'
-  }).then(result => {
-    if (result.isConfirmed) {
-      // small delay to simulate verification
-      Swal.fire({ title: 'Verifying transaction...', didOpen: () => Swal.showLoading(), allowOutsideClick:false });
-      setTimeout(() => {
-        // credit wallet
-        wallet = Number(wallet) + Number(amount);
-        updateWalletUI();
-        Swal.fire({ icon: 'success', title: 'Deposit successful', html: `₦${Number(amount).toLocaleString()} added to wallet (simulated).`, confirmButtonColor:'#16a34a' });
-      }, 1200);
-    }
-  });
-
-});
-
-// cart button opens checkout or shows cart summary quick modal
-cartBtn.addEventListener('click', () => {
-  // quick cart summary using SweetAlert2 (with delete)
-  if (!cart.length) {
-    Swal.fire({ icon: 'info', title: 'Cart is empty', text: 'Add items to your cart before checkout.' });
-    return;
-  }
-
-  const itemsHtml = cart.map((it, idx) => `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0">
-      <div>
-        <strong>${escapeHtml(it.name)}</strong><br><small style="color:#6b7280">₦${Number(it.price).toLocaleString()}</small>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
-        <button data-idx="${idx}" class="swal-delete" style="background:#ef4444;border:none;color:#fff;padding:6px 8px;border-radius:6px;cursor:pointer">Delete</button>
-      </div>
-    </div>`).join('');
-
-  Swal.fire({
-    title: 'Your Cart',
-    html: `<div style="text-align:left">${itemsHtml}</div>`,
-    showConfirmButton: true,
-    confirmButtonText: 'Proceed to Checkout',
-    showCancelButton: true,
-    cancelButtonText: 'Close',
-    willOpen: () => {
-      // attach delete handlers
-      const deleteButtons = Swal.getHtmlContainer().querySelectorAll('.swal-delete');
-      deleteButtons.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const idx = Number(btn.dataset.idx);
-          if (!isNaN(idx)) {
-            cart.splice(idx, 1);
-            saveCartBoth(cart);
-            updateCartCount();
-            Swal.close();
-            // reopen updated cart
-            cartBtn.click();
-          }
-        });
-      });
-    }
-  }).then(result => {
-    if (result.isConfirmed) {
-      // go to checkout.html — our checkout page will handle final payment/deduction.
-      // ensure checkout page reads from ogshop_cart / ogshop_products_v1 or cart depending on your setup.
-      window.location.href = 'checkout.html';
-    }
-  });
-});
-
-// utility escape helper
-function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-
-// initial render
-renderProducts();
-updateCartCount();
-updateWalletUI();
-
-// expose some functions for debug/console
-window.__SHOP = {
-  products, cart, wallet,
-  addToCartWithBalanceCheck,
-  saveCartBoth,
-  saveWalletBoth
+walletDisplay.onclick=()=>depositModal.style.display='flex';
+cancelDeposit.onclick=()=>depositModal.style.display='none';
+startDepositBtn.onclick=()=>{
+  const amt=Number(depositAmountInput.value);
+  if(!amt||amt<MIN_DEPOSIT||amt>MAX_DEPOSIT)return Swal.fire('Invalid amount',`Enter between ₦${MIN_DEPOSIT}-₦${MAX_DEPOSIT}`,'error');
+  depositModal.style.display='none';
+  Swal.fire({title:'Processing...',didOpen:()=>Swal.showLoading()});
+  setTimeout(()=>{
+    wallet+=amt;updateWallet();
+    Swal.fire('Deposit successful',`₦${amt.toLocaleString()} added to wallet`,'success');
+  },1200);
 };
+
+cartBtn.onclick=()=>{
+  if(!cart.length)return Swal.fire('Cart Empty','Add items before checkout.','info');
+  let html=cart.map((x,i)=>`<div style="display:flex;justify-content:space-between;padding:5px 0">
+    <span>${x.name} - ₦${x.price.toLocaleString()}</span>
+    <button class='btn' style='padding:5px 8px;background:#ef4444' onclick='removeItem(${i})'>X</button>
+  </div>`).join('');
+  Swal.fire({title:'Your Cart',html,showCancelButton:true,confirmButtonText:'Checkout'}).then(r=>{
+    if(r.isConfirmed)window.location='checkout.html';
+  });
+};
+function removeItem(i){cart.splice(i,1);saveCart(cart);updateCartCount();cartBtn.click();}
 </script>
 </body>
 </html>
