@@ -34,5 +34,35 @@
     "price": 1200,
     "category": "POSTER",
     "image": "https://i.pinimg.com/1200x/17/95/f5/1795f507d24c22d4dbaf47aed985def3.jpg"
+  },
+  {
+    "name": "Brain Jotter",
+    "price": 3000,
+    "image": "https://i.pinimg.com/736x/3d/cb/f5/3dcbf575ae777adc64e85e5b4d0469c4.jpg"
+  },
+  {
+    "name": "Miss Gloria",
+    "price": 2500,
+    "image": "https://i.pinimg.com/736x/f5/e5/8d/f5e58d9ccee0d0a7aa60b3e0d67c627e.jpg"
+  },
+  {
+    "name": "Queen Jonah",
+    "price": 2000,
+    "image": "https://i.pinimg.com/736x/f5/60/32/f56032e227ffb1ba1645b506e57163ee.jpg"
+  },
+  {
+    "name": "Princess",
+    "price": 3000,
+    "image": "https://i.pinimg.com/736x/42/93/54/4293544a8c451dbd2009c7a13daf2bd9.jpg"
+  },
+  {
+    "name": "blazer",
+    "price": 3000,
+    "image": "https://i.pinimg.com/1200x/7b/0a/36/7b0a36645f38e804dc8177c33ffc1fc9.jpg"
+  },
+  {
+    "name": "Utah",
+    "price": 3000,
+    "image": "https://i.pinimg.com/736x/07/2b/81/072b813eb3a662ecf2080441fe5f4375.jpg"
   }
 ]
