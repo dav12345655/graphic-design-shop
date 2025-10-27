@@ -35,9 +35,9 @@
   }
   header h1{
     margin:0;
-    font-size:28px; /* larger font */
-    font-weight:800;
-    letter-spacing:0.3px;
+    font-size:32px;
+    font-weight:900;
+    letter-spacing:0.4px;
   }
   header p{margin:6px 0 0;opacity:0.9;font-size:14px}
   .container{
@@ -74,10 +74,10 @@
   .btn:hover{opacity:0.9;}
   footer{text-align:center;color:#fff;padding:20px;font-size:13px;margin-top:30px;}
 
-  /* floating cart + wallet */
+  /* floating buttons */
   .top-buttons {
     position: fixed;
-    top: 100px; /* moved down to prevent overlap */
+    top: 110px;
     right: 20px;
     display:flex;
     flex-direction:column;
@@ -102,6 +102,20 @@
     display:flex;gap:8px;align-items:center;
   }
 
+  /* logout button */
+  .logout-btn {
+    background:#ef4444;
+    color:#fff;
+    border:none;
+    border-radius:20px;
+    padding:6px 12px;
+    font-weight:700;
+    font-size:13px;
+    box-shadow:0 6px 16px rgba(0,0,0,0.15);
+    cursor:pointer;
+  }
+  .logout-btn:hover{opacity:0.9;}
+
   /* floating WhatsApp */
   .whatsapp{
     position:fixed;right:18px;bottom:18px;width:64px;height:64px;border-radius:50%;
@@ -110,8 +124,8 @@
   }
 
   @media(max-width:520px){
-    .top-buttons { right: 10px; gap:8px; top: 80px; } /* adjusted for small screens */
-    header h1 { font-size:22px; }
+    .top-buttons { right: 10px; gap:8px; top: 90px; }
+    header h1 { font-size:24px; }
   }
 </style>
 </head>
@@ -122,6 +136,7 @@
   </header>
 
   <div class="top-buttons">
+    <button class="logout-btn" id="logoutBtn">Logout</button>
     <div id="walletDisplay" class="wallet-display" title="Click to deposit">
       💰 Wallet: ₦<span id="wallet-amount">0.00</span>
     </div>
@@ -136,7 +151,6 @@
 
   <footer>© <span id="year"></span> Online Graphic Shop — Designed by <strong>ABblack</strong></footer>
 
-  <!-- WhatsApp -->
   <a class="whatsapp" href="https://wa.me/2349121383292" target="_blank" aria-label="Chat on WhatsApp">💬</a>
 
   <!-- Deposit Modal -->
@@ -177,6 +191,7 @@ const depositAmountInput=document.getElementById('depositAmountInput');
 const startDepositBtn=document.getElementById('startDepositBtn');
 const cancelDeposit=document.getElementById('cancelDeposit');
 const cartCountEl=document.getElementById('cart-count');
+const logoutBtn=document.getElementById('logoutBtn');
 
 let cart=readCart();
 let wallet=readWallet();
@@ -249,6 +264,23 @@ cartBtn.onclick=()=>{
   });
 };
 function removeItem(i){cart.splice(i,1);saveCart(cart);updateCartCount();cartBtn.click();}
+
+logoutBtn.onclick=()=>{
+  Swal.fire({
+    title:'Logout?',
+    text:'You will be signed out of your account.',
+    icon:'warning',
+    showCancelButton:true,
+    confirmButtonText:'Yes, Logout',
+    confirmButtonColor:'#ef4444'
+  }).then(res=>{
+    if(res.isConfirmed){
+      localStorage.removeItem('loggedInUser');
+      Swal.fire('Logged out','You have been signed out.','success');
+      setTimeout(()=>window.location='login.html',1200);
+    }
+  });
+};
 </script>
 </body>
 </html>
