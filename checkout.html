@@ -130,28 +130,46 @@
   <a class="whatsapp" href="https://wa.me/2349121383292" target="_blank">💬</a>
 
 <script>
+// ===== USER SESSION + SHARED WALLET SYSTEM =====
 const userEmail = localStorage.getItem('loggedInUser');
 if(!userEmail){
-  Swal.fire({icon:'warning',title:'Login Required',text:'Please login to continue.',confirmButtonText:'Go to Login'})
-  .then(()=>window.location.href='login.html');
+  Swal.fire({
+    icon:'warning',
+    title:'Login Required',
+    text:'Please login to continue.',
+    confirmButtonText:'Go to Login'
+  }).then(()=>window.location.href='login.html');
 }
 
-function getWallets(){ return JSON.parse(localStorage.getItem('wallets')||'{}'); }
+// --- Shared Wallet Logic (same as index.html) ---
+function getWallets(){ return JSON.parse(localStorage.getItem('wallets') || '{}'); }
 function getWalletBalance(){
-  const w=getWallets(); return w[userEmail]||0;
+  const wallets = getWallets();
+  return parseFloat(wallets[userEmail] || 0);
 }
 function setWalletBalance(amount){
-  const w=getWallets(); w[userEmail]=amount; localStorage.setItem('wallets',JSON.stringify(w));
+  const wallets = getWallets();
+  wallets[userEmail] = amount;
+  localStorage.setItem('wallets', JSON.stringify(wallets));
 }
 
-const walletBar=document.createElement('div');
-walletBar.id='wallet-bar';
-walletBar.innerHTML=`💰 Wallet: ₦<span id="wallet-balance">${getWalletBalance().toLocaleString()}</span>
-<button id="deposit-btn">Deposit</button>`;
+// --- Wallet UI Bar ---
+const walletBar = document.createElement('div');
+walletBar.id = 'wallet-bar';
+walletBar.innerHTML = `
+  💰 Wallet: ₦<span id="wallet-balance">${getWalletBalance().toLocaleString()}</span>
+  <button id="deposit-btn">Deposit</button>
+`;
+walletBar.style.cssText = `
+  position:fixed;top:12px;left:12px;background:#fff;
+  padding:8px 14px;border-radius:25px;box-shadow:0 4px 10px rgba(0,0,0,0.15);
+  display:flex;align-items:center;gap:10px;font-weight:700;color:#0f172a;z-index:999;
+`;
 document.body.appendChild(walletBar);
 
+// --- Deposit Function ---
 document.getElementById('deposit-btn').addEventListener('click', async()=>{
-  const {value:amount}=await Swal.fire({
+  const {value:amount} = await Swal.fire({
     title:'Deposit Funds',
     input:'number',
     inputLabel:'Enter amount to deposit (₦)',
@@ -160,15 +178,15 @@ document.getElementById('deposit-btn').addEventListener('click', async()=>{
     confirmButtonText:'Deposit',
     confirmButtonColor:'#4f46e5'
   });
-  if(!amount || amount<=0)return;
+  if(!amount || amount <= 0) return;
 
   Swal.fire({title:'Processing deposit...',allowOutsideClick:false,didOpen:()=>Swal.showLoading()});
   await new Promise(r=>setTimeout(r,2000));
   Swal.close();
 
-  const newBal=getWalletBalance()+parseFloat(amount);
+  const newBal = getWalletBalance() + parseFloat(amount);
   setWalletBalance(newBal);
-  document.getElementById('wallet-balance').textContent=newBal.toLocaleString();
+  document.getElementById('wallet-balance').textContent = newBal.toLocaleString();
 
   Swal.fire({icon:'success',title:'Deposit successful!',text:'Your wallet has been credited.'});
 });
