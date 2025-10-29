@@ -1,271 +1,293 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Products — Online Graphic Shop</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products - Online Graphic Shop</title>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
+    * { box-sizing: border-box; font-family: "Poppins", sans-serif; }
     body {
       margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #dfe9f3 0%, #ffffff 100%);
+      display: flex;
+      background: linear-gradient(135deg, #e3f2fd, #f9f9fb);
+      min-height: 100vh;
       overflow-x: hidden;
-    }
-
-    header {
-      background: rgba(255, 255, 255, 0.6);
-      backdrop-filter: blur(12px);
-      text-align: center;
-      padding: 50px 20px;
-      border-radius: 0 0 40px 40px;
-      margin-bottom: 20px;
-    }
-
-    header h1 {
-      font-size: 2rem;
-      color: #111;
     }
 
     /* Sidebar */
     .sidebar {
-      position: fixed;
-      top: 0;
-      left: -250px;
       width: 250px;
-      height: 100%;
-      background: rgba(255, 255, 255, 0.3);
-      backdrop-filter: blur(12px);
-      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
-      transition: 0.3s ease-in-out;
-      padding-top: 70px;
-      z-index: 1000;
-    }
-
-    .sidebar.active {
-      left: 0;
-    }
-
-    .sidebar a, .sidebar button {
-      display: block;
-      padding: 15px 25px;
-      color: #333;
-      text-decoration: none;
-      font-size: 16px;
-      transition: 0.3s;
-      border: none;
-      background: transparent;
-      width: 100%;
-      text-align: left;
-    }
-
-    .sidebar a:hover, .sidebar button:hover {
-      background: rgba(255, 255, 255, 0.6);
-      border-radius: 8px;
-    }
-
-    .menu-toggle {
+      height: 100vh;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(20px);
+      box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+      border-right: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 20px;
       position: fixed;
-      top: 20px;
-      left: 20px;
-      font-size: 26px;
-      background: rgba(255,255,255,0.7);
-      backdrop-filter: blur(8px);
-      border: none;
-      padding: 10px 12px;
-      border-radius: 50%;
-      cursor: pointer;
-      z-index: 1100;
+      left: 0;
+      top: 0;
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
     }
 
-    /* Products */
-    .products-container {
+    .sidebar h2 {
+      font-size: 1.4rem;
+      color: #111;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    .sidebar button {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 0;
+      margin-bottom: 15px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: 0.3s;
+    }
+
+    .sidebar button:hover {
+      background: #111;
+    }
+
+    /* Content */
+    .content {
+      margin-left: 270px;
+      padding: 40px 20px;
+      flex: 1;
+      text-align: center;
+    }
+
+    header {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #111;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: #555;
+      margin-bottom: 40px;
+    }
+
+    /* Product grid */
+    .product-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 25px;
-      padding: 20px;
+      justify-items: center;
     }
 
     .product-card {
-      background: rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.25);
       backdrop-filter: blur(15px);
       border-radius: 20px;
       overflow: hidden;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-      transition: 0.3s;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      transition: 0.4s;
       cursor: pointer;
+      width: 100%;
+      max-width: 320px;
+      position: relative;
     }
 
-    .product-card:hover {
-      transform: translateY(-5px);
-    }
+    .product-card:hover { transform: translateY(-5px); }
 
     .product-card img {
       width: 100%;
       height: 200px;
       object-fit: cover;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     }
 
-    .product-card-content {
-      padding: 15px;
-      text-align: center;
-    }
-
-    .product-card-content h3 {
+    .product-card h3 {
       font-size: 1.1rem;
       color: #111;
-      margin-bottom: 5px;
+      margin: 10px 0;
     }
 
-    .product-card-content p {
-      font-size: 0.9rem;
-      color: #666;
+    .price {
+      color: #333;
+      font-weight: 500;
+      margin-bottom: 10px;
     }
 
-    .product-card-content button {
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      padding-bottom: 15px;
+    }
+
+    .btn {
       background: #111;
       color: white;
       border: none;
-      padding: 8px 16px;
-      border-radius: 6px;
+      border-radius: 8px;
+      padding: 8px 12px;
       cursor: pointer;
-      margin-top: 10px;
+      font-size: 0.9rem;
       transition: 0.3s;
     }
 
-    .product-card-content button:hover {
-      background: #333;
+    .btn:hover {
+      background: #000;
     }
 
-    @media (max-width: 768px) {
-      header h1 { font-size: 1.5rem; }
-      .product-card img { height: 180px; }
+    @media(max-width: 768px) {
+      body { flex-direction: column; }
+      .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        justify-content: space-around;
+        border-right: none;
+        border-bottom: 1px solid rgba(255,255,255,0.3);
+      }
+      .content { margin-left: 0; padding-top: 30px; }
+      .sidebar h2 { display: none; }
+      .sidebar button { width: auto; padding: 8px 14px; font-size: 0.9rem; }
     }
   </style>
 </head>
 <body>
 
-  <button class="menu-toggle" id="menuToggle"><i class="fas fa-ellipsis-v"></i></button>
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <h2>Menu</h2>
+    <button onclick="window.location.href='index.html'">🏠 Home</button>
+    <button id="cartBtn">🛒 View Cart</button>
+    <button id="logoutBtn">🚪 Logout</button>
+  </aside>
 
-  <div class="sidebar" id="sidebar">
-    <a href="index.html"><i class="fas fa-home"></i> Home</a>
-    <a href="products.html"><i class="fas fa-box-open"></i> Products</a>
-    <a href="#" id="cart-btn"><i class="fas fa-shopping-cart"></i> Cart</a>
-    <button id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+  <!-- Content -->
+  <div class="content">
+    <header>Our Featured Designs</header>
+    <p class="subtitle">Explore professionally crafted designs tailored to elevate your brand and visual identity.</p>
+
+    <div class="product-grid" id="productGrid"></div>
   </div>
 
-  <header>
-    <h1>Our Products</h1>
-  </header>
-
-  <div class="products-container" id="productsContainer"></div>
-
   <script>
-    // Sidebar toggle
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
-    menuToggle.addEventListener('click', () => sidebar.classList.toggle('active'));
-
-    // Sample products
-    const products = JSON.parse(localStorage.getItem("products")) || [
-      { name: "Logo Design", price: 12000, image: "https://i.pinimg.com/736x/0d/55/7a/0d557a9f0a7dcbcbab6f91b1e6578038.jpg" },
-      { name: "Poster Design", price: 8000, image: "https://i.pinimg.com/736x/a7/e3/2b/a7e32b88b51e6b67f89308702f928a59.jpg" },
-      { name: "Business Card", price: 5000, image: "https://i.pinimg.com/736x/5b/7f/84/5b7f845cdcc99ed924b2d3b1d310dd85.jpg" }
+    const products = [
+      {
+        name: "Creative Poster Design",
+        price: 15000,
+        image: "https://i.pinimg.com/736x/88/35/15/8835155d4f0a99f0878591e853d1b105.jpg",
+        description: "A modern poster layout designed to capture attention and communicate your message clearly."
+      },
+      {
+        name: "Minimalist Brand Logo",
+        price: 12000,
+        image: "https://i.pinimg.com/736x/1e/8f/f8/1e8ff8c9e5df22cf13b1a2a57e057301.jpg",
+        description: "A clean, versatile, and memorable logo that represents your brand identity perfectly."
+      },
+      {
+        name: "Social Media Template Pack",
+        price: 10000,
+        image: "https://i.pinimg.com/736x/f0/02/70/f002708a9ac31ad227839c6878a41ebc.jpg",
+        description: "A collection of editable templates to maintain brand consistency across social media platforms."
+      },
+      {
+        name: "Business Flyer Design",
+        price: 13000,
+        image: "https://i.pinimg.com/736x/31/47/da/3147da8d4a82de6bb09a2047a12e71c7.jpg",
+        description: "A professionally designed flyer to help you market your services effectively."
+      }
     ];
 
-    const productsContainer = document.getElementById('productsContainer');
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const productGrid = document.getElementById("productGrid");
+    productGrid.innerHTML = products.map((p, index) => `
+      <div class="product-card">
+        <img src="${p.image}" alt="${p.name}">
+        <h3>${p.name}</h3>
+        <div class="price">₦${p.price.toLocaleString()}</div>
+        <div class="actions">
+          <button class="btn" onclick="previewProduct(${index})">Preview</button>
+        </div>
+      </div>
+    `).join("");
 
-    // Render products
-    function renderProducts() {
-      productsContainer.innerHTML = "";
-      products.forEach((p, i) => {
-        const card = document.createElement("div");
-        card.className = "product-card";
-        card.innerHTML = `
-          <img src="${p.image}" alt="${p.name}">
-          <div class="product-card-content">
-            <h3>${p.name}</h3>
-            <p>₦${p.price.toLocaleString()}</p>
-            <button onclick="previewProduct(${i})">Preview</button>
-          </div>
-        `;
-        productsContainer.appendChild(card);
-      });
-    }
-
-    // Preview product
-    function previewProduct(index) {
-      const p = products[index];
+    function previewProduct(i) {
+      const p = products[i];
       Swal.fire({
         title: p.name,
-        html: `
-          <img src="${p.image}" style="width:100%;border-radius:10px;margin-bottom:15px;">
-          <p><b>Price:</b> ₦${p.price.toLocaleString()}</p>
-        `,
+        text: p.description,
+        imageUrl: p.image,
+        imageWidth: 400,
+        confirmButtonText: "Add to Cart",
         showCancelButton: true,
-        confirmButtonText: 'Add to Cart',
-        cancelButtonText: 'Cancel',
-        confirmButtonColor: '#111'
-      }).then(result => {
-        if (result.isConfirmed) {
+        cancelButtonText: "Cancel",
+        confirmButtonColor: "#111"
+      }).then(res => {
+        if (res.isConfirmed) {
+          const cart = JSON.parse(localStorage.getItem("ogshop_cart")) || [];
           cart.push(p);
-          localStorage.setItem('cart', JSON.stringify(cart));
-          Swal.fire('Added!', `${p.name} has been added to your cart.`, 'success');
+          localStorage.setItem("ogshop_cart", JSON.stringify(cart));
+          Swal.fire("Added!", `${p.name} has been added to your cart.`, "success");
         }
       });
     }
 
-    // View cart
-    document.getElementById('cart-btn').addEventListener('click', () => {
+    // Cart button
+    document.getElementById("cartBtn").addEventListener("click", () => {
+      const cart = JSON.parse(localStorage.getItem("ogshop_cart")) || [];
       if (cart.length === 0) {
-        Swal.fire('Cart Empty', 'You have no products in your cart.', 'info');
+        Swal.fire("Your Cart", "Your cart is empty!", "info");
         return;
       }
 
-      let cartHTML = '<ul style="list-style:none;padding:0;text-align:left;">';
-      cart.forEach((item, index) => {
-        cartHTML += `
-          <li style="display:flex;justify-content:space-between;align-items:center;margin:10px 0;border-bottom:1px solid #ddd;padding-bottom:5px;">
-            <span>${item.name} - ₦${item.price.toLocaleString()}</span>
-            <button onclick="deleteCartItem(${index})" style="background:crimson;border:none;color:white;padding:5px 8px;border-radius:4px;cursor:pointer;">🗑️</button>
-          </li>
-        `;
-      });
-      cartHTML += '</ul>';
+      const cartHTML = cart.map((x, i) => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;">
+          <span>${x.name} - ₦${x.price.toLocaleString()}</span>
+          <button style="background:#ef4444;color:#fff;border:none;border-radius:5px;padding:3px 6px;cursor:pointer;" onclick="removeCartItem(${i})">X</button>
+        </div>
+      `).join("");
 
       Swal.fire({
-        title: 'Your Cart',
-        html: cartHTML,
+        title: "Your Cart",
+        html: `<div style="text-align:left;max-height:200px;overflow:auto">${cartHTML}</div>`,
         showCancelButton: true,
-        confirmButtonText: 'Add More',
-        cancelButtonText: 'Cancel',
-        width: 500,
-        confirmButtonColor: '#111'
+        confirmButtonText: "Checkout",
+        cancelButtonText: "Close",
+      }).then(r => {
+        if (r.isConfirmed) window.location.href = "checkout.html";
       });
     });
-
-    // Delete from cart
-    window.deleteCartItem = (index) => {
-      cart.splice(index, 1);
-      localStorage.setItem('cart', JSON.stringify(cart));
-      Swal.fire('Deleted', 'Item removed from cart.', 'success');
-    };
 
     // Logout
-    document.getElementById('logout-btn').addEventListener('click', () => {
+    document.getElementById("logoutBtn").addEventListener("click", () => {
       Swal.fire({
-        title: 'Logout Successful',
-        text: 'You have been logged out.',
-        icon: 'success'
-      }).then(() => {
-        localStorage.clear();
-        window.location.href = 'login.html';
+        title: "Confirm Logout",
+        text: "Do you really want to logout?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, Logout",
+        confirmButtonColor: "#d33"
+      }).then(result => {
+        if (result.isConfirmed) {
+          localStorage.removeItem("loggedInUser");
+          Swal.fire("Logged Out", "You have successfully logged out.", "success");
+          setTimeout(() => window.location.href = "login.html", 1200);
+        }
       });
     });
 
-    renderProducts();
+    // Remove item from cart
+    function removeCartItem(i) {
+      const cart = JSON.parse(localStorage.getItem("ogshop_cart")) || [];
+      cart.splice(i, 1);
+      localStorage.setItem("ogshop_cart", JSON.stringify(cart));
+      Swal.close();
+      document.getElementById("cartBtn").click();
+    }
   </script>
 </body>
 </html>
