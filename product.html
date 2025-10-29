@@ -1,124 +1,271 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Product Preview</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Products — Online Graphic Shop</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     body {
-      font-family: "Segoe UI", sans-serif;
-      background: #f4f4f4;
       margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #dfe9f3 0%, #ffffff 100%);
+      overflow-x: hidden;
     }
 
     header {
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(12px);
+      text-align: center;
+      padding: 50px 20px;
+      border-radius: 0 0 40px 40px;
+      margin-bottom: 20px;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      color: #111;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -250px;
+      width: 250px;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(12px);
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+      transition: 0.3s ease-in-out;
+      padding-top: 70px;
+      z-index: 1000;
+    }
+
+    .sidebar.active {
+      left: 0;
+    }
+
+    .sidebar a, .sidebar button {
+      display: block;
+      padding: 15px 25px;
+      color: #333;
+      text-decoration: none;
+      font-size: 16px;
+      transition: 0.3s;
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+    }
+
+    .sidebar a:hover, .sidebar button:hover {
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 8px;
+    }
+
+    .menu-toggle {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      font-size: 26px;
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(8px);
+      border: none;
+      padding: 10px 12px;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 1100;
+    }
+
+    /* Products */
+    .products-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+      padding: 20px;
+    }
+
+    .product-card {
+      background: rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(15px);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+      transition: 0.3s;
+      cursor: pointer;
+    }
+
+    .product-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .product-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .product-card-content {
+      padding: 15px;
+      text-align: center;
+    }
+
+    .product-card-content h3 {
+      font-size: 1.1rem;
+      color: #111;
+      margin-bottom: 5px;
+    }
+
+    .product-card-content p {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .product-card-content button {
       background: #111;
-      color: white;
-      padding: 15px;
-      width: 100%;
-      text-align: center;
-    }
-
-    .product-container {
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      max-width: 400px;
-      margin-top: 30px;
-      padding: 15px;
-      text-align: center;
-    }
-
-    img {
-      width: 100%;
-      border-radius: 10px;
-    }
-
-    h2 {
-      margin: 10px 0;
-    }
-
-    p {
-      color: #555;
-      margin-bottom: 10px;
-    }
-
-    button {
-      background: #28a745;
       color: white;
       border: none;
-      padding: 10px 20px;
+      padding: 8px 16px;
       border-radius: 6px;
       cursor: pointer;
-      font-weight: bold;
+      margin-top: 10px;
+      transition: 0.3s;
     }
 
-    a.back-link {
-      display: inline-block;
-      margin-top: 15px;
-      color: #007bff;
-      text-decoration: none;
+    .product-card-content button:hover {
+      background: #333;
     }
 
-    footer {
-      text-align: center;
-      padding: 15px;
-      background: #111;
-      color: #ccc;
-      margin-top: 40px;
-      width: 100%;
+    @media (max-width: 768px) {
+      header h1 { font-size: 1.5rem; }
+      .product-card img { height: 180px; }
     }
   </style>
 </head>
 <body>
-  <header><h1>Product Preview</h1></header>
 
-  <div id="product-container" class="product-container">
-    <p>Loading product...</p>
+  <button class="menu-toggle" id="menuToggle"><i class="fas fa-ellipsis-v"></i></button>
+
+  <div class="sidebar" id="sidebar">
+    <a href="index.html"><i class="fas fa-home"></i> Home</a>
+    <a href="products.html"><i class="fas fa-box-open"></i> Products</a>
+    <a href="#" id="cart-btn"><i class="fas fa-shopping-cart"></i> Cart</a>
+    <button id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
   </div>
 
-  <a href="admin.html" class="back-link">← Back to Shop</a>
+  <header>
+    <h1>Our Products</h1>
+  </header>
 
-  <footer>
-    <p>Designed by <strong>ABblack</strong> © <span id="year"></span></p>
-  </footer>
+  <div class="products-container" id="productsContainer"></div>
 
   <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
+    // Sidebar toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    menuToggle.addEventListener('click', () => sidebar.classList.toggle('active'));
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const productId = urlParams.get("id");
+    // Sample products
+    const products = JSON.parse(localStorage.getItem("products")) || [
+      { name: "Logo Design", price: 12000, image: "https://i.pinimg.com/736x/0d/55/7a/0d557a9f0a7dcbcbab6f91b1e6578038.jpg" },
+      { name: "Poster Design", price: 8000, image: "https://i.pinimg.com/736x/a7/e3/2b/a7e32b88b51e6b67f89308702f928a59.jpg" },
+      { name: "Business Card", price: 5000, image: "https://i.pinimg.com/736x/5b/7f/84/5b7f845cdcc99ed924b2d3b1d310dd85.jpg" }
+    ];
 
-    fetch("products.json")
-      .then(res => res.json())
-      .then(products => {
-        const product = products[productId];
-        const container = document.getElementById("product-container");
+    const productsContainer = document.getElementById('productsContainer');
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-        if (!product) {
-          container.innerHTML = "<p>Product not found.</p>";
-          return;
-        }
-
-        container.innerHTML = `
-          <img src="${product.image}" alt="${product.name}">
-          <h2>${product.name}</h2>
-          <p><strong>Price:</strong> ₦${product.price}</p>
-          <button id="add-to-cart">Add to Cart</button>
+    // Render products
+    function renderProducts() {
+      productsContainer.innerHTML = "";
+      products.forEach((p, i) => {
+        const card = document.createElement("div");
+        card.className = "product-card";
+        card.innerHTML = `
+          <img src="${p.image}" alt="${p.name}">
+          <div class="product-card-content">
+            <h3>${p.name}</h3>
+            <p>₦${p.price.toLocaleString()}</p>
+            <button onclick="previewProduct(${i})">Preview</button>
+          </div>
         `;
+        productsContainer.appendChild(card);
+      });
+    }
 
-        document.getElementById("add-to-cart").addEventListener("click", () => {
-          let cart = JSON.parse(localStorage.getItem("cart")) || [];
-          cart.push(product);
-          localStorage.setItem("cart", JSON.stringify(cart));
-          alert("✅ Added to cart!");
-        });
-      })
-      .catch(err => console.error("Error loading product:", err));
+    // Preview product
+    function previewProduct(index) {
+      const p = products[index];
+      Swal.fire({
+        title: p.name,
+        html: `
+          <img src="${p.image}" style="width:100%;border-radius:10px;margin-bottom:15px;">
+          <p><b>Price:</b> ₦${p.price.toLocaleString()}</p>
+        `,
+        showCancelButton: true,
+        confirmButtonText: 'Add to Cart',
+        cancelButtonText: 'Cancel',
+        confirmButtonColor: '#111'
+      }).then(result => {
+        if (result.isConfirmed) {
+          cart.push(p);
+          localStorage.setItem('cart', JSON.stringify(cart));
+          Swal.fire('Added!', `${p.name} has been added to your cart.`, 'success');
+        }
+      });
+    }
+
+    // View cart
+    document.getElementById('cart-btn').addEventListener('click', () => {
+      if (cart.length === 0) {
+        Swal.fire('Cart Empty', 'You have no products in your cart.', 'info');
+        return;
+      }
+
+      let cartHTML = '<ul style="list-style:none;padding:0;text-align:left;">';
+      cart.forEach((item, index) => {
+        cartHTML += `
+          <li style="display:flex;justify-content:space-between;align-items:center;margin:10px 0;border-bottom:1px solid #ddd;padding-bottom:5px;">
+            <span>${item.name} - ₦${item.price.toLocaleString()}</span>
+            <button onclick="deleteCartItem(${index})" style="background:crimson;border:none;color:white;padding:5px 8px;border-radius:4px;cursor:pointer;">🗑️</button>
+          </li>
+        `;
+      });
+      cartHTML += '</ul>';
+
+      Swal.fire({
+        title: 'Your Cart',
+        html: cartHTML,
+        showCancelButton: true,
+        confirmButtonText: 'Add More',
+        cancelButtonText: 'Cancel',
+        width: 500,
+        confirmButtonColor: '#111'
+      });
+    });
+
+    // Delete from cart
+    window.deleteCartItem = (index) => {
+      cart.splice(index, 1);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      Swal.fire('Deleted', 'Item removed from cart.', 'success');
+    };
+
+    // Logout
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      Swal.fire({
+        title: 'Logout Successful',
+        text: 'You have been logged out.',
+        icon: 'success'
+      }).then(() => {
+        localStorage.clear();
+        window.location.href = 'login.html';
+      });
+    });
+
+    renderProducts();
   </script>
 </body>
 </html>
