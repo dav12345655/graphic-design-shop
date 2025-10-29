@@ -46,6 +46,7 @@
       box-shadow: 0 3px 8px rgba(0,0,0,0.1);
       transition: 0.3s;
     }
+
     .menu-icon:hover {
       background: rgba(255,255,255,0.5);
     }
@@ -94,14 +95,19 @@
       background: #111;
     }
 
-    .blog-section {
+    .blog-section, .product-section {
       text-align: center;
       padding: 50px 20px;
-      max-width: 800px;
+      max-width: 900px;
       margin: 0 auto;
+      display: none;
     }
 
-    .blog-section h2 {
+    .active-section {
+      display: block;
+    }
+
+    .blog-section h2, .product-section h2 {
       font-size: 2rem;
       background: linear-gradient(90deg, #3a3a3a, #000);
       -webkit-background-clip: text;
@@ -120,7 +126,7 @@
       gap: 25px;
     }
 
-    .blog-card {
+    .blog-card, .product-card {
       background: rgba(255, 255, 255, 0.25);
       backdrop-filter: blur(15px);
       border-radius: 20px;
@@ -130,21 +136,27 @@
       cursor: pointer;
     }
 
-    .blog-card:hover {
+    .blog-card:hover, .product-card:hover {
       transform: translateY(-5px);
     }
 
-    .blog-card img {
+    .blog-card img, .product-card img {
       width: 100%;
       height: 180px;
       object-fit: cover;
     }
 
-    .blog-card h3 {
+    .blog-card h3, .product-card h3 {
       font-size: 1.2rem;
       color: #111;
       padding: 15px;
       margin: 0;
+    }
+
+    .product-card p {
+      color: #444;
+      font-weight: 600;
+      padding-bottom: 15px;
     }
 
     @media(max-width: 600px) {
@@ -163,6 +175,7 @@
 
   <aside class="sidebar" id="sidebar">
     <h2>Menu</h2>
+    <button id="productBtn">🛍️ Products</button>
     <button id="cartBtn">🛒 View Cart</button>
     <button id="logoutBtn">🚪 Logout</button>
     <button id="blogToggle">📰 Blog</button>
@@ -177,7 +190,8 @@
     </div>
   </aside>
 
-  <section class="blog-section">
+  <!-- BLOG SECTION -->
+  <section class="blog-section active-section" id="blogSection">
     <h2>Insights & Inspiration from the World of Design</h2>
     <p>Explore the art, passion, and creativity that drive modern graphic design — discover how visuals shape perception and elevate brands.</p>
 
@@ -186,19 +200,17 @@
         <img src="https://i.pinimg.com/736x/db/e3/d4/dbe3d47c35a749790fdbd9a3ee7b30a7.jpg" alt="">
         <h3>Why You Need a Graphic Designer</h3>
       </div>
-      <div class="blog-card" data-title="Do You Need a Graphic Designer?" data-img="https://www.pinterest.com/pin/1015209941009693809/" data-text="Your brand deserves a visual identity that resonates. A graphic designer can bring your ideas to life.">
+      <div class="blog-card" data-title="Do You Need a Graphic Designer?" data-img="https://i.pinimg.com/originals/7e/6f/6e/7e6f6ed43238adfe414c4ac1ff9f2e3b.jpg" data-text="Your brand deserves a visual identity that resonates. A graphic designer can bring your ideas to life.">
         <img src="https://i.pinimg.com/originals/7e/6f/6e/7e6f6ed43238adfe414c4ac1ff9f2e3b.jpg" alt="">
         <h3>Do You Need a Graphic Designer?</h3>
       </div>
-      <div class="blog-card" data-title="The Future of Visual Branding" data-img="https://i.pinimg.com/564x/8e/34/bb/8e34bb24c15efb6272c067356d37e2e1.jpg" data-text="Design trends evolve, but creativity remains timeless. Explore the rise of motion and AI-driven visuals.">
-        <img src="https://i.pinimg.com/564x/8e/34/bb/8e34bb24c15efb6272c067356d37e2e1.jpg" alt="">
-        <h3>The Future of Visual Branding</h3>
-      </div>
-      <div class="blog-card" data-title="Design Thinking for Entrepreneurs" data-img="https://i.pinimg.com/564x/4b/88/11/4b881153a2a4b9b36c48c8a4e5b4dc16.jpg" data-text="Entrepreneurs can harness design thinking to innovate and build stronger, customer-centered brands.">
-        <img src="https://i.pinimg.com/564x/4b/88/11/4b881153a2a4b9b36c48c8a4e5b4dc16.jpg" alt="">
-        <h3>Design Thinking for Entrepreneurs</h3>
-      </div>
     </div>
+  </section>
+
+  <!-- PRODUCT SECTION -->
+  <section class="product-section" id="productSection">
+    <h2>Our Featured Products</h2>
+    <div class="blog-grid" id="productGrid"></div>
   </section>
 
   <script>
@@ -208,15 +220,22 @@
     const blogList = document.getElementById("blogList");
     const blogLinks = document.querySelectorAll(".blogLink");
     const blogCards = document.querySelectorAll(".blog-card");
+    const productBtn = document.getElementById("productBtn");
+    const blogSection = document.getElementById("blogSection");
+    const productSection = document.getElementById("productSection");
+    const productGrid = document.getElementById("productGrid");
 
+    // Menu toggle
     menuBtn.addEventListener("click", () => {
       sidebar.classList.toggle("active");
     });
 
+    // Toggle blog list inside menu
     blogToggle.addEventListener("click", () => {
       blogList.style.display = blogList.style.display === "none" ? "block" : "none";
     });
 
+    // SweetAlert for blog items
     [...blogLinks, ...blogCards].forEach(item => {
       item.addEventListener("click", () => {
         Swal.fire({
@@ -231,13 +250,40 @@
       });
     });
 
+    // Logout and Cart alerts
     document.getElementById("logoutBtn").addEventListener("click", () => {
       Swal.fire("Logged Out", "You have successfully logged out.", "success");
     });
-
     document.getElementById("cartBtn").addEventListener("click", () => {
       Swal.fire("Your Cart", "Your cart items will appear here soon!", "info");
     });
+
+    // Product Page Toggle
+    productBtn.addEventListener("click", () => {
+      blogSection.classList.remove("active-section");
+      productSection.classList.add("active-section");
+      sidebar.classList.remove("active");
+      loadProducts();
+    });
+
+    function loadProducts() {
+      const products = JSON.parse(localStorage.getItem("products")) || [];
+      productGrid.innerHTML = "";
+      if (products.length === 0) {
+        productGrid.innerHTML = "<p>No products available yet.</p>";
+        return;
+      }
+      products.forEach(p => {
+        const div = document.createElement("div");
+        div.className = "product-card";
+        div.innerHTML = `
+          <img src="${p.image}" alt="${p.name}">
+          <h3>${p.name}</h3>
+          <p>₦${p.price}</p>
+        `;
+        productGrid.appendChild(div);
+      });
+    }
   </script>
 </body>
 </html>
