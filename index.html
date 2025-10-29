@@ -6,17 +6,45 @@
   <title>Online Graphic Shop</title>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
-    * { box-sizing: border-box; font-family: "Poppins", sans-serif; }
+    * { box-sizing: border-box; font-family: "Poppins", sans-serif; margin: 0; padding: 0; }
+
     body {
-      margin: 0;
       background: linear-gradient(135deg, #e3f2fd, #f9f9fb);
       min-height: 100vh;
       overflow-x: hidden;
-      display: flex;
     }
 
-    /* Sidebar - always on the left */
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #111;
+      position: relative;
+    }
+
+    .menu-icon {
+      font-size: 26px;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.3);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+      transition: 0.3s;
+    }
+
+    .menu-icon:hover {
+      background: rgba(255,255,255,0.5);
+    }
+
+    /* Sidebar */
     .sidebar {
+      position: fixed;
+      top: 0;
+      left: -270px;
       width: 250px;
       height: 100vh;
       background: rgba(255, 255, 255, 0.25);
@@ -24,12 +52,11 @@
       box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
       border-right: 1px solid rgba(255, 255, 255, 0.3);
       padding: 20px;
-      position: fixed;
-      left: 0;
-      top: 0;
-      display: flex;
-      flex-direction: column;
       z-index: 100;
+    }
+
+    .sidebar.active {
+      left: 0;
     }
 
     .sidebar h2 {
@@ -56,27 +83,18 @@
       background: #111;
     }
 
-    /* Main content area */
+    /* Content */
     .content {
-      margin-left: 270px;
-      padding: 40px 20px;
-      flex: 1;
       text-align: center;
+      padding: 30px 20px;
     }
 
-    header {
-      font-size: 1.8rem;
-      font-weight: 600;
-      color: #111;
-      margin-bottom: 10px;
-    }
-
-    p.subtitle {
+    .subtitle {
       color: #555;
       margin-bottom: 40px;
     }
 
-    /* Blog section */
+    /* Blog Grid */
     .blog-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -89,7 +107,7 @@
       backdrop-filter: blur(15px);
       border-radius: 20px;
       overflow: hidden;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
       transition: 0.4s;
       cursor: pointer;
       width: 100%;
@@ -112,58 +130,37 @@
     }
 
     @media(max-width: 768px) {
-      body { flex-direction: column; }
-      .sidebar {
-        position: relative;
-        width: 100%;
-        height: auto;
-        flex-direction: row;
-        justify-content: space-around;
-        border-right: none;
-        border-bottom: 1px solid rgba(255,255,255,0.3);
-      }
-      .content { margin-left: 0; padding-top: 30px; }
-      .sidebar h2 { display: none; }
-      .sidebar button { width: auto; padding: 8px 14px; font-size: 0.9rem; }
+      header { font-size: 1.3rem; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Sidebar menu -->
-  <aside class="sidebar">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
     <h2>Menu</h2>
     <button onclick="window.location.href='products.html'">🛍️ Products</button>
     <button id="cartBtn">🛒 View Cart</button>
     <button id="logoutBtn">🚪 Logout</button>
   </aside>
 
+  <!-- Header -->
+  <header>
+    <div>Insights & Inspiration from the World of Design</div>
+    <div class="menu-icon" id="menuBtn">⋮</div>
+  </header>
+
   <!-- Main content -->
   <div class="content">
-    <header>Insights & Inspiration from the World of Design</header>
     <p class="subtitle">Discover creativity, passion, and strategy behind modern graphic design that shapes perception and inspires innovation.</p>
 
     <div class="blog-grid">
-      <div class="blog-card" data-title="Why You Need a Graphic Designer" data-img="https://i.pinimg.com/736x/db/e3/d4/dbe3d47c35a749790fdbd9a3ee7b30a7.jpg" data-text="Graphic designers help communicate your message visually with clarity, creativity, and emotion. As a creative professional, my role is not just to design; it's to solve your business's visual communication challenges and deliver measurable results. Your brand isn't just a logo or a collection of colors—it's a story waiting to be told. I translate that story into a visual language that captivates your audience, builds trust, and ultimately drives your success.
-A great design does more than just look good. It works hard for your business. My approach focuses on a strategic partnership to ensure every visual element created serves a specific purpose.
-I design high-quality, professional logos, websites, and marketing materials that immediately communicate your credibility and professionalism. In a matter of seconds, potential customers will understand that you are an authority in your field and a business they can trust.
-I go beyond creating a single logo. I craft a comprehensive visual identity, including a cohesive color palette, typography, and imagery, that is consistently applied across all your platforms. This consistency reinforces brand recognition and builds lasting customer loyalty.
-Why invest in a professional, not a tool
-While AI can generate visuals quickly, it can't replace the strategic thinking and emotional intelligence of a human designer. The value I offer is not in the software I use, but in my ability to:
-•	Understand context: I take the time to learn about your business goals, your target audience, and market trends to ensure every design has a specific, strategic purpose.
-•	Offer originality and emotion: My designs are bespoke and intentional. I craft visuals that build an authentic emotional connection with your audience, creating work that feels personal and resonates on a deeper level.
-•	Solve problems, not just decorate: My role is to solve visual communication problems that directly impact your bottom line. My focus is on creating visuals that work, not just on making things "look pretty".
-•	Let's build something remarkable
-•	Your business deserves a visual identity that is as unique and professional as your products and services. Investing in professional graphic design isn't a cost—it's an investment in your brand's future, credibility, and growth.">
+      <div class="blog-card" data-title="Why You Need a Graphic Designer" data-img="https://i.pinimg.com/736x/db/e3/d4/dbe3d47c35a749790fdbd9a3ee7b30a7.jpg" data-text="Graphic designers help communicate your message visually with clarity, creativity, and emotion.">
         <img src="https://i.pinimg.com/736x/db/e3/d4/dbe3d47c35a749790fdbd9a3ee7b30a7.jpg" alt="">
         <h3>Why You Need a Graphic Designer</h3>
       </div>
 
-      <div class="blog-card" data-title="Graphic Design" data-img="https://i.pinimg.com/736x/3b/6e/eb/3b6eeb8aaccea98ec819c0c601939574.jpg" data-text="Modern graphic design goes beyond aesthetics — it’s about telling stories, evoking emotions, and creating experiences that connect. Color, shape, and composition are not just design elements—they are tools for emotional connection. The warm, inviting tones of a website can make a user feel comfortable and welcome, while bold, dynamic shapes in an advertisement can evoke excitement and energy. A great designer understands how to harness these psychological triggers to create a specific emotional response. This emotional connection is what turns a passive observer into an engaged customer, building trust and loyalty on a deeper level.
-In today’s digital-first world, a user’s interaction with a brand is an experience. Graphic design is crucial in shaping this journey. From the moment someone lands on a website to the moment they make a purchase, every visual element guides them and influences their perception. This is the heart of user experience (UX) design—creating intuitive, enjoyable, and seamless interactions that feel effortless. A well-designed app isn’t just functional; it’s a pleasure to use. A well-designed product isn't just a thing; it's a part of our daily lives.
-Ultimately, modern graphic design is about purpose. It’s about building bridges between a brand and its audience, one compelling visual experience at a time. It’s a powerful tool for communication, connection, and creating a world that is not just seen, but felt.
-
-">
+      <div class="blog-card" data-title="Graphic Design" data-img="https://i.pinimg.com/736x/3b/6e/eb/3b6eeb8aaccea98ec819c0c601939574.jpg" data-text="Modern graphic design goes beyond aesthetics—it’s about telling stories, evoking emotions, and creating experiences.">
         <img src="https://i.pinimg.com/736x/3b/6e/eb/3b6eeb8aaccea98ec819c0c601939574.jpg" alt="">
         <h3>Graphic Design</h3>
       </div>
@@ -176,7 +173,21 @@ Ultimately, modern graphic design is about purpose. It’s about building bridge
   </div>
 
   <script>
-    // SweetAlert popups for blog
+    const sidebar = document.getElementById("sidebar");
+    const menuBtn = document.getElementById("menuBtn");
+
+    menuBtn.addEventListener("click", () => {
+      sidebar.classList.toggle("active");
+    });
+
+    // Close sidebar when clicking outside
+    document.addEventListener("click", (e) => {
+      if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+        sidebar.classList.remove("active");
+      }
+    });
+
+    // SweetAlert for blogs
     document.querySelectorAll(".blog-card").forEach(card => {
       card.addEventListener("click", () => {
         Swal.fire({
@@ -228,8 +239,8 @@ Ultimately, modern graphic design is about purpose. It’s about building bridge
         title: "Your Cart",
         html: `<div style="text-align:left;max-height:200px;overflow:auto">${cartHTML}</div>`,
         showCancelButton: true,
-        confirmButtonText: "Checkout",
-        cancelButtonText: "Close",
+        confirmButtonText: "Proceed to Checkout",
+        cancelButtonText: "Cancel",
       }).then(r => {
         if (r.isConfirmed) window.location.href = "checkout.html";
       });
