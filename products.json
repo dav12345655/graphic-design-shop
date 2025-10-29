@@ -64,5 +64,25 @@
     "name": "Utah",
     "price": 3000,
     "image": "https://i.pinimg.com/736x/07/2b/81/072b813eb3a662ecf2080441fe5f4375.jpg"
+  },
+  {
+    "name": "7",
+    "price": 4000,
+    "image": "https://i.pinimg.com/1200x/8d/88/1c/8d881c47bb8bd740eb350907af07bb3a.jpg"
+  },
+  {
+    "name": "woman",
+    "price": 2000,
+    "image": "https://i.pinimg.com/736x/e9/ea/ae/e9eaaeb928f15315da427445058a29f8.jpg"
+  },
+  {
+    "name": "DJ Giang",
+    "price": 3000,
+    "image": "https://i.pinimg.com/736x/fc/20/86/fc2086be1f9f87ad3d9b3b53fe280b5a.jpg"
+  },
+  {
+    "name": "Praise Concert",
+    "price": 5000,
+    "image": "https://i.pinimg.com/736x/0b/ea/8f/0bea8fd77f00df208474b7e0ce1fe6e4.jpg"
   }
 ]
