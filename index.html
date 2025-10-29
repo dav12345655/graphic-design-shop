@@ -1,359 +1,243 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Online Graphic Shop</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online Graphic Shop</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
 
-<!-- SweetAlert2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<!-- Paystack inline -->
-<script src="https://js.paystack.co/v1/inline.js"></script>
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #e3f2fd, #f9f9fb);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-<style>
-  :root {
-    --bg1: #4f46e5;
-    --bg2: #7c3aed;
-    --card: rgba(255, 255, 255, 0.25);
-    --border: rgba(255, 255, 255, 0.3);
-    --muted: #6b7280;
-  }
-  html,body {
-    height:100%;margin:0;
-    font-family: "Inter", system-ui, Segoe UI, Arial, sans-serif;
-    background: linear-gradient(135deg,var(--bg1),var(--bg2));
-    color:#0f172a;
-  }
-  header {
-    background: rgba(255,255,255,0.15);
-    color:#fff;
-    padding:60px 10px 40px;
-    text-align:center;
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border);
-  }
-  header h1 {margin:0;font-size:42px;font-weight:900;}
-  header p {margin:6px 0 0;opacity:0.9;font-size:15px;}
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
 
-  .top-buttons {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    z-index:1000;
-    align-items:flex-end;
-  }
-  .cart-btn, .wallet-display {
-    background: var(--card);
-    backdrop-filter: blur(10px);
-    color:#fff;
-    border-radius:30px;
-    padding:10px 16px;
-    display:flex;
-    align-items:center;
-    gap:6px;
-    border:1px solid var(--border);
-    cursor:pointer;
-    font-weight:700;
-    box-shadow:0 8px 24px rgba(0,0,0,0.15);
-  }
-  .logout-btn {
-    background: rgba(239,68,68,0.9);
-    color:#fff;
-    border:none;
-    border-radius:20px;
-    padding:6px 12px;
-    font-weight:700;
-    font-size:13px;
-    box-shadow:0 6px 16px rgba(0,0,0,0.15);
-    cursor:pointer;
-  }
-  .logout-btn:hover {opacity:0.9;}
+    .title {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #111;
+    }
 
-  .container {
-    max-width:1100px;
-    margin:20px auto;
-    padding:12px;
-  }
-  .product-grid {
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-    gap:18px;
-  }
-  .product {
-    background:var(--card);
-    backdrop-filter: blur(15px);
-    border:1px solid var(--border);
-    border-radius:14px;
-    overflow:hidden;
-    box-shadow:0 8px 24px rgba(16,24,40,0.15);
-    display:flex;
-    flex-direction:column;
-    transition:transform 0.2s ease,box-shadow 0.2s ease;
-  }
-  .product:hover {transform:translateY(-3px);box-shadow:0 10px 28px rgba(16,24,40,0.25);}
-  .product img {width:100%;height:180px;object-fit:cover;}
-  .info {padding:10px 12px;flex:1;display:flex;flex-direction:column;justify-content:space-between}
-  .info h3 {margin:0;font-size:16px;font-weight:700;color:#fff;}
-  .info p {margin:4px 0 0;color:#e5e7eb;font-size:14px}
-  .price {font-weight:800;font-size:15px;margin-top:8px;color:#fff;}
-  .btn {
-    background:linear-gradient(90deg,#0ea5e9,#7c3aed);
-    color:#fff;border:0;border-radius:8px;
-    padding:10px;font-weight:700;cursor:pointer;
-    transition:opacity 0.2s ease;
-  }
-  .btn:hover {opacity:0.9;}
-  footer {
-    text-align:center;color:#fff;padding:20px;font-size:13px;margin-top:40px;
-  }
+    .menu-icon {
+      font-size: 26px;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.3);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+      transition: 0.3s;
+    }
+    .menu-icon:hover {
+      background: rgba(255,255,255,0.5);
+    }
 
-  /* Blog Section */
-  .blog-section {
-    margin:60px auto;
-    max-width:1100px;
-    padding:20px;
-  }
-  .blog-section h2 {
-    color:#fff;
-    text-align:center;
-    font-size:30px;
-    font-weight:900;
-    margin-bottom:30px;
-    text-shadow:0 2px 10px rgba(0,0,0,0.3);
-  }
-  .blog-grid {
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-    gap:20px;
-  }
-  .blog-card {
-    background: var(--card);
-    border:1px solid var(--border);
-    border-radius:16px;
-    overflow:hidden;
-    box-shadow:0 8px 20px rgba(0,0,0,0.2);
-    backdrop-filter: blur(10px);
-    cursor:pointer;
-    transition:transform 0.3s ease;
-  }
-  .blog-card:hover {transform:translateY(-5px);}
-  .blog-card img {
-    width:100%;
-    height:180px;
-    object-fit:cover;
-  }
-  .blog-card .blog-content {
-    padding:16px;
-    color:#fff;
-  }
-  .blog-card h3 {margin:0;font-size:18px;font-weight:700;}
-  .blog-card p {margin-top:6px;color:#e5e7eb;font-size:14px;}
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -270px;
+      width: 270px;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(20px);
+      box-shadow: 2px 0 15px rgba(0,0,0,0.1);
+      border-right: 1px solid rgba(255,255,255,0.3);
+      padding: 20px;
+      transition: left 0.4s ease;
+      z-index: 100;
+    }
 
-  /* Whatsapp */
-  .whatsapp {
-    position:fixed;right:18px;bottom:18px;width:64px;height:64px;border-radius:50%;
-    background:#25D366;color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;
-    z-index:9999;box-shadow:0 10px 30px rgba(2,6,23,0.25);text-decoration:none;
-  }
+    .sidebar.active {
+      left: 0;
+    }
 
-  @media (max-width:600px){
-    header h1 {font-size:28px;}
-    .top-buttons{top:15px;right:10px;}
-  }
-</style>
+    .sidebar h2 {
+      font-size: 1.4rem;
+      color: #111;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    .sidebar button {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 0;
+      margin-bottom: 15px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: 0.3s;
+    }
+
+    .sidebar button:hover {
+      background: #111;
+    }
+
+    .blog-section {
+      text-align: center;
+      padding: 50px 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .blog-section h2 {
+      font-size: 2rem;
+      background: linear-gradient(90deg, #3a3a3a, #000);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 15px;
+    }
+
+    .blog-section p {
+      color: #555;
+      margin-bottom: 40px;
+    }
+
+    .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 25px;
+    }
+
+    .blog-card {
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(15px);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      transition: 0.4s;
+      cursor: pointer;
+    }
+
+    .blog-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .blog-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    .blog-card h3 {
+      font-size: 1.2rem;
+      color: #111;
+      padding: 15px;
+      margin: 0;
+    }
+
+    @media(max-width: 600px) {
+      .title {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
 </head>
 <body>
+
   <header>
-    <h1>Welcome to Online Graphic Shop</h1>
-    <p>Creative designs, flyers, posters & more</p>
+    <div class="title">Welcome to Online Graphic Shop</div>
+    <div class="menu-icon" id="menuBtn">⋮</div>
   </header>
 
-  <div class="top-buttons">
-    <button class="logout-btn" id="logoutBtn">Logout</button>
-    <div id="walletDisplay" class="wallet-display" title="Click to deposit">💰 Wallet: ₦<span id="wallet-amount">0.00</span></div>
-    <div class="cart-btn" id="cartBtn" title="View cart">🛒 Cart (<span id="cart-count">0</span>)</div>
-  </div>
+  <aside class="sidebar" id="sidebar">
+    <h2>Menu</h2>
+    <button id="cartBtn">🛒 View Cart</button>
+    <button id="logoutBtn">🚪 Logout</button>
+    <button id="blogToggle">📰 Blog</button>
 
-  <div class="container">
-    <div class="product-grid" id="product-grid"></div>
-  </div>
+    <div id="blogList" style="display:none; margin-top:10px;">
+      <button class="blogLink" data-title="Why You Need a Graphic Designer"
+        data-img="https://i.pinimg.com/736x/db/e3/d4/dbe3d47c35a749790fdbd9a3ee7b30a7.jpg"
+        data-text="Graphic designers help translate your brand’s vision into a compelling visual language that captures attention and builds trust.">Why You Need a Graphic Designer</button>
+      <button class="blogLink" data-title="Do You Need a Graphic Designer?"
+        data-img="https://i.pinimg.com/originals/7e/6f/6e/7e6f6ed43238adfe414c4ac1ff9f2e3b.jpg"
+        data-text="Every brand needs a unique visual identity — professional designers bring creative expertise that sets your brand apart.">Do You Need a Graphic Designer?</button>
+    </div>
+  </aside>
 
-  <!-- Blog Section -->
   <section class="blog-section">
     <h2>Insights & Inspiration from the World of Design</h2>
-    <div class="blog-grid" id="blogGrid"></div>
+    <p>Explore the art, passion, and creativity that drive modern graphic design — discover how visuals shape perception and elevate brands.</p>
+
+    <div class="blog-grid">
+      <div class="blog-card" data-title="Why You Need a Graphic Designer" data-img="https://i.pinimg.com/736x/db/e3/d4/dbe3d47c35a749790fdbd9a3ee7b30a7.jpg" data-text="Graphic designers help communicate your message visually with clarity, creativity, and emotion.">
+        <img src="https://i.pinimg.com/736x/db/e3/d4/dbe3d47c35a749790fdbd9a3ee7b30a7.jpg" alt="">
+        <h3>Why You Need a Graphic Designer</h3>
+      </div>
+      <div class="blog-card" data-title="Do You Need a Graphic Designer?" data-img="https://www.pinterest.com/pin/1015209941009693809/" data-text="Your brand deserves a visual identity that resonates. A graphic designer can bring your ideas to life.">
+        <img src="https://i.pinimg.com/originals/7e/6f/6e/7e6f6ed43238adfe414c4ac1ff9f2e3b.jpg" alt="">
+        <h3>Do You Need a Graphic Designer?</h3>
+      </div>
+      <div class="blog-card" data-title="The Future of Visual Branding" data-img="https://i.pinimg.com/564x/8e/34/bb/8e34bb24c15efb6272c067356d37e2e1.jpg" data-text="Design trends evolve, but creativity remains timeless. Explore the rise of motion and AI-driven visuals.">
+        <img src="https://i.pinimg.com/564x/8e/34/bb/8e34bb24c15efb6272c067356d37e2e1.jpg" alt="">
+        <h3>The Future of Visual Branding</h3>
+      </div>
+      <div class="blog-card" data-title="Design Thinking for Entrepreneurs" data-img="https://i.pinimg.com/564x/4b/88/11/4b881153a2a4b9b36c48c8a4e5b4dc16.jpg" data-text="Entrepreneurs can harness design thinking to innovate and build stronger, customer-centered brands.">
+        <img src="https://i.pinimg.com/564x/4b/88/11/4b881153a2a4b9b36c48c8a4e5b4dc16.jpg" alt="">
+        <h3>Design Thinking for Entrepreneurs</h3>
+      </div>
+    </div>
   </section>
 
-  <footer>© <span id="year"></span> Online Graphic Shop — Designed by <strong>ABblack</strong></footer>
-  <a class="whatsapp" href="https://wa.me/2349121383292" target="_blank">💬</a>
+  <script>
+    const menuBtn = document.getElementById("menuBtn");
+    const sidebar = document.getElementById("sidebar");
+    const blogToggle = document.getElementById("blogToggle");
+    const blogList = document.getElementById("blogList");
+    const blogLinks = document.querySelectorAll(".blogLink");
+    const blogCards = document.querySelectorAll(".blog-card");
 
-<script>
-document.getElementById("year").textContent=new Date().getFullYear();
-
-let storedProducts = JSON.parse(localStorage.getItem("products")) || [];
-let products = storedProducts.length ? storedProducts : [
-  {name:"Party",price:3000,category:"FLYER",image:"https://i.pinimg.com/1200x/41/61/f4/4161f44b77d1240bf7549c6dbb445055.jpg"},
-  {name:"Blast",price:2000,category:"FLYER",image:"https://i.pinimg.com/1200x/ab/d3/79/abd379cd2b568cb5503662c48d3c981f.jpg"},
-  {name:"The GOAT",price:2000,category:"GRAPHICS",image:"https://i.pinimg.com/736x/d2/62/9a/d2629a92a49e363ed0446bcc3a98f66a.jpg"},
-  {name:"V Design",price:2500,category:"GRAPHICS",image:"https://i.pinimg.com/1200x/3a/15/f2/3a15f2cb8387639c5abec72284267654.jpg"}
-];
-
-function readCart(){try{return JSON.parse(localStorage.getItem('ogshop_cart'))||[];}catch{return[];}}
-function saveCart(cart){localStorage.setItem('ogshop_cart',JSON.stringify(cart));}
-function readWallet(){return parseFloat(localStorage.getItem('ogshop_wallet'))||0;}
-function saveWallet(amount){localStorage.setItem('ogshop_wallet',amount);}
-
-const grid=document.getElementById('product-grid');
-const cartBtn=document.getElementById('cartBtn');
-const walletDisplay=document.getElementById('walletDisplay');
-const walletAmountEl=document.getElementById('wallet-amount');
-const logoutBtn=document.getElementById('logoutBtn');
-
-let cart=readCart();
-let wallet=readWallet();
-
-function updateCartCount(){document.getElementById('cart-count').textContent=cart.length;}
-function updateWallet(){walletAmountEl.textContent=wallet.toLocaleString();saveWallet(wallet);}
-updateCartCount();updateWallet();
-
-function renderProducts(){
-  grid.innerHTML='';
-  products.forEach((p,i)=>{
-    grid.innerHTML+=`
-      <div class="product">
-        <img src="${p.image}" alt="${p.name}">
-        <div class="info">
-          <div>
-            <h3>${p.name}</h3>
-            <p>${p.category}</p>
-            <div class="price">₦${p.price.toLocaleString()}</div>
-          </div>
-          <button class="btn" onclick="preview(${i})">Preview</button>
-        </div>
-      </div>`;
-  });
-}
-renderProducts();
-
-function preview(i){
-  const p=products[i];
-  Swal.fire({
-    title:p.name,
-    html:`<img src="${p.image}" style="width:100%;border-radius:10px;margin-bottom:10px"><p>${p.category}</p><p><b>₦${p.price.toLocaleString()}</b></p>`,
-    showCancelButton:true,
-    confirmButtonText:'Add to Cart',
-    cancelButtonText:'Close',
-    confirmButtonColor:'#4f46e5'
-  }).then(res=>{
-    if(res.isConfirmed)addToCart(p);
-  });
-}
-function addToCart(p){
-  if(wallet<p.price)return Swal.fire('Insufficient Balance',`You need ₦${p.price.toLocaleString()}`, 'warning');
-  if(cart.find(x=>x.name===p.name))return Swal.fire('Already in cart',`${p.name} already added.`, 'info');
-  cart.push(p);saveCart(cart);updateCartCount();
-  Swal.fire('Added!','Product added successfully.','success');
-}
-
-walletDisplay.onclick=()=>{
-  Swal.fire({
-    title:'Deposit Funds',
-    input:'number',
-    inputLabel:'Enter amount (₦100–₦50,000)',
-    inputAttributes:{min:100,max:50000},
-    showCancelButton:true,
-    confirmButtonText:'Deposit',
-    confirmButtonColor:'#0ea5e9'
-  }).then(r=>{
-    if(r.isConfirmed){
-      const amt=Number(r.value);
-      if(amt<100||amt>50000)return Swal.fire('Invalid','Enter between ₦100–₦50,000','error');
-      wallet+=amt;updateWallet();
-      Swal.fire('Deposit successful',`₦${amt.toLocaleString()} added to wallet`,'success');
-    }
-  });
-};
-
-cartBtn.onclick=()=>{
-  if(!cart.length)return Swal.fire('Cart Empty','Add items before checkout.','info');
-  Swal.fire({
-    title:'Your Cart',
-    html:cart.map((x,i)=>`<div style="display:flex;justify-content:space-between;padding:5px 0">
-      <span>${x.name} - ₦${x.price.toLocaleString()}</span>
-      <button class='btn' style='padding:5px 8px;background:#ef4444' onclick='removeItem(${i})'>X</button>
-    </div>`).join(''),
-    showCancelButton:true,
-    confirmButtonText:'Checkout'
-  }).then(r=>{
-    if(r.isConfirmed)window.location='checkout.html';
-  });
-};
-function removeItem(i){cart.splice(i,1);saveCart(cart);updateCartCount();cartBtn.click();}
-
-logoutBtn.onclick=()=>{
-  Swal.fire({
-    title:'Logout?',
-    text:'You will be signed out of your account.',
-    icon:'warning',
-    showCancelButton:true,
-    confirmButtonText:'Yes, Logout',
-    confirmButtonColor:'#ef4444'
-  }).then(res=>{
-    if(res.isConfirmed){
-      localStorage.removeItem('loggedInUser');
-      Swal.fire('Logged out','You have been signed out.','success');
-      setTimeout(()=>window.location='login.html',1200);
-    }
-  });
-};
-
-/* Blog Cards */
-const blogPosts = [
-  {
-    title: "Why You Need a Graphic Designer",
-    image: "https://i.pinimg.com/736x/db/e3/d4/dbe3d47c35a749790fdbd9a3ee7b30a7.jpg",
-    content: "A skilled graphic designer can transform your brand into a powerful visual story. From logos to promotional materials, every element speaks volumes about your identity. In a world driven by visuals, design is not luxury — it’s a necessity for impact and memorability."
-  },
-  {
-    title: "Do You Need a Graphic Designer?",
-    image: "https://i.pinimg.com/originals/41/9f/69/419f69d90c3c9b4f1cba309c4309c6f9.jpg",
-    content: "Professional design isn’t just about beauty — it’s about communication. A good designer knows how to balance creativity with purpose, crafting visuals that attract, inform, and persuade. The question is not ‘if’ you need one, but how soon you can start."
-  },
-  {
-    title: "Color Psychology in Modern Branding",
-    image: "https://i.pinimg.com/736x/2a/58/6a/2a586ae08755a8ea1953a41b097c1d55.jpg",
-    content: "Colors evoke emotions and shape perception. Blue builds trust, red ignites excitement, and yellow sparks creativity. Understanding color psychology gives your brand an edge in creating deeper emotional connections with your audience."
-  },
-  {
-    title: "Minimalist Design: The Power of Less",
-    image: "https://i.pinimg.com/736x/83/2d/09/832d090bb4ce65f4b3b2c6e0b52fa428.jpg",
-    content: "Minimalism focuses on clarity, space, and intention. By reducing clutter and emphasizing core messages, minimalist designs increase focus and improve user experience. In design, less truly becomes more."
-  }
-];
-
-const blogGrid = document.getElementById('blogGrid');
-blogPosts.forEach((post, i) => {
-  const card = document.createElement('div');
-  card.className = 'blog-card';
-  card.innerHTML = `
-    <img src="${post.image}" alt="${post.title}">
-    <div class="blog-content">
-      <h3>${post.title}</h3>
-      <p>${post.content.substring(0, 80)}...</p>
-    </div>`;
-  card.onclick = () => {
-    Swal.fire({
-      title: post.title,
-      html: `<img src="${post.image}" style="width:100%;border-radius:10px;margin-bottom:10px"><p style="text-align:left">${post.content}</p>`,
-      confirmButtonText:'Close',
-      confirmButtonColor:'#7c3aed'
+    menuBtn.addEventListener("click", () => {
+      sidebar.classList.toggle("active");
     });
-  };
-  blogGrid.appendChild(card);
-});
-</script>
+
+    blogToggle.addEventListener("click", () => {
+      blogList.style.display = blogList.style.display === "none" ? "block" : "none";
+    });
+
+    [...blogLinks, ...blogCards].forEach(item => {
+      item.addEventListener("click", () => {
+        Swal.fire({
+          title: item.dataset.title,
+          text: item.dataset.text,
+          imageUrl: item.dataset.img,
+          imageWidth: 400,
+          imageAlt: "Blog Image",
+          confirmButtonColor: "#111",
+          confirmButtonText: "Close"
+        });
+      });
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      Swal.fire("Logged Out", "You have successfully logged out.", "success");
+    });
+
+    document.getElementById("cartBtn").addEventListener("click", () => {
+      Swal.fire("Your Cart", "Your cart items will appear here soon!", "info");
+    });
+  </script>
 </body>
 </html>
