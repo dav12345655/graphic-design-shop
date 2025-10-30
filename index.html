@@ -1,259 +1,168 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Online Graphic Shop</title>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <style>
-    * { box-sizing: border-box; font-family: "Poppins", sans-serif; margin: 0; padding: 0; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Products - Online Graphic Shop</title>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style>
+  * { box-sizing: border-box; font-family: "Poppins", sans-serif; }
+  body { margin:0; display:flex; background:linear-gradient(135deg,#e3f2fd,#f9f9fb); min-height:100vh; overflow-x:hidden; flex-direction:column; }
 
-    body {
-      background: linear-gradient(135deg, #e3f2fd, #f9f9fb);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+  /* Sidebar */
+  .sidebar {
+    width:250px; height:100vh;
+    background:rgba(255,255,255,0.25); backdrop-filter:blur(20px);
+    box-shadow:2px 0 15px rgba(0,0,0,0.1);
+    border-right:1px solid rgba(255,255,255,0.3);
+    padding:20px; position:fixed; left:0; top:0; display:flex; flex-direction:column; z-index:100;
+  }
+  .sidebar h2 { font-size:1.4rem; color:#111; margin-bottom:25px; text-align:center; }
+  .sidebar button {
+    width:100%; background:rgba(0,0,0,0.7); color:white; border:none; border-radius:10px; padding:10px 0; margin-bottom:15px;
+    cursor:pointer; font-size:1rem; transition:0.3s;
+  }
+  .sidebar button:hover { background:#111; }
 
-    /* Header */
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px;
-      font-size: 1.8rem;
-      font-weight: 600;
-      color: #111;
-      position: relative;
-    }
+  /* Main content */
+  .content { margin-left:270px; padding:40px 20px; flex:1; text-align:center; }
 
-    .menu-icon {
-      font-size: 26px;
-      cursor: pointer;
-      padding: 8px;
-      border-radius: 10px;
-      background: rgba(255,255,255,0.3);
-      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-      transition: 0.3s;
-    }
+  header { font-size:1.8rem; font-weight:600; color:#111; margin-bottom:10px; }
 
-    .menu-icon:hover {
-      background: rgba(255,255,255,0.5);
-    }
+  .subtitle { color:#555; margin-bottom:40px; }
 
-    /* Sidebar */
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: -270px;
-      width: 250px;
-      height: 100vh;
-      background: rgba(255, 255, 255, 0.25);
-      backdrop-filter: blur(20px);
-      box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
-      border-right: 1px solid rgba(255, 255, 255, 0.3);
-      padding: 20px;
-      z-index: 100;
-    }
+  .product-grid {
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:25px; justify-items:center;
+  }
 
-    .sidebar.active {
-      left: 0;
-    }
+  .product-card {
+    background:rgba(255,255,255,0.25); backdrop-filter:blur(15px); border-radius:20px; overflow:hidden; box-shadow:0 6px 20px rgba(0,0,0,0.08); transition:0.4s; cursor:pointer; width:100%; max-width:320px; position:relative;
+  }
+  .product-card:hover { transform:translateY(-5px); }
+  .product-card img { width:100%; height:200px; object-fit:cover; border-bottom:1px solid rgba(0,0,0,0.1); }
+  .product-card h3 { font-size:1.1rem; color:#111; margin:10px 0; }
+  .price { color:#333; font-weight:500; margin-bottom:10px; }
+  .actions { display:flex; justify-content:center; gap:10px; padding-bottom:15px; }
+  .btn { background:#111; color:white; border:none; border-radius:8px; padding:8px 12px; cursor:pointer; font-size:0.9rem; transition:0.3s; }
+  .btn:hover { background:#000; }
 
-    .sidebar h2 {
-      font-size: 1.4rem;
-      color: #111;
-      margin-bottom: 25px;
-      text-align: center;
-    }
+  /* 3-dot menu */
+  #menuBtn { position:fixed; top:20px; right:20px; font-size:26px; cursor:pointer; background:rgba(255,255,255,0.3); padding:8px; border-radius:10px; box-shadow:0 3px 8px rgba(0,0,0,0.1); transition:0.3s; z-index:101; }
+  #menuBtn:hover { background:rgba(255,255,255,0.5); }
+  .sidebar.hidden { left:-270px; transition:left 0.4s; }
+  .sidebar.active { left:0; }
 
-    .sidebar button {
-      width: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      color: white;
-      border: none;
-      border-radius: 10px;
-      padding: 10px 0;
-      margin-bottom: 15px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: 0.3s;
-    }
-
-    .sidebar button:hover {
-      background: #111;
-    }
-
-    /* Content */
-    .content {
-      text-align: center;
-      padding: 30px 20px;
-    }
-
-    .subtitle {
-      color: #555;
-      margin-bottom: 40px;
-    }
-
-    /* Blog Grid */
-    .blog-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 25px;
-      justify-items: center;
-    }
-
-    .blog-card {
-      background: rgba(255, 255, 255, 0.25);
-      backdrop-filter: blur(15px);
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-      transition: 0.4s;
-      cursor: pointer;
-      width: 100%;
-      max-width: 340px;
-    }
-
-    .blog-card:hover { transform: translateY(-5px); }
-
-    .blog-card img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-      display: block;
-    }
-
-    .blog-card h3 {
-      font-size: 1.2rem;
-      color: #111;
-      padding: 15px;
-      margin: 0;
-    }
-
-    @media(max-width: 768px) {
-      header { font-size: 1.3rem; }
-    }
-  </style>
+  /* Footer */
+  footer {
+    text-align:center;
+    padding:15px 0;
+    background:rgba(0,0,0,0.8);
+    color:#c7f9ff;
+    font-size:0.9rem;
+    margin-top:auto;
+  }
+  footer a { color:#c7f9ff; text-decoration:none; }
+</style>
 </head>
 <body>
 
-  <!-- Sidebar -->
-  <aside class="sidebar" id="sidebar">
-    <h2>Menu</h2>
-    <button onclick="window.location.href='products.html'">🛍️ Products</button>
-    <button id="cartBtn">🛒 View Cart</button>
-    <button id="logoutBtn">🚪 Logout</button>
-  </aside>
+<!-- Sidebar -->
+<aside class="sidebar hidden" id="sidebar">
+  <h2>Menu</h2>
+  <button onclick="window.location.href='index.html'">🏠 Home</button>
+  <button id="cartBtn">🛒 View Cart</button>
+  <button id="logoutBtn">🚪 Logout</button>
+</aside>
 
-  <!-- Header -->
-  <header>
-    <div>Insights & Inspiration from the World of Design</div>
-    <div class="menu-icon" id="menuBtn">⋮</div>
-  </header>
+<!-- 3-dot menu button -->
+<div id="menuBtn">⋮</div>
 
-  <!-- Main content -->
-  <div class="content">
-    <p class="subtitle">Discover creativity, passion, and strategy behind modern graphic design that shapes perception and inspires innovation.</p>
+<!-- Content -->
+<div class="content">
+  <header>Our Featured Designs</header>
+  <p class="subtitle">Explore professionally crafted designs tailored to elevate your brand and visual identity.</p>
 
-  <!-- Blog grid inside index.html -->
-  <div class="blog-grid">
-    <div class="blog-card" data-title="Why You Need a Graphic Designer" data-img="https://i.pinimg.com/736x/db/e3/d4/dbe3d47c35a749790fdbd9a3ee7b30a7.jpg" data-text="Graphic designers help communicate your message visually with clarity, creativity, and emotion.">
-      <img src="https://i.pinimg.com/736x/db/e3/d4/dbe3d47c35a749790fdbd9a3ee7b30a7.jpg" alt="">
-      <h3>Why You Need a Graphic Designer</h3>
+  <div class="product-grid" id="productGrid"></div>
+</div>
+
+<!-- Footer -->
+<footer>
+  Designed by <strong>ABblack</strong> • 📞 
+  <a href="tel:+2347026865570">07026865570</a>
+</footer>
+
+<script>
+const menuBtn = document.getElementById("menuBtn");
+const sidebar = document.getElementById("sidebar");
+menuBtn.addEventListener("click", ()=> sidebar.classList.toggle("active"));
+
+// Load products from products.json
+fetch('products.json')
+.then(res => res.json())
+.then(products => {
+  const productGrid = document.getElementById("productGrid");
+  productGrid.innerHTML = products.map((p,i)=>`
+    <div class="product-card">
+      <img src="${p.image}" alt="${p.name}">
+      <h3>${p.name}</h3>
+      <div class="price">₦${p.price.toLocaleString()}</div>
+      <div class="actions">
+        <button class="btn" onclick="previewProduct(${i})">Preview</button>
+      </div>
     </div>
+  `).join("");
 
-    <div class="blog-card" data-title="Graphic Design" data-img="https://i.pinimg.com/736x/3b/6e/eb/3b6eeb8aaccea98ec819c0c601939574.jpg" data-text="Modern graphic design goes beyond aesthetics — it’s about telling stories, evoking emotions, and creating experiences that connect.">
-      <img src="https://i.pinimg.com/736x/3b/6e/eb/3b6eeb8aaccea98ec819c0c601939574.jpg" alt="">
-      <h3>Graphic Design</h3>
-    </div>
+  window.products = products; // store globally for preview
+});
 
-    <div class="blog-card" data-title="Do You Need a Graphic Designer?" data-img="https://i.pinimg.com/736x/22/19/9a/22199a896bde84970ae67f0047ea0faa.jpg" data-text="Your brand deserves a visual identity that resonates. A graphic designer can bring your ideas to life.">
-      <img src="https://i.pinimg.com/736x/22/19/9a/22199a896bde84970ae67f0047ea0faa.jpg" alt="">
-      <h3>Do You Need a Graphic Designer?</h3>
-    </div>
-  </div>
-  </div>
-
-  <script>
-    const sidebar = document.getElementById("sidebar");
-    const menuBtn = document.getElementById("menuBtn");
-
-    menuBtn.addEventListener("click", () => {
-      sidebar.classList.toggle("active");
-    });
-
-    document.addEventListener("click", (e) => {
-      if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
-        sidebar.classList.remove("active");
-      }
-    });
-
-    // SweetAlert for blogs
-    document.querySelectorAll(".blog-card").forEach(card => {
-      card.addEventListener("click", () => {
-        Swal.fire({
-          title: card.dataset.title,
-          text: card.dataset.text,
-          imageUrl: card.dataset.img,
-          imageWidth: 400,
-          imageAlt: "Blog Image",
-          confirmButtonColor: "#111",
-          confirmButtonText: "Close"
-        });
-      });
-    });
-
-    // Logout button
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-      Swal.fire({
-        title: "Confirm Logout",
-        text: "Do you really want to logout?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Yes, Logout",
-        confirmButtonColor: "#d33"
-      }).then(result => {
-        if (result.isConfirmed) {
-          localStorage.removeItem("loggedInUser");
-          Swal.fire("Logged Out", "You have successfully logged out.", "success");
-          setTimeout(() => window.location.href = "login.html", 1200);
-        }
-      });
-    });
-
-    // Cart button
-    document.getElementById("cartBtn").addEventListener("click", () => {
+// Preview product
+function previewProduct(i){
+  const p = window.products[i];
+  Swal.fire({
+    title: p.name,
+    text: p.description || "",
+    imageUrl: p.image,
+    imageWidth: 400,
+    confirmButtonText: "Add to Cart",
+    showCancelButton:true,
+    cancelButtonText:"Cancel",
+    confirmButtonColor:"#111"
+  }).then(res=>{
+    if(res.isConfirmed){
       const cart = JSON.parse(localStorage.getItem("ogshop_cart")) || [];
-      if (cart.length === 0) {
-        Swal.fire("Your Cart", "Your cart is empty!", "info");
-        return;
-      }
-
-      const cartHTML = cart.map((x, i) => `
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;">
-          <span>${x.name} - ₦${x.price.toLocaleString()}</span>
-          <button style="background:#ef4444;color:#fff;border:none;border-radius:5px;padding:3px 6px;cursor:pointer;" onclick="removeCartItem(${i})">X</button>
-        </div>
-      `).join("");
-
-      Swal.fire({
-        title: "Your Cart",
-        html: `<div style="text-align:left;max-height:200px;overflow:auto">${cartHTML}</div>`,
-        showCancelButton: true,
-        confirmButtonText: "Proceed to Checkout",
-        cancelButtonText: "Cancel",
-      }).then(r => {
-        if (r.isConfirmed) window.location.href = "checkout.html";
-      });
-    });
-
-    function removeCartItem(i) {
-      const cart = JSON.parse(localStorage.getItem("ogshop_cart")) || [];
-      cart.splice(i, 1);
-      localStorage.setItem("ogshop_cart", JSON.stringify(cart));
-      Swal.close();
-      document.getElementById("cartBtn").click();
+      cart.push(p);
+      localStorage.setItem("ogshop_cart",JSON.stringify(cart));
+      Swal.fire("Added!", `${p.name} has been added to your cart.`, "success");
     }
-  </script>
+  });
+}
+
+// Cart
+document.getElementById("cartBtn").addEventListener("click", ()=>{
+  const cart = JSON.parse(localStorage.getItem("ogshop_cart")) || [];
+  if(cart.length===0){Swal.fire("Your Cart","Your cart is empty!","info"); return;}
+  const cartHTML = cart.map((x,i)=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;">
+      <span>${x.name} - ₦${x.price.toLocaleString()}</span>
+      <button style="background:#ef4444;color:#fff;border:none;border-radius:5px;padding:3px 6px;cursor:pointer;" onclick="removeCartItem(${i})">X</button>
+    </div>
+  `).join("");
+  Swal.fire({title:"Your Cart", html:`<div style="text-align:left;max-height:200px;overflow:auto">${cartHTML}</div>`, showCancelButton:true, confirmButtonText:"Checkout", cancelButtonText:"Close"})
+  .then(r=>{if(r.isConfirmed) window.location.href="checkout.html";});
+});
+function removeCartItem(i){
+  const cart = JSON.parse(localStorage.getItem("ogshop_cart")) || [];
+  cart.splice(i,1);
+  localStorage.setItem("ogshop_cart",JSON.stringify(cart));
+  Swal.close();
+  document.getElementById("cartBtn").click();
+}
+
+// Logout
+document.getElementById("logoutBtn").addEventListener("click", ()=>{
+  Swal.fire({title:"Confirm Logout", text:"Do you really want to logout?", icon:"warning", showCancelButton:true, confirmButtonText:"Yes, Logout", confirmButtonColor:"#d33"})
+  .then(res=>{if(res.isConfirmed){localStorage.removeItem("loggedInUser"); Swal.fire("Logged Out","You have successfully logged out.","success"); setTimeout(()=>window.location.href="login.html",1200);}});
+});
+</script>
 </body>
 </html>
