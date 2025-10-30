@@ -120,6 +120,7 @@
       width: 100%;
       height: 180px;
       object-fit: cover;
+      display: block;
     }
 
     .blog-card h3 {
@@ -155,23 +156,22 @@
     <p class="subtitle">Discover creativity, passion, and strategy behind modern graphic design that shapes perception and inspires innovation.</p>
 
   <!-- Blog grid inside index.html -->
-<div class="blog-grid">
-  <div class="blog-card" data-title="Why You Need a Graphic Designer" data-img="https://i.pinimg.com/736x/db/e3/d4/dbe3d47c35a749790fdbd9a3ee7b30a7.jpg" data-text="Graphic designers help communicate your message visually with clarity, creativity, and emotion.">
-    <img src="https://i.pinimg.com/736x/db/e3/d4/dbe3d47c35a749790fdbd9a3ee7b30a7.jpg" alt="">
-    <h3>Why You Need a Graphic Designer</h3>
-  </div>
+  <div class="blog-grid">
+    <div class="blog-card" data-title="Why You Need a Graphic Designer" data-img="https://i.pinimg.com/736x/db/e3/d4/dbe3d47c35a749790fdbd9a3ee7b30a7.jpg" data-text="Graphic designers help communicate your message visually with clarity, creativity, and emotion.">
+      <img src="https://i.pinimg.com/736x/db/e3/d4/dbe3d47c35a749790fdbd9a3ee7b30a7.jpg" alt="">
+      <h3>Why You Need a Graphic Designer</h3>
+    </div>
 
-  <div class="blog-card" data-title="Do You Need a Graphic Designer?" data-img="https://i.pinimg.com/originals/7e/6f/6e/7e6f6ed43238adfe414c4ac1ff9f2e3b.jpg" data-text="Your brand deserves a visual identity that resonates. A graphic designer can bring your ideas to life.">
-    <!-- FIXED: Added image for direct display -->
-    <img src="https://i.pinimg.com/originals/7e/6f/6e/7e6f6ed43238adfe414c4ac1ff9f2e3b.jpg" alt="">
-    <h3>Do You Need a Graphic Designer?</h3>
-  </div>
+    <div class="blog-card" data-title="Graphic Design" data-img="https://i.pinimg.com/736x/3b/6e/eb/3b6eeb8aaccea98ec819c0c601939574.jpg" data-text="Modern graphic design goes beyond aesthetics — it’s about telling stories, evoking emotions, and creating experiences that connect.">
+      <img src="https://i.pinimg.com/736x/3b/6e/eb/3b6eeb8aaccea98ec819c0c601939574.jpg" alt="">
+      <h3>Graphic Design</h3>
+    </div>
 
-  <div class="blog-card" data-title="Graphic Design" data-img="https://i.pinimg.com/736x/3b/6e/eb/3b6eeb8aaccea98ec819c0c601939574.jpg" data-text="Modern graphic design goes beyond aesthetics — it’s about telling stories, evoking emotions, and creating experiences that connect.">
-    <img src="https://i.pinimg.com/736x/3b/6e/eb/3b6eeb8aaccea98ec819c0c601939574.jpg" alt="">
-    <h3>Graphic Design</h3>
+    <div class="blog-card" data-title="Do You Need a Graphic Designer?" data-img="https://i.pinimg.com/736x/22/19/9a/22199a896bde84970ae67f0047ea0faa.jpg" data-text="Your brand deserves a visual identity that resonates. A graphic designer can bring your ideas to life.">
+      <img src="https://i.pinimg.com/736x/22/19/9a/22199a896bde84970ae67f0047ea0faa.jpg" alt="">
+      <h3>Do You Need a Graphic Designer?</h3>
+    </div>
   </div>
-</div>
   </div>
 
   <script>
@@ -182,7 +182,6 @@
       sidebar.classList.toggle("active");
     });
 
-    // Close sidebar when clicking outside
     document.addEventListener("click", (e) => {
       if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
         sidebar.classList.remove("active");
