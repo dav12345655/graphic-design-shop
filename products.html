@@ -1,22 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Products - Online Graphic Shop</title>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     * { box-sizing: border-box; font-family: "Poppins", sans-serif; }
     body {
       margin: 0;
-      display: flex;
       background: linear-gradient(135deg, #e3f2fd, #f9f9fb);
       min-height: 100vh;
       overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header bar */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(15px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .top-bar h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #111;
+      margin: 0;
+    }
+
+    .menu-icon {
+      font-size: 24px;
+      cursor: pointer;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 8px;
     }
 
     /* Sidebar */
     .sidebar {
+      position: fixed;
+      left: -260px;
+      top: 0;
       width: 250px;
       height: 100vh;
       background: rgba(255, 255, 255, 0.25);
@@ -24,12 +58,14 @@
       box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
       border-right: 1px solid rgba(255, 255, 255, 0.3);
       padding: 20px;
-      position: fixed;
-      left: 0;
-      top: 0;
+      transition: 0.4s ease;
+      z-index: 200;
       display: flex;
       flex-direction: column;
-      z-index: 100;
+    }
+
+    .sidebar.open {
+      left: 0;
     }
 
     .sidebar h2 {
@@ -58,10 +94,9 @@
 
     /* Content */
     .content {
-      margin-left: 270px;
-      padding: 40px 20px;
-      flex: 1;
+      padding: 30px 20px;
       text-align: center;
+      margin-top: 20px;
     }
 
     header {
@@ -91,7 +126,6 @@
       overflow: hidden;
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
       transition: 0.4s;
-      cursor: pointer;
       width: 100%;
       max-width: 320px;
       position: relative;
@@ -139,43 +173,38 @@
     .btn:hover {
       background: #000;
     }
-
-    @media(max-width: 768px) {
-      body { flex-direction: column; }
-      .sidebar {
-        position: relative;
-        width: 100%;
-        height: auto;
-        flex-direction: row;
-        justify-content: space-around;
-        border-right: none;
-        border-bottom: 1px solid rgba(255,255,255,0.3);
-      }
-      .content { margin-left: 0; padding-top: 30px; }
-      .sidebar h2 { display: none; }
-      .sidebar button { width: auto; padding: 8px 14px; font-size: 0.9rem; }
-    }
   </style>
 </head>
 <body>
 
+  <!-- Top bar -->
+  <div class="top-bar">
+    <h1>Our Featured Designs</h1>
+    <div class="menu-icon" id="menuIcon">⋮</div>
+  </div>
+
   <!-- Sidebar -->
-  <aside class="sidebar">
+  <aside class="sidebar" id="sidebar">
     <h2>Menu</h2>
     <button onclick="window.location.href='index.html'">🏠 Home</button>
+    <button onclick="window.location.href='products.html'">🛍️ Products</button>
     <button id="cartBtn">🛒 View Cart</button>
     <button id="logoutBtn">🚪 Logout</button>
   </aside>
 
   <!-- Content -->
   <div class="content">
-    <header>Our Featured Designs</header>
     <p class="subtitle">Explore professionally crafted designs tailored to elevate your brand and visual identity.</p>
-
     <div class="product-grid" id="productGrid"></div>
   </div>
 
   <script>
+    // Toggle sidebar
+    document.getElementById("menuIcon").addEventListener("click", () => {
+      document.getElementById("sidebar").classList.toggle("open");
+    });
+
+    // Products JSON data
     const products = [
       {
         name: "Creative Poster Design",
@@ -236,7 +265,7 @@
       });
     }
 
-    // Cart button
+    // Cart
     document.getElementById("cartBtn").addEventListener("click", () => {
       const cart = JSON.parse(localStorage.getItem("ogshop_cart")) || [];
       if (cart.length === 0) {
@@ -262,6 +291,15 @@
       });
     });
 
+    // Remove item
+    function removeCartItem(i) {
+      const cart = JSON.parse(localStorage.getItem("ogshop_cart")) || [];
+      cart.splice(i, 1);
+      localStorage.setItem("ogshop_cart", JSON.stringify(cart));
+      Swal.close();
+      document.getElementById("cartBtn").click();
+    }
+
     // Logout
     document.getElementById("logoutBtn").addEventListener("click", () => {
       Swal.fire({
@@ -279,15 +317,6 @@
         }
       });
     });
-
-    // Remove item from cart
-    function removeCartItem(i) {
-      const cart = JSON.parse(localStorage.getItem("ogshop_cart")) || [];
-      cart.splice(i, 1);
-      localStorage.setItem("ogshop_cart", JSON.stringify(cart));
-      Swal.close();
-      document.getElementById("cartBtn").click();
-    }
   </script>
 </body>
 </html>
