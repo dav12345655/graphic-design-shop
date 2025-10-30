@@ -12,6 +12,8 @@
       background: linear-gradient(135deg, #e3f2fd, #f9f9fb);
       min-height: 100vh;
       overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
     }
 
     /* Header */
@@ -55,9 +57,7 @@
       z-index: 100;
     }
 
-    .sidebar.active {
-      left: 0;
-    }
+    .sidebar.active { left: 0; }
 
     .sidebar h2 {
       font-size: 1.4rem;
@@ -79,14 +79,13 @@
       transition: 0.3s;
     }
 
-    .sidebar button:hover {
-      background: #111;
-    }
+    .sidebar button:hover { background: #111; }
 
     /* Content */
     .content {
       text-align: center;
       padding: 30px 20px;
+      flex: 1;
     }
 
     .subtitle {
@@ -118,7 +117,7 @@
 
     .blog-card img {
       width: 100%;
-      height: 260px; /* Bigger image height for article-like feel */
+      height: 260px;
       object-fit: cover;
       display: block;
     }
@@ -129,6 +128,27 @@
       padding: 20px;
       margin: 0;
       text-align: left;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 15px 0;
+      font-size: 0.95rem;
+      color: #111;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+    }
+
+    footer a {
+      color: #0077b6;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
     }
 
     @media(max-width: 768px) {
@@ -157,24 +177,29 @@
   <div class="content">
     <p class="subtitle">Discover creativity, passion, and strategy behind modern graphic design that shapes perception and inspires innovation.</p>
 
-  <!-- Blog grid inside index.html -->
-  <div class="blog-grid">
-    <div class="blog-card" data-title="Why You Need a Graphic Designer" data-img="https://i.pinimg.com/736x/db/e3/d4/dbe3d47c35a749790fdbd9a3ee7b30a7.jpg" data-text="Graphic designers help communicate your message visually with clarity, creativity, and emotion.">
-      <img src="https://i.pinimg.com/736x/db/e3/d4/dbe3d47c35a749790fdbd9a3ee7b30a7.jpg" alt="">
-      <h3>Why You Need a Graphic Designer</h3>
-    </div>
+    <div class="blog-grid">
+      <div class="blog-card" data-title="Why You Need a Graphic Designer" data-img="https://i.pinimg.com/736x/db/e3/d4/dbe3d47c35a749790fdbd9a3ee7b30a7.jpg" data-text="Graphic designers help communicate your message visually with clarity, creativity, and emotion.">
+        <img src="https://i.pinimg.com/736x/db/e3/d4/dbe3d47c35a749790fdbd9a3ee7b30a7.jpg" alt="">
+        <h3>Why You Need a Graphic Designer</h3>
+      </div>
 
-    <div class="blog-card" data-title="Graphic Design" data-img="https://i.pinimg.com/736x/3b/6e/eb/3b6eeb8aaccea98ec819c0c601939574.jpg" data-text="Modern graphic design goes beyond aesthetics — it’s about telling stories, evoking emotions, and creating experiences that connect.">
-      <img src="https://i.pinimg.com/736x/3b/6e/eb/3b6eeb8aaccea98ec819c0c601939574.jpg" alt="">
-      <h3>Graphic Design</h3>
-    </div>
+      <div class="blog-card" data-title="Graphic Design" data-img="https://i.pinimg.com/736x/3b/6e/eb/3b6eeb8aaccea98ec819c0c601939574.jpg" data-text="Modern graphic design goes beyond aesthetics — it’s about telling stories, evoking emotions, and creating experiences that connect.">
+        <img src="https://i.pinimg.com/736x/3b/6e/eb/3b6eeb8aaccea98ec819c0c601939574.jpg" alt="">
+        <h3>Graphic Design</h3>
+      </div>
 
-    <div class="blog-card" data-title="Do You Need a Graphic Designer?" data-img="https://i.pinimg.com/736x/22/19/9a/22199a896bde84970ae67f0047ea0faa.jpg" data-text="Your brand deserves a visual identity that resonates. A graphic designer can bring your ideas to life.">
-      <img src="https://i.pinimg.com/736x/22/19/9a/22199a896bde84970ae67f0047ea0faa.jpg" alt="">
-      <h3>Do You Need a Graphic Designer?</h3>
+      <div class="blog-card" data-title="Do You Need a Graphic Designer?" data-img="https://i.pinimg.com/736x/22/19/9a/22199a896bde84970ae67f0047ea0faa.jpg" data-text="Your brand deserves a visual identity that resonates. A graphic designer can bring your ideas to life.">
+        <img src="https://i.pinimg.com/736x/22/19/9a/22199a896bde84970ae67f0047ea0faa.jpg" alt="">
+        <h3>Do You Need a Graphic Designer?</h3>
+      </div>
     </div>
   </div>
-  </div>
+
+  <!-- Footer -->
+  <footer>
+    Designed by <strong>ABblack</strong> • 📞 
+    <a href="tel:+2347026865570">07026865570</a>
+  </footer>
 
   <script>
     const sidebar = document.getElementById("sidebar");
@@ -190,7 +215,6 @@
       }
     });
 
-    // SweetAlert for blogs
     document.querySelectorAll(".blog-card").forEach(card => {
       card.addEventListener("click", () => {
         Swal.fire({
@@ -205,7 +229,6 @@
       });
     });
 
-    // Logout button
     document.getElementById("logoutBtn").addEventListener("click", () => {
       Swal.fire({
         title: "Confirm Logout",
@@ -223,7 +246,6 @@
       });
     });
 
-    // Cart button
     document.getElementById("cartBtn").addEventListener("click", () => {
       const cart = JSON.parse(localStorage.getItem("ogshop_cart")) || [];
       if (cart.length === 0) {
