@@ -4,35 +4,58 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Checkout — Online Graphic Shop</title>
-
-<!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
-  :root{
+  :root {
     --bg1:#4f46e5; --bg2:#7c3aed;
     --card:#ffffffcc; --muted:#6b7280;
     --accent:#06b6d4; --success:#16a34a; --danger:#ef4444;
   }
-  html,body{height:100%;margin:0;padding:0;}
-  body{
-    font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;
-    background:linear-gradient(135deg,var(--bg1),var(--bg2));
-    color:#0f172a;
-    display:flex;align-items:center;justify-content:center;
-    min-height:100vh;padding:20px;box-sizing:border-box;
+  html,body {height:100%;margin:0}
+  body {
+    font-family: Inter, system-ui, Segoe UI, Arial, sans-serif;
+    background: linear-gradient(135deg,var(--bg1),var(--bg2));
+    color: #0f172a;
+    display: flex;align-items: flex-start;justify-content: center;
+    padding: 28px 12px;box-sizing: border-box;min-height:100vh;
   }
-  .container{
-    width:100%;max-width:980px;margin:auto;
+  .container {width:100%;max-width:980px;margin:18px auto;}
+  header {display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;color:#fff;position:relative;}
+  header h1 {margin:0;font-size:20px}
+  header p {margin:0;opacity:0.9;font-size:13px}
+  .menu {
+    position: absolute;
+    right: 0;
   }
-  header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;color:#fff;flex-wrap:wrap;}
-  header h1{margin:0;font-size:20px}
-  header p{margin:0;opacity:0.9;font-size:13px}
-  .card{background:var(--card);border-radius:14px;padding:18px;box-shadow:0 10px 30px rgba(2,6,23,0.25);backdrop-filter:blur(6px);}
-  .grid{display:grid;grid-template-columns:1fr 360px;gap:18px;}
-  @media(max-width:880px){
-    .grid{grid-template-columns:1fr;}
+  .menu-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 22px;
+    cursor: pointer;
   }
+  .dropdown {
+    display: none;
+    position: absolute;
+    top: 32px;
+    right: 0;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    overflow: hidden;
+  }
+  .dropdown a {
+    display: block;
+    padding: 10px 16px;
+    color: #0f172a;
+    text-decoration: none;
+    font-size: 14px;
+  }
+  .dropdown a:hover {background: #f1f5f9;}
+  .card {background: var(--card);border-radius:14px;padding:18px;box-shadow:0 10px 30px rgba(2,6,23,0.25);backdrop-filter:blur(6px);}
+  .grid {display:grid;grid-template-columns:1fr 360px;gap:18px;}
+  @media(max-width:880px){.grid{grid-template-columns:1fr}}
   .left,.right{padding:8px}
   .items-list{background:#fff;border-radius:10px;padding:12px;max-height:420px;overflow:auto}
   .item{display:flex;gap:12px;align-items:center;padding:10px 6px;border-bottom:1px solid #f1f5f9;}
@@ -49,11 +72,10 @@
   .btn-primary{background:linear-gradient(90deg,#0ea5e9,#7c3aed)}
   .btn-ghost{background:transparent;border:1px solid rgba(15,23,42,0.06);color:#0f172a}
   .note{margin-top:12px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.8);font-size:14px;color:#334155;}
-  footer{margin-top:20px;color:#fff;text-align:center;font-size:13px}
+  footer{margin-top:16px;color:#fff;text-align:center;font-size:13px}
   .whatsapp{position:fixed;right:18px;bottom:18px;width:64px;height:64px;border-radius:50%;
     background:#25D366;color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;
     z-index:9999;box-shadow:0 10px 30px rgba(2,6,23,0.25);text-decoration:none;}
-  /* Wallet top bar */
   #wallet-bar{
     position:fixed;top:12px;left:12px;background:#fff;
     padding:8px 14px;border-radius:25px;box-shadow:0 4px 10px rgba(0,0,0,0.15);
@@ -65,17 +87,21 @@
   }
 </style>
 </head>
+
 <body>
   <div class="container">
     <header>
       <div>
         <h1>Checkout — Online Graphic Shop</h1>
-        <p>Confirm payment details to complete your order</p>
+        <p>Confirm details to complete your order</p>
       </div>
-      <div style="text-align:right">
-        <small style="color:#fff;opacity:0.9">Payment beneficiary</small>
-        <div style="margin-top:6px;font-weight:700;color:#fff">Joy Gift • Opay</div>
-        <div style="color:#fff;opacity:0.9">Acct: 9121383292</div>
+      <div class="menu">
+        <button class="menu-btn">⋮</button>
+        <div class="dropdown" id="dropdown-menu">
+          <a href="index.html">🏠 Home</a>
+          <a href="cart.html">🛒 View Cart</a>
+          <a href="#" id="logout">🚪 Logout</a>
+        </div>
       </div>
     </header>
 
@@ -102,14 +128,12 @@
           <div style="background:linear-gradient(180deg,#ffffffcc,#ffffffbb);padding:14px;border-radius:10px">
             <h3 style="margin:0 0 8px">Payment</h3>
             <p style="color:var(--muted);margin:0 0 12px">
-              Account name: <strong>Joy Gift</strong><br>
-              Bank: <strong>Opay</strong><br>
-              Account: <strong>9121383292</strong>
+              No bank details needed. Your payment will be deducted directly from your wallet.
             </p>
 
             <div style="display:flex;gap:8px;margin-top:14px">
               <button id="pay-btn" class="btn btn-primary" style="flex:1">Pay Now</button>
-              <button id="back-shop" class="btn btn-ghost" style="flex:1">Back to shop</button>
+              <button id="back-shop" class="btn btn-ghost" style="flex:1">Back to Shop</button>
             </div>
 
             <div style="margin-top:12px;text-align:center">
@@ -134,69 +158,70 @@
   <a class="whatsapp" href="https://wa.me/2349121383292" target="_blank">💬</a>
 
 <script>
-// ===== USER SESSION + SHARED WALLET SYSTEM =====
-const userEmail = localStorage.getItem('loggedInUser');
+// ===== MENU FUNCTIONALITY =====
+const menuBtn=document.querySelector('.menu-btn');
+const dropdown=document.getElementById('dropdown-menu');
+menuBtn.addEventListener('click',()=>dropdown.style.display=dropdown.style.display==='block'?'none':'block');
+window.addEventListener('click',e=>{
+  if(!menuBtn.contains(e.target)&&!dropdown.contains(e.target)) dropdown.style.display='none';
+});
+document.getElementById('logout').addEventListener('click',()=>{
+  localStorage.removeItem('loggedInUser');
+  Swal.fire({icon:'info',title:'Logged Out',text:'You have been logged out.'})
+  .then(()=>window.location.href='login.html');
+});
+
+// ===== USER SESSION + WALLET =====
+const userEmail=localStorage.getItem('loggedInUser');
 if(!userEmail){
-  Swal.fire({
-    icon:'warning',
-    title:'Login Required',
-    text:'Please login to continue.',
-    confirmButtonText:'Go to Login'
-  }).then(()=>window.location.href='login.html');
+  Swal.fire({icon:'warning',title:'Login Required',text:'Please login to continue.',confirmButtonText:'Go to Login'})
+  .then(()=>window.location.href='login.html');
 }
 
-// --- Shared Wallet Logic ---
-function getWallets(){ return JSON.parse(localStorage.getItem('wallets') || '{}'); }
+function getWallets(){return JSON.parse(localStorage.getItem('wallets')||'{}');}
 function getWalletBalance(){
-  const wallets = getWallets();
-  return parseFloat(wallets[userEmail] || 0);
+  const wallets=getWallets();
+  return parseFloat(wallets[userEmail]||0);
 }
 function setWalletBalance(amount){
-  const wallets = getWallets();
-  wallets[userEmail] = amount;
-  localStorage.setItem('wallets', JSON.stringify(wallets));
+  const wallets=getWallets();
+  wallets[userEmail]=amount;
+  localStorage.setItem('wallets',JSON.stringify(wallets));
 }
 
-// --- Wallet UI Bar ---
-const walletBar = document.createElement('div');
-walletBar.id = 'wallet-bar';
-walletBar.innerHTML = `
-  💰 Wallet: ₦<span id="wallet-balance">${getWalletBalance().toLocaleString()}</span>
-  <button id="deposit-btn">Deposit</button>
-`;
+// WALLET BAR
+const walletBar=document.createElement('div');
+walletBar.id='wallet-bar';
+walletBar.innerHTML=`💰 Wallet: ₦<span id="wallet-balance">${getWalletBalance().toLocaleString()}</span>
+<button id="deposit-btn">Deposit</button>`;
 document.body.appendChild(walletBar);
 
-// --- Deposit Function with ₦1,000,000 limit ---
-document.getElementById('deposit-btn').addEventListener('click', async()=>{
-  const {value:amount} = await Swal.fire({
+document.getElementById('deposit-btn').addEventListener('click',async()=>{
+  const {value:amount}=await Swal.fire({
     title:'Deposit Funds',
     input:'number',
     inputLabel:'Enter amount to deposit (₦)',
-    inputAttributes:{min:1,max:1000000},
+    inputAttributes:{min:1},
     showCancelButton:true,
     confirmButtonText:'Deposit',
     confirmButtonColor:'#4f46e5'
   });
-  if(!amount || amount <= 0) return;
-
-  const currentBal = getWalletBalance();
-  if(currentBal + parseFloat(amount) > 1000000){
-    return Swal.fire({icon:'error',title:'Limit Exceeded',text:'Wallet balance cannot exceed ₦1,000,000.'});
-  }
+  if(!amount||amount<=0)return;
+  if(amount>1000000)return Swal.fire({icon:'error',title:'Deposit Limit',text:'Maximum deposit is ₦1,000,000.'});
 
   Swal.fire({title:'Processing deposit...',allowOutsideClick:false,didOpen:()=>Swal.showLoading()});
-  await new Promise(r=>setTimeout(r,1500));
+  await new Promise(r=>setTimeout(r,2000));
   Swal.close();
 
-  const newBal = currentBal + parseFloat(amount);
+  const newBal=getWalletBalance()+parseFloat(amount);
   setWalletBalance(newBal);
-  document.getElementById('wallet-balance').textContent = newBal.toLocaleString();
-
+  document.getElementById('wallet-balance').textContent=newBal.toLocaleString();
   Swal.fire({icon:'success',title:'Deposit successful!',text:'Your wallet has been credited.'});
 });
 </script>
 
 <script>
+// ===== CART + PAYMENT LOGIC =====
 (function(){
   const itemsList=document.getElementById('items-list');
   const totalAmountEl=document.getElementById('total-amount');
@@ -220,7 +245,7 @@ document.getElementById('deposit-btn').addEventListener('click', async()=>{
       const row=document.createElement('div');
       row.className='item';
       row.innerHTML=`<img src="${p.image}" alt="${p.name}">
-        <div class="meta"><b>${p.name}</b></div>
+        <div class="meta"><b>${p.name}</b><small>${p.desc||''}</small></div>
         <div class="price">₦${Number(p.price).toLocaleString()}</div>`;
       itemsList.appendChild(row);
     });
@@ -240,10 +265,10 @@ document.getElementById('deposit-btn').addEventListener('click', async()=>{
     Swal.fire({title:'Processing payment...',allowOutsideClick:false,didOpen:()=>Swal.showLoading()});
     await new Promise(r=>setTimeout(r,1500)); Swal.close();
 
-    const newBal=current-total; setWalletBalance(newBal);
+    const newBal=current-total;
+    setWalletBalance(newBal);
     document.getElementById('wallet-balance').textContent=newBal.toLocaleString();
-    localStorage.setItem('cart','[]'); // clear cart after payment
-
+    localStorage.setItem('cart','[]'); // clear cart
     Swal.fire({icon:'success',title:'Payment Successful',text:'Your order has been placed successfully!'})
     .then(()=>window.location.href='products.html');
   });
