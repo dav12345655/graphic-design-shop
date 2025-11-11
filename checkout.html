@@ -1,3 +1,6 @@
+what youll do now is to connect the checkout page to the cart, because the product in the cart does not show on the checkout page when selected.
+here is the current checkout.html
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -24,20 +27,40 @@
   header {display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;color:#fff;position:relative;}
   header h1 {margin:0;font-size:20px}
   header p {margin:0;opacity:0.9;font-size:13px}
-  .menu {position:absolute;right:0;}
+  .menu {
+    position: absolute;
+    right: 0;
+  }
   .menu-btn {
-    background:transparent;border:none;color:white;font-size:22px;cursor:pointer;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 22px;
+    cursor: pointer;
   }
   .dropdown {
-    display:none;position:absolute;top:32px;right:0;background:#fff;border-radius:10px;
-    box-shadow:0 8px 20px rgba(0,0,0,0.2);overflow:hidden;
+    display: none;
+    position: absolute;
+    top: 32px;
+    right: 0;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    overflow: hidden;
   }
   .dropdown a {
-    display:block;padding:10px 16px;color:#0f172a;text-decoration:none;font-size:14px;
+    display: block;
+    padding: 10px 16px;
+    color: #0f172a;
+    text-decoration: none;
+    font-size: 14px;
   }
-  .dropdown a:hover{background:#f1f5f9;}
-  .card{background:var(--card);border-radius:14px;padding:18px;box-shadow:0 10px 30px rgba(2,6,23,0.25);backdrop-filter:blur(6px);}
-  .items-list{background:#fff;border-radius:10px;padding:12px;max-height:420px;overflow:auto;}
+  .dropdown a:hover {background: #f1f5f9;}
+  .card {background: var(--card);border-radius:14px;padding:18px;box-shadow:0 10px 30px rgba(2,6,23,0.25);backdrop-filter:blur(6px);}
+  .grid {display:grid;grid-template-columns:1fr 360px;gap:18px;}
+  @media(max-width:880px){.grid{grid-template-columns:1fr}}
+  .left,.right{padding:8px}
+  .items-list{background:#fff;border-radius:10px;padding:12px;max-height:420px;overflow:auto}
   .item{display:flex;gap:12px;align-items:center;padding:10px 6px;border-bottom:1px solid #f1f5f9;}
   .item img{width:78px;height:56px;object-fit:cover;border-radius:8px}
   .item .meta{flex:1}
@@ -45,10 +68,17 @@
   .item .meta small{color:var(--muted);display:block;margin-top:6px;font-size:13px}
   .item .price{font-weight:800}
   .total-row{display:flex;justify-content:space-between;align-items:center;padding:14px 6px;font-weight:800;font-size:18px}
+  .form{margin-top:12px;display:grid;gap:10px}
+  .form input{width:100%;padding:10px;border-radius:10px;border:1px solid #e6edf4;font-size:15px;}
   .btn{display:inline-block;padding:12px 14px;border-radius:10px;border:0;color:white;font-weight:800;cursor:pointer;
-       background:linear-gradient(90deg,#06b6d4,#7c3aed);}
+       background:linear-gradient(90deg,#06b6d4,#06b6d4);}
+  .btn-primary{background:linear-gradient(90deg,#0ea5e9,#7c3aed)}
   .btn-ghost{background:transparent;border:1px solid rgba(15,23,42,0.06);color:#0f172a}
+  .note{margin-top:12px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.8);font-size:14px;color:#334155;}
   footer{margin-top:16px;color:#fff;text-align:center;font-size:13px}
+  .whatsapp{position:fixed;right:18px;bottom:18px;width:64px;height:64px;border-radius:50%;
+    background:#25D366;color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;
+    z-index:9999;box-shadow:0 10px 30px rgba(2,6,23,0.25);text-decoration:none;}
   #wallet-bar{
     position:fixed;top:12px;left:12px;background:#fff;
     padding:8px 14px;border-radius:25px;box-shadow:0 4px 10px rgba(0,0,0,0.15);
@@ -66,7 +96,7 @@
     <header>
       <div>
         <h1>Checkout — Online Graphic Shop</h1>
-        <p>Confirm your order details</p>
+        <p>Confirm details to complete your order</p>
       </div>
       <div class="menu">
         <button class="menu-btn">⋮</button>
@@ -79,15 +109,46 @@
     </header>
 
     <div class="card">
-      <div id="items-list"></div>
-      <div class="total-row">
-        <div>Total</div>
-        <div>₦<span id="total-amount">0</span></div>
-      </div>
+      <div class="grid">
+        <div class="left">
+          <div class="items-list" id="items-list"></div>
+          <div class="total-row">
+            <div>Total</div>
+            <div>₦<span id="total-amount">0</span></div>
+          </div>
 
-      <div style="display:flex;gap:8px;margin-top:14px">
-        <button id="pay-btn" class="btn" style="flex:1">Pay Now</button>
-        <button id="back-shop" class="btn-ghost" style="flex:1">Back to Shop</button>
+          <div class="form">
+            <input id="cust-name" placeholder="Full name" />
+            <input id="cust-phone" placeholder="Phone or email" />
+          </div>
+
+          <div class="note">
+            <strong>Note:</strong> Ensure you have enough wallet balance to cover your total before clicking “Pay Now.”
+          </div>
+        </div>
+
+        <div class="right">
+          <div style="background:linear-gradient(180deg,#ffffffcc,#ffffffbb);padding:14px;border-radius:10px">
+            <h3 style="margin:0 0 8px">Payment</h3>
+            <p style="color:var(--muted);margin:0 0 12px">
+              No bank details needed. Your payment will be deducted directly from your wallet.
+            </p>
+
+            <div style="display:flex;gap:8px;margin-top:14px">
+              <button id="pay-btn" class="btn btn-primary" style="flex:1">Pay Now</button>
+              <button id="back-shop" class="btn btn-ghost" style="flex:1">Back to Shop</button>
+            </div>
+
+            <div style="margin-top:12px;text-align:center">
+              <small style="color:var(--muted)">Need help? Chat with us on WhatsApp.</small>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;background:rgba(255,255,255,0.85);padding:12px;border-radius:10px;text-align:center">
+            <strong style="font-size:14px">Order Summary</strong>
+            <div style="margin-top:8px;color:var(--muted);font-size:14px" id="summary-count">0 items</div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -96,6 +157,8 @@
       <a href="tel:+2347026865570" style="color:#c7f9ff;text-decoration:none">07026865570</a>
     </footer>
   </div>
+
+  <a class="whatsapp" href="https://wa.me/2349121383292" target="_blank">💬</a>
 
 <script>
 // ===== MENU FUNCTIONALITY =====
@@ -117,14 +180,19 @@ if(!userEmail){
   Swal.fire({icon:'warning',title:'Login Required',text:'Please login to continue.',confirmButtonText:'Go to Login'})
   .then(()=>window.location.href='login.html');
 }
+
 function getWallets(){return JSON.parse(localStorage.getItem('wallets')||'{}');}
 function getWalletBalance(){
-  const wallets=getWallets();return parseFloat(wallets[userEmail]||0);
+  const wallets=getWallets();
+  return parseFloat(wallets[userEmail]||0);
 }
 function setWalletBalance(amount){
-  const wallets=getWallets();wallets[userEmail]=amount;
+  const wallets=getWallets();
+  wallets[userEmail]=amount;
   localStorage.setItem('wallets',JSON.stringify(wallets));
 }
+
+// WALLET BAR
 const walletBar=document.createElement('div');
 walletBar.id='wallet-bar';
 walletBar.innerHTML=`💰 Wallet: ₦<span id="wallet-balance">${getWalletBalance().toLocaleString()}</span>
@@ -143,20 +211,28 @@ document.getElementById('deposit-btn').addEventListener('click',async()=>{
   });
   if(!amount||amount<=0)return;
   if(amount>1000000)return Swal.fire({icon:'error',title:'Deposit Limit',text:'Maximum deposit is ₦1,000,000.'});
+
   Swal.fire({title:'Processing deposit...',allowOutsideClick:false,didOpen:()=>Swal.showLoading()});
-  await new Promise(r=>setTimeout(r,2000));Swal.close();
+  await new Promise(r=>setTimeout(r,2000));
+  Swal.close();
+
   const newBal=getWalletBalance()+parseFloat(amount);
   setWalletBalance(newBal);
   document.getElementById('wallet-balance').textContent=newBal.toLocaleString();
   Swal.fire({icon:'success',title:'Deposit successful!',text:'Your wallet has been credited.'});
 });
+</script>
 
-// ===== CART + CHECKOUT LOGIC =====
+<script>
+// ===== CART + PAYMENT LOGIC =====
 (function(){
   const itemsList=document.getElementById('items-list');
   const totalAmountEl=document.getElementById('total-amount');
+  const summaryCount=document.getElementById('summary-count');
   const payBtn=document.getElementById('pay-btn');
   const backShop=document.getElementById('back-shop');
+  const nameInput=document.getElementById('cust-name');
+  const phoneInput=document.getElementById('cust-phone');
   let cart=[];
   try{cart=JSON.parse(localStorage.getItem('cart')||'[]');}catch(e){cart=[];}
 
@@ -164,8 +240,7 @@ document.getElementById('deposit-btn').addEventListener('click',async()=>{
     itemsList.innerHTML='';
     if(!cart.length){
       itemsList.innerHTML='<p style="color:#475569">Your cart is empty. <a href="products.html">Go back to shop</a></p>';
-      totalAmountEl.textContent='0';
-      return;
+      totalAmountEl.textContent='0'; summaryCount.textContent='0 items'; return;
     }
     let total=0;
     cart.forEach(p=>{
@@ -178,16 +253,21 @@ document.getElementById('deposit-btn').addEventListener('click',async()=>{
       itemsList.appendChild(row);
     });
     totalAmountEl.textContent=total.toLocaleString();
+    summaryCount.textContent=`${cart.length} item${cart.length>1?'s':''}`;
   }
 
   payBtn.addEventListener('click',async()=>{
-    if(!cart.length)return Swal.fire({icon:'error',title:'Empty Cart',text:'Add items before checking out.'});
+    const name=nameInput.value.trim(),phone=phoneInput.value.trim();
     const total=parseFloat(totalAmountEl.textContent.replace(/,/g,''))||0;
     const current=getWalletBalance();
+
+    if(!cart.length)return Swal.fire({icon:'error',title:'Empty Cart',text:'Add items before checking out.'});
+    if(!name||!phone)return Swal.fire({icon:'error',title:'Missing Info',text:'Please enter your full name and contact.'});
     if(current<total)return Swal.fire({icon:'error',title:'Insufficient Wallet',text:'Deposit more funds before checkout.'});
 
     Swal.fire({title:'Processing payment...',allowOutsideClick:false,didOpen:()=>Swal.showLoading()});
-    await new Promise(r=>setTimeout(r,1500));Swal.close();
+    await new Promise(r=>setTimeout(r,1500)); Swal.close();
+
     const newBal=current-total;
     setWalletBalance(newBal);
     document.getElementById('wallet-balance').textContent=newBal.toLocaleString();
